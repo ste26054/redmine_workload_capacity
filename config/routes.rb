@@ -11,3 +11,5 @@ resources :users do
 		resources :wl_project_allocations, :wl_custom_allocations, :wl_user_overtimes
 	end
 end
+
+get '/projects/:project_id/workload/board', :to => 'wl_boards#index'

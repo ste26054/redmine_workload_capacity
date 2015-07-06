@@ -1,0 +1,5 @@
+<% unless @project.module_enabled?(:workload_capacity) %>
+	<p>Please enable the Workload Capacity module first</p>
+<% else %>
+	<p>Module is correctly activated !</p>
+<% end %>
