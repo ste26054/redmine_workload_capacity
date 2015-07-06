@@ -5,7 +5,7 @@ class WlBoardsController < ApplicationController
 
   def index
   	@project = Project.find(params[:project_id])
-  	@project_window = WlProjectWindow.where(project_id: @project.id).first
+  	@project_window = WlProjectWindow.find_by(project_id: @project.id)
 
   	render_404 if @project_window == nil
   end
