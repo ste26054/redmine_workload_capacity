@@ -2,3 +2,8 @@
 en:
   # my_label: "My label"
   label_workload: "Workload"
+
+  notice_project_windows_set: "The project windows was correctly set"
+
+  error_project_windows_set: "An error occured. Please check that your parameters are correct"
+  error_project_windows_dates: "End date cannot take place before Start date"

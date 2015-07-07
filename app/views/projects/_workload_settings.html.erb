@@ -1,5 +1,16 @@
 <% unless @project.module_enabled?(:workload_capacity) %>
-	<p>Please enable the Workload Capacity module first</p>
+	<h3>Please enable the Workload Capacity module first</h3>
 <% else %>
-	<p>Module is correctly activated !</p>
+	<h2>Project Windows:</h2>
+
+	<fieldset>
+	<% if @project.wl_project_window != nil %>
+		<h3>From: <%= format_date(@project.wl_project_window.start_date) %> To: <%= format_date(@project.wl_project_window.end_date) %> </h3>
+		<%= link_to 'Edit', edit_project_wl_project_windows_path(@project) %>
+		
+	<% else %>
+		<h3>No Project Windows is defined yet</h3>
+		<%= link_to 'Create', new_project_wl_project_windows_path(@project) %>
+	<% end %>
+	</fieldset>
 <% end %>

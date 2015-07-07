@@ -4,18 +4,22 @@ class WlProjectWindowsController < ApplicationController
   before_action :set_project, :retrieve_project_window
 
   def new
-  	@project_window = WlProjectWindow.new
+  	if @project_window
+  		redirect_to edit_project_wl_project_windows_path
+  	else
+  		@project_window = WlProjectWindow.new
+  	end
   end
 
   def create
   	@project_window = WlProjectWindow.new(wl_project_window_params)
   	@project_window.project_id = @project.id
   	if @project_window.save
-  		flash[:notice] = "The project window was correctly set"
-  		render new_project_wl_project_windows_path
+  		flash[:notice] = l(:notice_project_windows_set)
+  		redirect_to edit_project_wl_project_windows_path
   	else
-  		flash[:error] = "An error occured. Please check that your parameters are correct"
-  		render new_project_wl_project_windows_path
+  		flash[:error] = l(:error_project_windows_set)
+  		render :new
   	end
   end
 
@@ -23,7 +27,14 @@ class WlProjectWindowsController < ApplicationController
   end
 
   def update
-
+  	if @project_window.update(wl_project_window_params)
+  		flash[:notice] = l(:notice_project_windows_set)
+  		redirect_to edit_project_wl_project_windows_path
+  	else
+  		flash[:error] = l(:error_project_windows_set)
+  		render :edit
+  	end
+  	
   end
 
 private
