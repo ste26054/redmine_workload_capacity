@@ -4,4 +4,5 @@ Rails.configuration.to_prepare do
   require 'redmine_workload_capacity/patches/user_patch'
   require 'redmine_workload_capacity/wl_scope_extensions'
   require 'redmine_workload_capacity/wl_common_validations'
+  require 'redmine_workload_capacity/wl_logic'
 end

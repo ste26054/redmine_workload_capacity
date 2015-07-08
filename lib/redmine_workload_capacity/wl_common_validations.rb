@@ -13,6 +13,14 @@ module WlCommonValidation
 	end
 
 	def custom_alloc_uniq_within_period
+	  	overlaps = self.class.overlaps(start_date, end_date)
+
+	  	overlaps.find_each do |o|
+	  		errors.add(:base, "Error: overlap found. Id: #{o.id} From: #{o.start_date}, To: #{o.end_date}")
+	  	end
+	end
+
+	def custom_alloc_per_user_uniq_within_period
 	  	overlaps = self.class.for_user(user_id).overlaps(start_date, end_date)
 
 	  	overlaps.find_each do |o|

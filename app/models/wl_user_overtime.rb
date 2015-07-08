@@ -14,7 +14,7 @@ class WlUserOvertime < ActiveRecord::Base
 
   validate :end_date_not_before_start_date
   validate :dates_not_beyond_project_window
-  validate :custom_alloc_uniq_within_period
+  validate :custom_alloc_per_user_uniq_within_period
 
   attr_accessible :start_date, :end_date, :overtime_hours, :wl_project_window_id, :user_id
 
