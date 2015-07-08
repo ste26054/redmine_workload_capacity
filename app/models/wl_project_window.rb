@@ -1,5 +1,8 @@
 class WlProjectWindow < ActiveRecord::Base
   unloadable
+  include WlScopeExtension::Dates
+  include WlCommonValidation
+  
 
   belongs_to :project
   attr_accessible :project_id, :start_date, :end_date
@@ -8,13 +11,9 @@ class WlProjectWindow < ActiveRecord::Base
   validates :end_date, date: true, presence: true
   validates :project_id, presence: true
 
-  validate :validate_end_date_before_start_date
+  validate :end_date_not_before_start_date
 
-
+  attr_accessible :start_date, :end_date, :project_id
 private
-  def validate_end_date_before_start_date
-    if end_date && start_date
-      errors.add(:base, l(:error_project_windows_dates)) if end_date < start_date
-    end
-  end
+
 end
