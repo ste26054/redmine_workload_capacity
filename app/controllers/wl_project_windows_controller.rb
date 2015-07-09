@@ -37,6 +37,11 @@ class WlProjectWindowsController < ApplicationController
   	
   end
 
+  def destroy
+  	@project_window.destroy
+  	redirect_to new_project_wl_project_windows_path
+  end
+
 private
 
   def wl_project_window_params

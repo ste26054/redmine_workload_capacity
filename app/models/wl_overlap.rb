@@ -3,8 +3,8 @@ class WlOverlap < ActiveRecord::Base
   include WlScopeExtension::Dates
   include WlCommonValidation
 
-  has_many :wl_project_overlaps, dependent: :destroy
-
+  has_many :wl_common_windows, :dependent => :destroy
+  has_many :wl_project_windows, :through => :wl_common_windows
 
   after_save :update_overlaps
 
@@ -20,7 +20,7 @@ private
 	def update_overlaps
 		projects_window_associated = WlProjectWindow.overlaps(start_date, end_date)
 		projects_window_associated.find_each do |p|
-			wl_project_overlap = WlProjectOverlap.new
+			wl_project_overlap = WlCommonWindow.new
 			wl_project_overlap.wl_overlap_id = self.id
 			wl_project_overlap.wl_project_window_id = p.id
 			wl_project_overlap.save
