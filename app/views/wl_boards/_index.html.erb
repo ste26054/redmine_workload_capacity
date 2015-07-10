@@ -1,1 +1,3 @@
-<p> TEST </p>
+<% project.wl_users.each do |u| %>
+<p><%= u.login %></p>
+<% end %>

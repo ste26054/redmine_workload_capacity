@@ -43,7 +43,7 @@ module WlLogic
 	def self.get_overlaps_from_db
 		table = []
 
-		WlOverlap.find_each do |overlap|
+		WlOverlap.order(:start_date).find_each do |overlap|
 			entry = {}
 			entry[:start_date] = overlap.start_date
 			entry[:end_date] = overlap.end_date

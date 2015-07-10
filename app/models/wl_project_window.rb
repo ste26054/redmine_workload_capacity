@@ -21,22 +21,36 @@ class WlProjectWindow < ActiveRecord::Base
 private
 
 	def update_overlaps
-		overlaps_table_new = WlLogic.generate_overlaps_table
-		overlaps_table_db = WlLogic.get_overlaps_from_db
+		#if changes.has_key?("start_date") || changes.has_key?("end_date")
+			WlOverlap.destroy_all
+			WlLogic.generate_overlaps_table.each do |overlap|
+				entry = WlOverlap.new
+				entry.start_date = overlap[:start_date]
+				entry.end_date = overlap[:end_date]
+				entry.save
+			end
 
-		identities = overlaps_table_new & overlaps_table_db
-		to_add = overlaps_table_new - identities
-		to_remove = overlaps_table_db - identities
+			# overlaps_table_new = WlLogic.generate_overlaps_table
+			# overlaps_table_db = WlLogic.get_overlaps_from_db
 
-		to_remove.each do |overlap|
-			entry = WlOverlap.find_by(start_date: overlap[:start_date], end_date: overlap[:end_date]).destroy
-		end
+			# identities = overlaps_table_new & overlaps_table_db
+			# to_add = overlaps_table_new - identities
+			# to_remove = overlaps_table_db - identities
 
-		to_add.each do |overlap|
-			entry = WlOverlap.new
-			entry.start_date = overlap[:start_date]
-			entry.end_date = overlap[:end_date]
-			entry.save
-		end
+			# to_remove.each do |overlap|
+			# 	entry = WlOverlap.find_by(start_date: overlap[:start_date], end_date: overlap[:end_date]).destroy
+			# end
+
+			# to_add.each do |overlap|
+			# 	entry = WlOverlap.new
+			# 	entry.start_date = overlap[:start_date]
+			# 	entry.end_date = overlap[:end_date]
+			# 	entry.save
+			# end
+		#end
 	end
+
+	# def delete_overlaps
+	# 	WlOverlap.destroy_all
+	# end
 end

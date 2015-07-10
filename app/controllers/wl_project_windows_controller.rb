@@ -5,7 +5,7 @@ class WlProjectWindowsController < ApplicationController
 
   def new
   	if @project_window
-  		redirect_to edit_project_wl_project_windows_path
+  		redirect_to :controller => 'projects', :action => 'settings', :id => @project.id, :tab => 'workload'
   	else
   		@project_window = WlProjectWindow.new
   	end
@@ -16,7 +16,7 @@ class WlProjectWindowsController < ApplicationController
   	@project_window.project_id = @project.id
   	if @project_window.save
   		flash[:notice] = l(:notice_project_windows_set)
-  		redirect_to edit_project_wl_project_windows_path
+  		redirect_to :controller => 'projects', :action => 'settings', :id => @project.id, :tab => 'workload'
   	else
   		flash[:error] = l(:error_project_windows_set)
   		render :new
@@ -29,7 +29,7 @@ class WlProjectWindowsController < ApplicationController
   def update
   	if @project_window.update(wl_project_window_params)
   		flash[:notice] = l(:notice_project_windows_set)
-  		redirect_to edit_project_wl_project_windows_path
+  		redirect_to :controller => 'projects', :action => 'settings', :id => @project.id, :tab => 'workload'
   	else
   		flash[:error] = l(:error_project_windows_set)
   		render :edit
@@ -39,7 +39,7 @@ class WlProjectWindowsController < ApplicationController
 
   def destroy
   	@project_window.destroy
-  	redirect_to new_project_wl_project_windows_path
+  	redirect_to :controller => 'projects', :action => 'settings', :id => @project.id, :tab => 'workload'
   end
 
 private
