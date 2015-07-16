@@ -47,10 +47,35 @@ module WlLogic
 			entry = {}
 			entry[:start_date] = overlap.start_date
 			entry[:end_date] = overlap.end_date
-			entry[:project_window_ids] = overlap.wl_project_windows.map {|o| o.id}
+			entry[:project_window_ids] = overlap.wl_project_windows.map(&:id)
 			table << entry
 		end
 		return table
+	end
+
+	def self.wl_project_overlaps(project)
+		window_id = project.wl_project_window.id
+		return WlLogic.get_overlaps_from_db.delete_if {|o| !window_id.in?(o[:project_window_ids])}
+	end
+
+	def self.wl_member_allocation(member)
+		Rails.logger.info "MEMBER: #{member.to_s}"
+		project_window = member.project.wl_project_window
+		hsh = {}
+		project_alloc = WlProjectAllocation.find_by(user_id: member.user_id, wl_project_window_id: project_window.id)
+		#raise "project allocation not defined for user #{user.login}" if project_alloc == nil
+		if project_alloc
+			hsh[:project_id] = member.project.id
+			hsh[:default_alloc] = project_alloc
+			hsh[:custom_allocs] = []
+
+			custom_allocs = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: project_window.id)
+
+			custom_allocs.find_each do |alloc|
+				hsh[:custom_allocs] << alloc
+			end
+		end
+		return hsh
 	end
 
 end

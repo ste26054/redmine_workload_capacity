@@ -14,7 +14,10 @@ module RedmineWorkloadCapacity
 		end
 
 		module MemberInstanceMethods
-			
+			include WlLogic
+			def wl_allocation
+				return WlLogic.wl_member_allocation(self)
+			end
 		end
 	end
 end

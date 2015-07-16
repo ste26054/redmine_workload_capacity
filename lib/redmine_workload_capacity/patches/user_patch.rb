@@ -14,16 +14,15 @@ module RedmineWorkloadCapacity
 
 		module UserInstanceMethods
 			def wl_allocs
-				# {projects: [
-				# 	project_id: ...
-				# 	default_alloc: ...
-				# 	allocs: [{ 	alloc_id: ...
-				# 				from: ...
-				# 				to: ...	
-				# 				percent_alloc: ...
-				# 			}]
-				# 		   ]
-				# }
+				wl_memberships = self.memberships.to_a.delete_if {|m| !self.allowed_to?(:appear_in_project_workload, m.project) || !m.project.wl_window_defined?}
+				
+				hsh = []
+
+				wl_memberships.each do |wl_member|
+					alloc = wl_member.wl_allocation 
+					hsh << alloc unless alloc.empty?
+				end
+				return hsh
 			end
 		end
 	end

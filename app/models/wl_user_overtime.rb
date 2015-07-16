@@ -19,5 +19,5 @@ class WlUserOvertime < ActiveRecord::Base
   attr_accessible :start_date, :end_date, :overtime_hours, :wl_project_window_id, :user_id
 
 private
-
+  
 end

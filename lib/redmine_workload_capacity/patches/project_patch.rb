@@ -18,6 +18,14 @@ module RedmineWorkloadCapacity
 			def wl_users
 				return WlUser.wl_users_for_project(self)
 			end
+
+			def wl_members
+				return WlUser.wl_members_for_project(self)
+			end
+
+			def wl_window_defined?
+				return WlProjectWindow.find_by(project_id: self.id) != nil
+			end
 		end
 	end
 end

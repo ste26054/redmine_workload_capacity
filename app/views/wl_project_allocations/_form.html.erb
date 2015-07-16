@@ -1,0 +1,4 @@
+<%= form_for project_allocation, :url => project_user_wl_project_allocation_path do |f| %>
+	<%- options = (0..100).step(5).to_a %>
+	<p>Project allocation: <%= f.select :percent_alloc, options %>% <%= f.submit 'Save' %></p>
+<% end %>

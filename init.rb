@@ -1,4 +1,3 @@
-#require 'redmine_workload_capacity'
 require 'redmine'
 require 'redmine_workload_capacity'
 
