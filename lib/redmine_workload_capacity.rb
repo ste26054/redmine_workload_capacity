@@ -7,5 +7,6 @@ Rails.configuration.to_prepare do
   require 'redmine_workload_capacity/wl_users'
 
   require 'redmine_workload_capacity/patches/project_patch'
+  require 'redmine_workload_capacity/patches/member_patch'
   require 'redmine_workload_capacity/patches/user_patch'
 end
