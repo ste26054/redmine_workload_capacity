@@ -15,6 +15,7 @@ module RedmineWorkloadCapacity
 
 		module ProjectInstanceMethods
 			include WlUser
+			include WlLogic
 			def wl_users
 				return WlUser.wl_users_for_project(self)
 			end
@@ -23,8 +24,12 @@ module RedmineWorkloadCapacity
 				return WlUser.wl_members_for_project(self)
 			end
 
-			def wl_window_defined?
+			def wl_window?
 				return WlProjectWindow.find_by(project_id: self.id) != nil
+			end
+
+			def wl_overlaps
+				return WlLogic.wl_project_overlaps(self)
 			end
 		end
 	end

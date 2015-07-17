@@ -1,3 +1,41 @@
-<% project.wl_users.each do |u| %>
-	<%= render 'user', :wl_user => u, :project => project %>
-<% end %>
+
+<table class="list">
+	<thead>
+		<tr>
+			<th>User</th>
+			<th>Allocation Type</th>
+			<th>Start Date</th>
+			<th>End Date</th>
+			<th>Project Alloc %</th>
+			<th>Total Remaining %</th>
+			<th>Total Alloc %</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+	<% project.wl_users.each do |u| %>
+		<% member = project.members.find_by(user_id: u.id) %>
+		<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" unless member.wl_project_allocation? %>">
+		<td><%= u.name %></td>
+		<td>Project Allocation</td>
+		<td><%= format_date(project.wl_project_window.start_date) %></td>
+		<td><%= format_date(project.wl_project_window.end_date) %></td>
+		<% if member.wl_project_allocation? %>
+			<td><%= member.wl_project_allocation.percent_alloc %></td>
+			<td><%= 100 - member.wl_project_allocation.percent_alloc %></td>
+			<td><%= member.wl_project_allocation.percent_alloc %></td>
+			<td><%= link_to 'Manage', new_project_user_wl_project_allocation_path(project, u) %></td>
+		<% else %>
+			<td>-</td>
+			<td>-</td>
+			<td>-</td>
+			<td><%= link_to 'Create', new_project_user_wl_project_allocation_path(project, u) %></td>
+		<% end %>
+		</tr>
+
+	<% end %>	
+	</tbody>
+
+</table>
+
+<p><%= project.wl_overlaps.to_json %></p>

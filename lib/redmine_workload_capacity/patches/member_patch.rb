@@ -18,6 +18,14 @@ module RedmineWorkloadCapacity
 			def wl_allocation
 				return WlLogic.wl_member_allocation(self)
 			end
+
+			def wl_project_allocation
+				return WlProjectAllocation.find_by(user_id: self.user_id, wl_project_window_id: self.project.wl_project_window.id)
+			end
+
+			def wl_project_allocation?
+				return self.wl_project_allocation != nil
+			end
 		end
 	end
 end

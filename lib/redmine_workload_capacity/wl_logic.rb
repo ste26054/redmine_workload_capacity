@@ -59,7 +59,6 @@ module WlLogic
 	end
 
 	def self.wl_member_allocation(member)
-		Rails.logger.info "MEMBER: #{member.to_s}"
 		project_window = member.project.wl_project_window
 		hsh = {}
 		project_alloc = WlProjectAllocation.find_by(user_id: member.user_id, wl_project_window_id: project_window.id)
@@ -70,7 +69,7 @@ module WlLogic
 			hsh[:custom_allocs] = []
 
 			custom_allocs = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: project_window.id)
-
+			
 			custom_allocs.find_each do |alloc|
 				hsh[:custom_allocs] << alloc
 			end

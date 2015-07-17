@@ -14,7 +14,7 @@ module RedmineWorkloadCapacity
 
 		module UserInstanceMethods
 			def wl_allocs
-				wl_memberships = self.memberships.to_a.delete_if {|m| !self.allowed_to?(:appear_in_project_workload, m.project) || !m.project.wl_window_defined?}
+				wl_memberships = self.memberships.to_a.delete_if {|m| !self.allowed_to?(:appear_in_project_workload, m.project) || !m.project.wl_window?}
 				
 				hsh = []
 
