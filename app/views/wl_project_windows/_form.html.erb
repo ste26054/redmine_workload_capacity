@@ -1,7 +1,7 @@
 <%= form_for project_window, :url => project_wl_project_window_path do |f| %>
 
 	<% if project_window.errors.any? %>
-		<div class="flash">
+		<div class="flash error">
 			<ul>
 		  		<% project_window.errors.full_messages.each do |msg| %>
 		    		<li><%= msg %></li>

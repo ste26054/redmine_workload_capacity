@@ -1,11 +1,11 @@
 # English strings go here for Rails i18n
 en:
-  # my_label: "My label"
   label_workload: "Workload"
 
-  notice_project_windows_set: "The project windows was correctly set"
+  notice_project_windows_set: "The project windows was correctly set for %{project}"
+  notice_custom_allocation_set: "The custom allocation was correctly set for %{user}"
+  notice_project_allocation_set: "The project allocation was correctly set for %{project}"
   error_project_windows_not_set: "Error: You must define a project time window before continuing"
-  error_project_windows_set: "An error occured. Please check that your parameters are correct"
+  error_set: "An error occured. Please check that your parameters are correct"
   error_dates: "End date cannot take place before Start date"
   error_custom_alloc_boundary: "Is outside project windows"
-

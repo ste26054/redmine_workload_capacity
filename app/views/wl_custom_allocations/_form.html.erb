@@ -1,0 +1,17 @@
+<%= form_for custom_allocation, :url => project_user_wl_custom_allocations_path do |f| %>
+
+	<% if custom_allocation.errors.any? %>
+		<div class="flash error">
+			<ul>
+		  		<% custom_allocation.errors.full_messages.each do |msg| %>
+		    		<li><%= msg %></li>
+		  		<% end %>
+			</ul>
+		</div>
+	<% end %>
+
+	<%- options = (0..100).step(5).to_a %>
+	<p>Start Date: <%= f.text_field :start_date, readonly: true %><%= calendar_for('wl_custom_allocation_start_date')%> End Date: <%= f.text_field :end_date, readonly: true %><%= calendar_for('wl_custom_allocation_end_date')%></p>
+	<p>Custom allocation: <%= f.select :percent_alloc, options %>%</p>
+	<p><%= f.submit 'Save' %></p>
+<% end %>

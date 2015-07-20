@@ -17,7 +17,7 @@
 		<% member = project.members.find_by(user_id: u.id) %>
 		<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" unless member.wl_project_allocation? %>">
 		<td><%= u.name %></td>
-		<td>Project Allocation</td>
+		<td>Default Allocation</td>
 		<td><%= format_date(project.wl_project_window.start_date) %></td>
 		<td><%= format_date(project.wl_project_window.end_date) %></td>
 		<% if member.wl_project_allocation? %>
@@ -37,5 +37,3 @@
 	</tbody>
 
 </table>
-
-<p><%= project.wl_overlaps.to_json %></p>

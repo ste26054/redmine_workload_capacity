@@ -16,17 +16,26 @@ class WlProjectAllocationsController < ApplicationController
     @project_allocation.user_id = @user.id
     @project_allocation.wl_project_window_id = @project.wl_project_window.id
 
-    @project_allocation.save
-
-    redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+    if @project_allocation.save
+      flash[:notice] = l(:notice_project_allocation_set, :project => @project.name)
+      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+    else
+      flash[:error] = l(:error_set)
+      render :new
+    end
   end
 
   def edit
   end
 
   def update
-    @project_allocation.update(wl_project_allocation_params)
-    redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+    if @project_allocation.update(wl_project_allocation_params)
+      flash[:notice] = l(:notice_project_allocation_set, :project => @project.name)
+      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+    else
+      flash[:error] = l(:error_set)
+      render :edit
+    end
   end
 
   private
