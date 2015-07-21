@@ -26,6 +26,10 @@ module RedmineWorkloadCapacity
 			def wl_project_allocation?
 				return self.wl_project_allocation != nil
 			end
+
+			def wl_table_allocation
+				return WlLogic.generate_allocations_table(self)
+			end
 		end
 	end
 end

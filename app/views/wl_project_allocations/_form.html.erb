@@ -15,3 +15,5 @@
 	<%- options = (0..100).step(5).to_a %>
 	<p>Project allocation: <%= f.select :percent_alloc, options, :selected => 100 %>% <%= f.submit 'Save' %></p>
 <% end %>
+
+<p><%= user.wl_allocs.to_json %></p>

@@ -40,7 +40,7 @@ class WlCustomAllocationsController < ApplicationController
   private
 
   def wl_custom_allocation_params
-    params.require(:wl_custom_allocation).permit(:start_date, :end_date, :percent_alloc, :wl_project_window_id, :user_id)
+    params.require(:wl_custom_allocation).permit(:start_date, :end_date, :percent_alloc)
   end
 
   def set_user

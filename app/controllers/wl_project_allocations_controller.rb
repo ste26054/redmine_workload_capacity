@@ -49,7 +49,7 @@ class WlProjectAllocationsController < ApplicationController
   end
 
   def wl_project_allocation_params
-    params.require(:wl_project_allocation).permit(:percent_alloc, :wl_project_window_id, :user_id)
+    params.require(:wl_project_allocation).permit(:percent_alloc)
   end
 
   def retrieve_project_alloc

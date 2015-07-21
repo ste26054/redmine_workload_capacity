@@ -11,6 +11,7 @@ class WlProjectWindow < ActiveRecord::Base
   has_many :wl_project_allocations, :dependent => :destroy
   has_many :wl_custom_allocations, :dependent => :destroy
 
+  # Should add an after_update callback to ensure that any previously created WlCustomAlloc would not be beyond the new WlProjectWindow
   after_save :update_overlaps
   after_destroy :update_overlaps
 
