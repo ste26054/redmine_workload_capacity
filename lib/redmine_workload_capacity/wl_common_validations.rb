@@ -16,7 +16,9 @@ module WlCommonValidation
 	  	overlaps = self.class.overlaps(start_date, end_date)
 
 	  	overlaps.find_each do |o|
-	  		errors.add(:base, "Error: overlap found. Id: #{o.id} From: #{o.start_date}, To: #{o.end_date}")
+	  		unless o.id == self.id
+	  			errors.add(:base, "Error: overlap found. Id: #{o.id} From: #{o.start_date}, To: #{o.end_date}")
+	  		end
 	  	end
 	end
 
@@ -24,7 +26,9 @@ module WlCommonValidation
 	  	overlaps = self.class.for_user(user_id).overlaps(start_date, end_date)
 
 	  	overlaps.find_each do |o|
-	  		errors.add(:base, "Error: overlap found. Id: #{o.id} From: #{o.start_date}, To: #{o.end_date}")
+	  		unless o.id == self.id
+	  			errors.add(:base, "Error: overlap found. Id: #{o.id} From: #{o.start_date}, To: #{o.end_date}")
+	  		end
 	  	end
 	end
 end

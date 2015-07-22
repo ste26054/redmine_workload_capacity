@@ -1,4 +1,4 @@
-<%= form_for custom_allocation, :url => project_user_wl_custom_allocations_path do |f| %>
+<%= form_for custom_allocation, :url => (custom_allocation.new_record? ? project_user_wl_custom_allocations_path : project_user_wl_custom_allocation_path) do |f| %>
 
 	<% if custom_allocation.errors.any? %>
 		<div class="flash error">

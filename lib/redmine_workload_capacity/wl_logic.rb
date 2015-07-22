@@ -44,6 +44,7 @@ module WlLogic
 	end
 
 	def self.generate_allocations_table(member)
+		#return [] if member.wl_project_allocation == nil
 		dates = []
 		dates << member.project.wl_project_window
 
@@ -62,7 +63,11 @@ module WlLogic
 			unless custom_allocation.empty?
 				entry[:percent_alloc] = custom_allocation.first.percent_alloc
 			else
-				entry[:percent_alloc] = member.wl_project_allocation.percent_alloc
+				unless member.wl_project_allocation == nil
+					entry[:percent_alloc] = member.wl_project_allocation.percent_alloc
+				else
+					entry[:percent_alloc] = 0
+				end
 			end
 			table << entry
 		end
@@ -80,9 +85,28 @@ module WlLogic
 		end
 
 		time_periods = self.get_time_periods(dates)
+		time_ranges = time_periods.map {|o| o[0]..o[1]}
+
+		table = []
 
 		
-		return self.get_time_periods(dates)
+		time_ranges.each do |tr|
+			entry = {}
+			entry[:start_date] = tr.first
+			entry[:end_date] = tr.last
+			entry[:percent_alloc] = 0
+			user.wl_memberships.each do |m|
+				m.wl_table_allocation.each do |wtl|
+					if (wtl[:start_date]..wtl[:end_date]).overlaps?(tr)
+						entry[:percent_alloc] += wtl[:percent_alloc]
+					end
+				end
+			end
+			table << entry
+		end
+		
+		
+		return table
 	end
 
 	def self.get_overlaps_from_db

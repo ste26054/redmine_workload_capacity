@@ -13,25 +13,40 @@
 		</tr>
 	</thead>
 	<tbody>
-	<% project.wl_users.each do |u| %>
-		<% member = project.members.find_by(user_id: u.id) %>
+	<% project.wl_members.each do |member| %>
 		<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" unless member.wl_project_allocation? %>">
-		<td><%= u.name %></td>
+		<td><%= member.user.name %></td>
 		<td>Default Allocation</td>
 		<td><%= format_date(project.wl_project_window.start_date) %></td>
 		<td><%= format_date(project.wl_project_window.end_date) %></td>
-		<% if member.wl_project_allocation? %>
-			<td><%= member.wl_project_allocation.percent_alloc %></td>
-			<td><%= 100 - member.wl_project_allocation.percent_alloc %></td>
-			<td><%= member.wl_project_allocation.percent_alloc %></td>
-			<td><%= link_to 'Manage', new_project_user_wl_project_allocation_path(project, u) %></td>
+		<% wl_alloc = member.wl_allocation %>
+		<% unless wl_alloc.empty? %>
+			<td><%= wl_alloc[:default_alloc].percent_alloc %></td>
+			<td><%= 100 - wl_alloc[:default_alloc].percent_alloc %></td>
+			<td><%= wl_alloc[:default_alloc].percent_alloc %></td>
+			<td><%= link_to 'Manage', new_project_user_wl_project_allocation_path(project, member.user), :class => 'icon icon-edit' %>
+			<%= link_to 'Add Custom Allocation', new_project_user_wl_custom_allocation_path(project, member.user), :class => 'icon icon-add' %></td>
+			</tr>
+			<% wl_alloc[:custom_allocs].each do |custom| %>
+				<tr class="<%= cycle("odd", "even") %>">
+					<td></td>
+					<td>Custom Allocation</td>
+					<td><%= format_date(custom.start_date) %></td>
+					<td><%= format_date(custom.end_date) %></td>
+					<td>-</td>
+					<td>-</td>
+					<td>-</td>
+					<td><%= link_to 'Edit', edit_project_user_wl_custom_allocation_path(project, member.user, custom), :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_custom_allocation_path(project, member.user, custom), method: :delete, :class => 'icon icon-del' %></td>
+				</tr>
+			<% end %>
 		<% else %>
 			<td>-</td>
 			<td>-</td>
 			<td>-</td>
-			<td><%= link_to 'Create', new_project_user_wl_project_allocation_path(project, u) %></td>
+			<td><%= link_to 'Create', new_project_user_wl_project_allocation_path(project, member.user) %></td>
+			</tr>
 		<% end %>
-		</tr>
+		
 
 	<% end %>	
 	</tbody>

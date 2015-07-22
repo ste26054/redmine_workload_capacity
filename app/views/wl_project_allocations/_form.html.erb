@@ -16,4 +16,4 @@
 	<p>Project allocation: <%= f.select :percent_alloc, options, :selected => 100 %>% <%= f.submit 'Save' %></p>
 <% end %>
 
-<p><%= user.wl_allocs.to_json %></p>
+<p><%= WlLogic.generate_allocations_table_user(user).to_json %></p>

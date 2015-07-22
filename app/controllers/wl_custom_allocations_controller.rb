@@ -2,6 +2,7 @@ class WlCustomAllocationsController < ApplicationController
   unloadable
 
   before_action :set_project, :set_user
+  before_action :retrieve_custom_alloc, except: [:new, :create]
 
   def new
   	@custom_allocation = WlCustomAllocation.new
@@ -34,7 +35,8 @@ class WlCustomAllocationsController < ApplicationController
   end
 
   def destroy
-  	
+  	@custom_allocation.destroy
+    redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
   end
 
   private
@@ -49,6 +51,10 @@ class WlCustomAllocationsController < ApplicationController
 
   def set_project
   	@project ||= Project.find(params[:project_id])
+  end
+
+  def retrieve_custom_alloc
+    @custom_allocation ||= WlCustomAllocation.find(params[:id])
   end
 
 end

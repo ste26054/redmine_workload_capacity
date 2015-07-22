@@ -7,7 +7,8 @@ resources :projects do
 
 	resources :users do
 		resource :wl_project_allocation
- 		resources :wl_custom_allocations, :wl_user_overtimes
+ 		resources :wl_custom_allocations
+ 		resources :wl_user_overtimes
  	end
 
 end
