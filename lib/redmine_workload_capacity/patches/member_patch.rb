@@ -34,6 +34,17 @@ module RedmineWorkloadCapacity
 				return WlLogic.generate_allocations_table(self)
 			end
 
+			def wl_project_allocation_between(from, to)
+				time_period = from..to
+				table_allocs = self.wl_table_allocation
+				table_periods = table_allocs
+
+				table_periods.each_with_index do |t|
+					return t[:percent_alloc] if (t[:start_date]..t[:end_date]).overlaps?(time_period) && from >= t[:start_date] && to <= t[:end_date]
+				end
+				return nil
+			end
+
 			# Returns the total cross project allocation table, bound to current project window
 			def wl_global_table_allocation
 				user_table_alloc = self.user.wl_table_allocation

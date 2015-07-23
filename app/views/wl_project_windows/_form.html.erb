@@ -10,7 +10,7 @@
 		</div>
 	<% end %>
 
-<p>Start: <%= f.text_field :start_date, readonly: true %><%= calendar_for('wl_project_window_start_date') %>
-			End: <%= f.text_field :end_date, readonly: true %><%= calendar_for('wl_project_window_end_date') %></p>
+<p>Start: <%= f.text_field :start_date %><%= calendar_for('wl_project_window_start_date') %>
+			End: <%= f.text_field :end_date %><%= calendar_for('wl_project_window_end_date') %></p>
 	<%= f.submit 'Save' %>
 <% end %>

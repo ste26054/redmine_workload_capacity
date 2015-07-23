@@ -1,3 +1,4 @@
+<fieldset>
 <%= form_for custom_allocation, :url => (custom_allocation.new_record? ? project_user_wl_custom_allocations_path : project_user_wl_custom_allocation_path) do |f| %>
 
 	<% if custom_allocation.errors.any? %>
@@ -11,7 +12,13 @@
 	<% end %>
 
 	<%- options = (0..100).step(5).to_a %>
-	<p>Start Date: <%= f.text_field :start_date, readonly: true %><%= calendar_for('wl_custom_allocation_start_date')%> End Date: <%= f.text_field :end_date, readonly: true %><%= calendar_for('wl_custom_allocation_end_date')%></p>
-	<p>Custom allocation: <%= f.select :percent_alloc, options %>%</p>
+	<% if custom_allocation.new_record? %>
+		<p>Start Date: <%= f.text_field :start_date, :value => params[:start_date] %><%= calendar_for('wl_custom_allocation_start_date')%> End Date: <%= f.text_field :end_date, :value => params[:end_date] %><%= calendar_for('wl_custom_allocation_end_date')%></p>
+		<p>Custom allocation: <%= f.select :percent_alloc, options, :selected => params[:percent_alloc] %>%</p>
+	<% else %>
+		<p>Start Date: <%= f.text_field :start_date %><%= calendar_for('wl_custom_allocation_start_date')%> End Date: <%= f.text_field :end_date %><%= calendar_for('wl_custom_allocation_end_date')%></p><p>Custom allocation: <%= f.select :percent_alloc, options %>%</p>
+	<% end %>
+	
 	<p><%= f.submit 'Save' %></p>
 <% end %>
+</fieldset>
