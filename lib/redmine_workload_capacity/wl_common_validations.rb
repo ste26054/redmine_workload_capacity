@@ -23,7 +23,7 @@ module WlCommonValidation
 	end
 
 	def custom_alloc_per_user_uniq_within_period
-	  	overlaps = self.class.for_user(user_id).overlaps(start_date, end_date)
+	  	overlaps = self.class.where(user_id: user_id, wl_project_window_id: wl_project_window_id).overlaps(start_date, end_date)
 
 	  	overlaps.find_each do |o|
 	  		unless o.id == self.id

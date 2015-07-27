@@ -12,7 +12,7 @@
 		</tr>
 	</thead>
 	<tbody>
-	<% project.wl_members.each do |member| %>
+	<% wl_members.each do |member| %>
 		<% if member.wl_project_allocation? %>
 			<% total_alloc = member.wl_global_table_allocation %>
 			<% remaining_alloc = member.wl_remaining_table_allocation %>
@@ -29,22 +29,26 @@
 			<% total_alloc.each_with_index do |alloc, i| %>
 			<% custom_alloc = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).overlaps(alloc[:start_date], alloc[:end_date]) %>
 
-			<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" unless (member.wl_project_allocation? && total_alloc[i][:percent_alloc] <= 100) %>">
+			<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" if (total_alloc[i][:percent_alloc] > 100) %>">
 			<td></td>
-			<td><%= member.wl_project_allocation_between(alloc[:start_date], alloc[:end_date]) %></td>
+			<% alloc_btw = member.wl_project_allocation_between(alloc[:start_date], alloc[:end_date]) %>
+			<td><%= alloc_btw %> (<%= member.user.weekly_working_hours * alloc_btw / 100.0 %>h/week)</td>
 			<td>
 				<% if custom_alloc.empty? %>
 					Default Project Allocation
 				<% else %>
-					Custom Project Allocation
+					Custom Project Allocation #<%= custom_alloc.first.id %>
 				<% end %>
 			</td>
 			<td><%= format_date(alloc[:start_date]) %></td>
 			<td><%= format_date(alloc[:end_date]) %></td>
 			<td><%= total_alloc[i][:percent_alloc] %></td>
 			<td>
+
 				<% if custom_alloc.empty? %>
-					<%= link_to 'Add Custom Alloc', new_project_user_wl_custom_allocation_path(project, member.user, :start_date => alloc[:start_date], :end_date => alloc[:end_date], :percent_alloc => remaining_alloc[i][:percent_alloc]), :class => 'icon icon-add' %>
+					<% if total_alloc[i][:percent_alloc] > 100 %>
+						<%= link_to 'Smart Allocation', project_user_wl_custom_allocations_path(project, member.user,:wl_custom_allocation =>{ :start_date => alloc[:start_date], :end_date => alloc[:end_date], :percent_alloc => remaining_alloc[i][:percent_alloc]}), :class => 'icon icon-summary', :method => :post %>
+					<% end %>
 				<% else %>
 					<%= link_to 'Edit', edit_project_user_wl_custom_allocation_path(project, member.user, custom_alloc.first), :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_custom_allocation_path(project, member.user, custom_alloc.first), method: :delete, :class => 'icon icon-del' %>
 				<% end %></td>
@@ -57,7 +61,7 @@
 			</tr>
 
 		<% end %>
-		<tr><td colspan="7"></td>
+		<tr><td colspan="7"></td></tr>
 	<% end %>	
 	</tbody>
 

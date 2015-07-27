@@ -4,17 +4,24 @@ class WlBoardsController < ApplicationController
 
   menu_item :workload
 
-  #before_filter :authorize
+  before_action :find_project
 
   def index
-  	@project = Project.find(params[:project_id])
+  	
 
   	unless @project.wl_window?
   	 	flash[:error] = l(:error_project_windows_not_set)
   	 	redirect_to :controller => 'projects', :action => 'settings', :id => @project.id, :tab => 'workload'
   	end
-  	@wl_users = WlUser.wl_users_for_project(@project)
+    
+  	@wl_members ||= @project.wl_members
 
+  end
+
+  private
+
+  def find_project
+    @project ||= Project.find(params[:project_id])
   end
 
 end

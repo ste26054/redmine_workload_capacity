@@ -66,7 +66,7 @@ module WlLogic
 				unless member.wl_project_allocation == nil
 					entry[:percent_alloc] = member.wl_project_allocation.percent_alloc
 				else
-					entry[:percent_alloc] = 0
+					entry[:percent_alloc] = 100
 				end
 			end
 			table << entry
@@ -130,7 +130,7 @@ module WlLogic
 	def self.wl_member_allocation(member)
 		project_window = member.project.wl_project_window
 		hsh = {}
-		project_alloc = WlProjectAllocation.find_by(user_id: member.user_id, wl_project_window_id: project_window.id)
+		project_alloc = member.wl_project_allocation
 		#raise "project allocation not defined for user #{user.login}" if project_alloc == nil
 		if project_alloc
 			hsh[:project_id] = member.project.id

@@ -35,7 +35,11 @@ class WlCustomAllocationsController < ApplicationController
   end
 
   def destroy
-  	@custom_allocation.destroy
+  	if @custom_allocation.destroy
+      flash[:notice] = l(:notice_custom_allocation_deleted, :user => @user.name)
+    else
+      flash[:error] = l(:error_set)
+    end
     redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
   end
 

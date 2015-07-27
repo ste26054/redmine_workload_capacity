@@ -1,5 +1,5 @@
 
-<h3>Set a default project allocation for <%= user.name %>. This allocation will be applied when no custom project allocation overlaps.</h3>
+<h2>Set a default project allocation for <%= user.name %>. This allocation will be applied when no custom project allocation overlaps.</h2>
 <%= form_for project_allocation, :url => project_user_wl_project_allocation_path do |f| %>
 
 	<% if project_allocation.errors.any? %>
@@ -15,5 +15,3 @@
 	<%- options = (0..100).step(5).to_a %>
 	<p>Project allocation: <%= f.select :percent_alloc, options, :selected => 100 %>% <%= f.submit 'Save' %></p>
 <% end %>
-
-<p><%= WlLogic.generate_allocations_table_user(user).to_json %></p>

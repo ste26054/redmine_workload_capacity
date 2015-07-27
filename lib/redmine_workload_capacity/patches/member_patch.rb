@@ -21,12 +21,13 @@ module RedmineWorkloadCapacity
 
 			# Returns the project allocation object
 			def wl_project_allocation
-				return WlProjectAllocation.find_by(user_id: self.user_id, wl_project_window_id: self.project.wl_project_window.id)
+				return WlProjectAllocation.create_with(percent_alloc: 100).find_or_create_by(user_id: self.user_id, wl_project_window_id: self.project.wl_project_window.id)
 			end
 
 			# Returns true if the associated user has a project allocation defined
 			def wl_project_allocation?
-				return self.wl_project_allocation != nil
+				#return self.wl_project_allocation != nil
+				return true
 			end
 
 			# Returns the current project allocation table
@@ -64,7 +65,9 @@ module RedmineWorkloadCapacity
 					total_alloc.each_with_index do |ta, i|
 						ta_period = ta[:start_date]..ta[:end_date]
 						if period.overlaps?(ta_period)
-							output[i][:percent_alloc] = 100 - (ta[:percent_alloc] - e[:percent_alloc])
+							total = (ta[:percent_alloc] - e[:percent_alloc])
+							total = 100 if total > 100
+							output[i][:percent_alloc] = 100 - total
 						end
 					end
 				end

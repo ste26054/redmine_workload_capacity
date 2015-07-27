@@ -11,7 +11,7 @@ class WlProjectWindow < ActiveRecord::Base
   has_many :wl_project_allocations, :dependent => :destroy
   has_many :wl_custom_allocations, :dependent => :destroy
 
-  # Should add an after_update callback to ensure that any previously created WlCustomAlloc would not be beyond the new WlProjectWindow
+  before_update :check_custom_allocations
   after_save :update_overlaps
   after_destroy :update_overlaps
 
@@ -20,41 +20,37 @@ class WlProjectWindow < ActiveRecord::Base
   validates :project_id, presence: true
 
   validate :end_date_not_before_start_date
+  validate :check_custom_allocations
 
   attr_accessible :start_date, :end_date, :project_id
 private
 
 	def update_overlaps
-		#if changes.has_key?("start_date") || changes.has_key?("end_date")
-			WlOverlap.destroy_all
-			WlLogic.generate_overlaps_table.each do |overlap|
-				entry = WlOverlap.new
-				entry.start_date = overlap[:start_date]
-				entry.end_date = overlap[:end_date]
-				entry.save
-			end
-
-			# overlaps_table_new = WlLogic.generate_overlaps_table
-			# overlaps_table_db = WlLogic.get_overlaps_from_db
-
-			# identities = overlaps_table_new & overlaps_table_db
-			# to_add = overlaps_table_new - identities
-			# to_remove = overlaps_table_db - identities
-
-			# to_remove.each do |overlap|
-			# 	entry = WlOverlap.find_by(start_date: overlap[:start_date], end_date: overlap[:end_date]).destroy
-			# end
-
-			# to_add.each do |overlap|
-			# 	entry = WlOverlap.new
-			# 	entry.start_date = overlap[:start_date]
-			# 	entry.end_date = overlap[:end_date]
-			# 	entry.save
-			# end
-		#end
+		WlOverlap.destroy_all
+		WlLogic.generate_overlaps_table.each do |overlap|
+			entry = WlOverlap.new
+			entry.start_date = overlap[:start_date]
+			entry.end_date = overlap[:end_date]
+			entry.save
+		end
 	end
 
-	# def delete_overlaps
-	# 	WlOverlap.destroy_all
-	# end
+	def check_custom_allocations
+		custom_allocs = WlCustomAllocation.where(wl_project_window_id: self.id)
+
+		custom_allocs.find_each do |c|
+
+			if self.start_date > c.end_date || self.end_date < c.start_date
+				errors.add(:base, "Custom allocation \##{c.id} from #{c.start_date} to #{c.end_date} needs to be deleted first")
+			else
+				if self.start_date > c.start_date
+		  			c.update(start_date: self.start_date)
+				end
+
+				if self.end_date < c.end_date
+					c.update(end_date: self.end_date)
+				end
+			end
+		end
+	end
 end
