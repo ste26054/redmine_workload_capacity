@@ -2,6 +2,8 @@ require 'redmine'
 require 'redmine_workload_capacity'
 
 Redmine::Plugin.register :redmine_workload_capacity do
+	requires_redmine_plugin :redmine_leaves_holidays, :version_or_higher => '0.0.1'
+
   name 'Redmine Workload Capacity plugin'
   author 'Stephane Evrard'
   description 'A Redmine Plugin for managing work capacity across projects'

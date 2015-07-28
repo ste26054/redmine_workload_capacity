@@ -15,7 +15,7 @@ module RedmineWorkloadCapacity
 
 		module UserInstanceMethods
 			def wl_memberships
-				return self.memberships.to_a.delete_if {|m| !self.allowed_to?(:appear_in_project_workload, m.project) || !m.project.wl_window?}
+				return self.memberships.to_a.delete_if {|m| !WlUser.wl_member?(m) || !m.project.wl_window?}
 			end
 
 			def wl_allocs

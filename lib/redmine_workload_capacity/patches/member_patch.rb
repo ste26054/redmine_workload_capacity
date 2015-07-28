@@ -19,15 +19,21 @@ module RedmineWorkloadCapacity
 				return WlLogic.wl_member_allocation(self)
 			end
 
+
+			def wl_member?
+				return WlUser.wl_member?(self)
+			end
+
 			# Returns the project allocation object
 			def wl_project_allocation
-				return WlProjectAllocation.create_with(percent_alloc: 100).find_or_create_by(user_id: self.user_id, wl_project_window_id: self.project.wl_project_window.id)
+				#return WlProjectAllocation.create_with(percent_alloc: 100).find_or_create_by(user_id: self.user_id, wl_project_window_id: self.project.wl_project_window.id)
+				return WlProjectAllocation.find_by(user_id: self.user_id, wl_project_window_id: self.project.wl_project_window.id)
 			end
 
 			# Returns true if the associated user has a project allocation defined
 			def wl_project_allocation?
-				#return self.wl_project_allocation != nil
-				return true
+				return self.wl_project_allocation != nil
+				#return true
 			end
 
 			# Returns the current project allocation table

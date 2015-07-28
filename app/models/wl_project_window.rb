@@ -14,6 +14,7 @@ class WlProjectWindow < ActiveRecord::Base
   before_update :check_custom_allocations
   after_save :update_overlaps
   after_destroy :update_overlaps
+  after_create :create_project_allocations
 
   validates :start_date, date: true, presence: true
   validates :end_date, date: true, presence: true
@@ -51,6 +52,16 @@ private
 					c.update(end_date: self.end_date)
 				end
 			end
+		end
+	end
+
+	def create_project_allocations
+		wl_members  = self.project.wl_members
+		Rails.logger.info "IN AFTER CREATE: #{wl_members.to_json}"
+		wl_members.each do |m|
+			parameters = {percent_alloc: 100, user_id: m.user_id, wl_project_window_id: self.id}
+			obj =  WlProjectAllocation.new(parameters)
+			obj.save
 		end
 	end
 end

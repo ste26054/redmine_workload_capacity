@@ -69,6 +69,7 @@ module WlLogic
 					entry[:percent_alloc] = 100
 				end
 			end
+			entry[:wl_project_window] = member.project.wl_project_window
 			table << entry
 		end
 		return table
@@ -95,10 +96,12 @@ module WlLogic
 			entry[:start_date] = tr.first
 			entry[:end_date] = tr.last
 			entry[:percent_alloc] = 0
+			entry[:details] = []
 			user.wl_memberships.each do |m|
 				m.wl_table_allocation.each do |wtl|
 					if (wtl[:start_date]..wtl[:end_date]).overlaps?(tr)
 						entry[:percent_alloc] += wtl[:percent_alloc]
+						entry[:details] << {wl_project_window: wtl[:wl_project_window], percent_alloc: wtl[:percent_alloc]}
 					end
 				end
 			end
