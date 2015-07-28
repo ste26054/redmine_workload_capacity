@@ -5,7 +5,7 @@ class WlCustomAllocationsController < ApplicationController
   before_action :retrieve_custom_alloc, except: [:new, :create]
 
   def new
-  	@custom_allocation = WlCustomAllocation.new
+  	@custom_allocation ||= WlCustomAllocation.new
   end
 
   def create

@@ -7,7 +7,7 @@ class WlProjectAllocationsController < ApplicationController
     if @project_allocation
       redirect_to edit_project_user_wl_project_allocation_path
     else
-      @project_allocation = WlProjectAllocation.new
+      @project_allocation ||= WlProjectAllocation.new
     end
   end
 

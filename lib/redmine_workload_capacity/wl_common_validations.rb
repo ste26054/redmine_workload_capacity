@@ -11,6 +11,7 @@ module WlCommonValidation
 	  		errors.add(:start_date, l(:error_custom_alloc_boundary)) if start_date < wl_project_window.start_date
 	  	end
 	end
+	
 
 	def custom_alloc_uniq_within_period
 	  	overlaps = self.class.overlaps(start_date, end_date)

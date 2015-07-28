@@ -57,7 +57,6 @@ private
 
 	def create_project_allocations
 		wl_members  = self.project.wl_members
-		Rails.logger.info "IN AFTER CREATE: #{wl_members.to_json}"
 		wl_members.each do |m|
 			parameters = {percent_alloc: 100, user_id: m.user_id, wl_project_window_id: self.id}
 			obj =  WlProjectAllocation.new(parameters)

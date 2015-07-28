@@ -5,6 +5,8 @@ en:
   notice_project_windows_set: "The project windows was correctly set for %{project}"
   notice_custom_allocation_set: "The custom allocation was correctly set for %{user}"
   notice_custom_allocation_deleted: "The custom allocation was successfully deleted for %{user}"
+  notice_user_overtime_set: "The overtime was correctly set for %{user}"
+  notice_user_overtime_deleted: "The overtime was successfully deleted for %{user}"
   notice_project_allocation_set: "The default project allocation was correctly set for %{project}"
   error_project_windows_not_set: "Error: You must define a project window before continuing"
   error_set: "An error occured. Please check that your parameters are correct"

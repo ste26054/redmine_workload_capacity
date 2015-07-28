@@ -7,7 +7,7 @@ class WlProjectWindowsController < ApplicationController
   	if @project_window
   		redirect_to :controller => 'projects', :action => 'settings', :id => @project.id, :tab => 'workload'
   	else
-  		@project_window = WlProjectWindow.new
+  		@project_window ||= WlProjectWindow.new
   	end
   end
 
