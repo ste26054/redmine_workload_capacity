@@ -1,7 +1,10 @@
 class WlUserOvertimesController < ApplicationController
   unloadable
+  include WlCommon
 
-  before_action :set_project, :set_user
+  before_action :set_project
+  before_action :authenticate
+  before_action :set_user
   before_action :retrieve_user_overtime, except: [:new, :create]
 
   def new

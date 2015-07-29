@@ -1,10 +1,11 @@
 class WlBoardsController < ApplicationController
   unloadable
-  include WlUser
+  include WlCommon
 
   menu_item :workload
 
   before_action :find_project
+  before_action :authenticate
 
   def index
   	

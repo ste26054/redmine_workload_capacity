@@ -12,4 +12,8 @@ module WlUser
 	def self.wl_member?(member)
 		return member.user.allowed_to?(:appear_in_project_workload, member.project)
 	end
+
+	def self.wl_manage_right?(user, project)
+		return user.allowed_to?(:manage_project_workload, project)
+	end
 end

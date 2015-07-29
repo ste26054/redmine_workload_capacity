@@ -1,7 +1,10 @@
 class WlProjectAllocationsController < ApplicationController
   unloadable
+  include WlCommon
 
-  before_action :set_project, :set_user, :retrieve_project_alloc
+  before_action :set_project
+  before_action :authenticate
+  before_action :set_user, :retrieve_project_alloc
 
   def new
     if @project_allocation

@@ -1,7 +1,10 @@
 class WlProjectWindowsController < ApplicationController
   unloadable
+  include WlCommon
 
-  before_action :set_project, :retrieve_project_window
+  before_action :set_project
+  before_action :authenticate
+  before_action :retrieve_project_window
 
   def new
   	if @project_window

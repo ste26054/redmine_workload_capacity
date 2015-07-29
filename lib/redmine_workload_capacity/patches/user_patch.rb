@@ -14,6 +14,8 @@ module RedmineWorkloadCapacity
 		end
 
 		module UserInstanceMethods
+			include WlUser
+
 			def wl_memberships
 				return self.memberships.to_a.delete_if {|m| !WlUser.wl_member?(m) || !m.project.wl_window?}
 			end
@@ -30,6 +32,10 @@ module RedmineWorkloadCapacity
 
 			def wl_table_allocation
 				return WlLogic.generate_allocations_table_user(self)
+			end
+
+			def wl_manage_right?(project)
+				return WlUser.wl_manage_right?(self, project)
 			end
 		end
 	end
