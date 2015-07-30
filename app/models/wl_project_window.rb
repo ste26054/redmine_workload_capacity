@@ -34,6 +34,7 @@ private
 			entry.end_date = overlap[:end_date]
 			entry.save
 		end
+		self.project.wl_reload
 	end
 
 	def check_custom_allocations

@@ -9,6 +9,7 @@ module RedmineWorkloadCapacity
 		        base.class_eval do
 		          unloadable # Send unloadable so it will not be unloaded in development
 		          has_one :wl_project_window
+		          after_save :wl_reload
 		        end
 		    end
 		end
@@ -16,12 +17,21 @@ module RedmineWorkloadCapacity
 		module ProjectInstanceMethods
 			include WlUser
 			include WlLogic
+
+			def wl_reload
+				Rails.logger.info "WL_PROJECT_RELOADED"
+				@wl_users = nil
+				@wl_members = nil
+				@has_wl_window = nil
+				@wl_overlaps = nil
+			end
+
 			def wl_users
-				return WlUser.wl_users_for_project(self)
+				@wl_users ||= WlUser.wl_users_for_project(self)
 			end
 
 			def wl_members
-				return WlUser.wl_members_for_project(self)
+				@wl_members ||= WlUser.wl_members_for_project(self)
 			end
 
 			def wl_window?
@@ -29,7 +39,7 @@ module RedmineWorkloadCapacity
 			end
 
 			def wl_overlaps
-				return WlLogic.wl_project_overlaps(self)
+				@wl_overlaps ||= WlLogic.wl_project_overlaps(self)
 			end
 		end
 	end

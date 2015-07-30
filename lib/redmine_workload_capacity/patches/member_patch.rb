@@ -8,13 +8,18 @@ module RedmineWorkloadCapacity
 
 		        base.class_eval do
 		          unloadable # Send unloadable so it will not be unloaded in development
-
+		          after_save :wl_reload
 		        end
 		    end
 		end
 
 		module MemberInstanceMethods
 			include WlLogic
+
+			def wl_reload
+				self.project.wl_reload
+			end
+
 			def wl_allocation
 				return WlLogic.wl_member_allocation(self)
 			end
@@ -37,6 +42,7 @@ module RedmineWorkloadCapacity
 			end
 
 			# Returns the current project allocation table
+			# TO CACHE
 			def wl_table_allocation
 				return WlLogic.generate_allocations_table(self)
 			end
