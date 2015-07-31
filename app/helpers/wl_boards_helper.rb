@@ -22,5 +22,25 @@ module WlBoardsHelper
 		output << "<strong>To:</strong> #{format_date(custom_alloc[:end_date])}".html_safe
 		return output
 	end
+
+	def render_member_project_allocation(member, start_date, end_date)
+		alloc_btw = member.wl_project_allocation_between(start_date, end_date)
+		hours_week = member.user.weekly_working_hours * alloc_btw / 100.0
+		overtimes_exist = !WlUserOvertime.where(user_id: member.user_id, wl_project_window_id: member.project.wl_project_window.id).overlaps(start_date, end_date).empty?
+		output = "".html_safe
+		output << "#{alloc_btw} (#{hours_week.round(1)}h/week)"
+		output << "<strong> *</strong>".html_safe if overtimes_exist 
+		return output
+	end
+
+	def render_member_overtime(member, hours, start_date, end_date)
+		output = "".html_safe
+		hours_per_week = member.user.weekly_working_hours
+		time_period = (end_date - start_date).to_i + 1
+		extra_hours_per_week = hours.to_f / time_period * 5.0
+		extra_percent_per_week =  (extra_hours_per_week * 100.0) / hours_per_week
+		output << "+#{extra_percent_per_week.round(1)}% (+#{extra_hours_per_week.round(1)}h/week)".html_safe
+		return output
+	end
 	
 end

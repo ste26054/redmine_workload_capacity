@@ -27,40 +27,54 @@
 			</tr>
 
 			<% total_alloc.each_with_index do |alloc, i| %>
-			<% custom_alloc = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).overlaps(alloc[:start_date], alloc[:end_date]) %>
+				<% custom_alloc = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).overlaps(alloc[:start_date], alloc[:end_date]) %>
 
-			<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" if (total_alloc[i][:percent_alloc] > 100) %>">
-			<td></td>
-			<% alloc_btw = member.wl_project_allocation_between(alloc[:start_date], alloc[:end_date]) %>
-			<td><%= alloc_btw %> (<%= member.user.weekly_working_hours * alloc_btw / 100.0 %>h/week)</td>
-			<td>
-				<% if custom_alloc.empty? %>
-					Default Project Allocation
-				<% else %>
-					Custom Project Allocation #<%= custom_alloc.first.id %>
-				<% end %>
-			</td>
-			<td><%= format_date(alloc[:start_date]) %></td>
-			<td><%= format_date(alloc[:end_date]) %></td>
-			<td>
-				<div class="tooltip"><%= total_alloc[i][:percent_alloc] %>
-	        		<span class="tip"><%= render_details_tooltip(alloc[:details], member) %></span>
-	  		    </div>
-			</td>
-			<td>
-				<% if custom_alloc.empty? %>
-					<% if total_alloc[i][:percent_alloc] > 100 %>
-						<% custom_link = { :start_date => alloc[:start_date], :end_date => alloc[:end_date], :percent_alloc => remaining_alloc[i][:percent_alloc]} %>
-
-						<div class="tooltip">
-							<%= link_to 'Smart Allocation', project_user_wl_custom_allocations_path(project, member.user,:wl_custom_allocation => custom_link), :class => 'icon icon-summary', :method => :post %>
-	        				<span class="tip"><%= render_smart_allocation_tooltip(custom_link) %></span>
-	  		    		</div>
+				<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" if (total_alloc[i][:percent_alloc] > 100) %>">
+				<td></td>
+				<td><%= render_member_project_allocation(member, alloc[:start_date], alloc[:end_date]) %></td>
+				<td>
+					<% if custom_alloc.empty? %>
+						Default Project Allocation
+					<% else %>
+						Custom Project Allocation
 					<% end %>
-				<% else %>
-					<%= link_to 'Edit', edit_project_user_wl_custom_allocation_path(project, member.user, custom_alloc.first), :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_custom_allocation_path(project, member.user, custom_alloc.first), method: :delete, :class => 'icon icon-del' %>
-				<% end %></td>
-			</tr>
+				</td>
+				<td><%= format_date(alloc[:start_date]) %></td>
+				<td><%= format_date(alloc[:end_date]) %></td>
+				<td>
+					<div class="tooltip"><%= total_alloc[i][:percent_alloc] %>
+		        		<span class="tip"><%= render_details_tooltip(alloc[:details], member) %></span>
+		  		    </div>
+				</td>
+				<td>
+					<% if custom_alloc.empty? %>
+						<% if total_alloc[i][:percent_alloc] > 100 %>
+							<% custom_link = { :start_date => alloc[:start_date], :end_date => alloc[:end_date], :percent_alloc => remaining_alloc[i][:percent_alloc]} %>
+
+							<div class="tooltip">
+								<%= link_to 'Smart Allocation', project_user_wl_custom_allocations_path(project, member.user,:wl_custom_allocation => custom_link), :class => 'icon icon-summary', :method => :post %>
+		        				<span class="tip"><%= render_smart_allocation_tooltip(custom_link) %></span>
+		  		    		</div>
+						<% end %>
+					<% else %>
+						<%= link_to 'Edit', edit_project_user_wl_custom_allocation_path(project, member.user, custom_alloc.first), :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_custom_allocation_path(project, member.user, custom_alloc.first), method: :delete, :class => 'icon icon-del' %>
+					<% end %></td>
+				</tr>
+			<% end %>
+			<% user_overtimes = WlUserOvertime.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).order(:start_date) %>
+			<% if user_overtimes.count > 0 %>
+				<tr><td colspan="7"></td></tr>
+			<% end %>
+			<% user_overtimes.each_with_index do |overtime, i| %>
+				<tr class="<%= cycle("odd", "even") %>">
+				<td></td>
+				<td><%= render_member_overtime(member, overtime.overtime_hours, overtime.start_date, overtime.end_date) %></td>
+				<td>User Overtime (<%= overtime.overtime_hours %>h)</td>
+				<td><%= format_date(overtime.start_date) %></td>
+				<td><%= format_date(overtime.end_date) %></td>
+				<td>-</td>
+				<td><%= link_to 'Edit', edit_project_user_wl_user_overtime_path(project, member.user, overtime), :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_user_overtime_path(project, member.user, overtime), method: :delete, :class => 'icon icon-del' %></td>
+				</tr>
 			<% end %>
 		<% else %>
 			<tr class="<%= cycle("odd", "even") %> priority-highest">

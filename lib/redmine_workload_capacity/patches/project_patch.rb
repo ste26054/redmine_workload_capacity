@@ -19,7 +19,6 @@ module RedmineWorkloadCapacity
 			include WlLogic
 
 			def wl_reload
-				Rails.logger.info "WL_PROJECT_RELOADED"
 				@wl_users = nil
 				@wl_members = nil
 				@has_wl_window = nil
