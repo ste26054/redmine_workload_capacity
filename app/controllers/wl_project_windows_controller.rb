@@ -19,7 +19,8 @@ class WlProjectWindowsController < ApplicationController
   	@project_window.project_id = @project.id
   	if @project_window.save
   		flash[:notice] = l(:notice_project_windows_set, :project => @project.name)
-  		redirect_to :controller => 'projects', :action => 'settings', :id => @project.id, :tab => 'workload'
+  		#redirect_to :controller => 'projects', :action => 'settings', :id => @project.id, :tab => 'workload'
+      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
   	else
   		flash[:error] = l(:error_set)
   		render :new
@@ -32,7 +33,8 @@ class WlProjectWindowsController < ApplicationController
   def update
   	if @project_window.update(wl_project_window_params)
   		flash[:notice] = l(:notice_project_windows_set, :project => @project.name)
-  		redirect_to :controller => 'projects', :action => 'settings', :id => @project.id, :tab => 'workload'
+  		#redirect_to :controller => 'projects', :action => 'settings', :id => @project.id, :tab => 'workload'
+      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
   	else
   		flash[:error] = l(:error_set)
   		render :edit

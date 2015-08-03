@@ -1,3 +1,4 @@
+<fieldset>
 <%= form_for project_window, :url => project_wl_project_window_path do |f| %>
 
 	<% if project_window.errors.any? %>
@@ -12,5 +13,6 @@
 
 <p>Start: <%= f.text_field :start_date %><%= calendar_for('wl_project_window_start_date') %>
 			End: <%= f.text_field :end_date %><%= calendar_for('wl_project_window_end_date') %></p>
-	<%= f.submit 'Save' %>
+	<p><%= f.submit 'Save' %> <a href="javascript:history.back()"><%= l(:button_back) %></a></p>
 <% end %>
+</fieldset>

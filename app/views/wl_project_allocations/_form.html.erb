@@ -1,5 +1,8 @@
-
-<h2>Set a default project allocation for <%= user.name %>. This allocation will be applied when no custom project allocation overlaps.</h2>
+<fieldset>
+	<p><strong>Note:</strong> This default project allocation will be applied throughout the project window, for each time period on which the user considered does not have a custom project allocation overlapping.</p>
+</fieldset>
+<br />
+<fieldset>
 <%= form_for project_allocation, :url => project_user_wl_project_allocation_path do |f| %>
 
 	<% if project_allocation.errors.any? %>
@@ -13,5 +16,7 @@
 	<% end %>
 
 	<%- options = (0..100).step(5).to_a %>
-	<p>Project allocation: <%= f.select :percent_alloc, options, :selected => 100 %>% <%= f.submit 'Save' %></p>
+	<p>Project allocation: <%= f.select :percent_alloc, options, :selected => 100 %>%</p>
+	<p><%= f.submit 'Save' %> <a href="javascript:history.back()"><%= l(:button_back) %></a></p>
 <% end %>
+</fieldset>

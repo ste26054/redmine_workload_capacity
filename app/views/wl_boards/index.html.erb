@@ -1,7 +1,13 @@
-<h2>Workload Dashboard for <%= link_to @project.name, edit_project_wl_project_window_path(@project) %> from <%= format_date(@project.wl_project_window.start_date) %> to <%= format_date(@project.wl_project_window.end_date) %></h2>
+<h2>Workload Dashboard from <%= format_date(@project.wl_project_window.start_date) %> to <%= format_date(@project.wl_project_window.end_date) %> (<%= link_to 'Edit', edit_project_wl_project_window_path(@project) %>)</h2>
 
+<fieldset>
+	<p><strong>Note:</strong> <strong>"*"</strong> symbol in a Project Allocation column means a user has one or several overtimes during the time period considered.</p>
 
-	<p><strong>Notice:</strong> <strong>"*"</strong> symbol in a Project Allocation column means a user has one or several overtimes during the time period considered.</p>
+</fieldset>
 
-
+<br />
 <%= render 'index', :project => @project, :wl_members => @wl_members %>
+
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'workload_capacity', :plugin => 'redmine_workload_capacity' %>
+<% end %>

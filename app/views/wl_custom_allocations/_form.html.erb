@@ -1,4 +1,9 @@
 <fieldset>
+	<p><strong>Note:</strong> This custom project allocation will overwrite the default project allocation for the time period considered below.</p>
+</fieldset>
+<br />
+
+<fieldset>
 <%= form_for custom_allocation, :url => (custom_allocation.new_record? ? project_user_wl_custom_allocations_path : project_user_wl_custom_allocation_path) do |f| %>
 
 	<% if custom_allocation.errors.any? %>
@@ -19,6 +24,7 @@
 		<p>Start Date: <%= f.text_field :start_date %><%= calendar_for('wl_custom_allocation_start_date')%> End Date: <%= f.text_field :end_date %><%= calendar_for('wl_custom_allocation_end_date')%></p><p>Custom allocation: <%= f.select :percent_alloc, options %>%</p>
 	<% end %>
 	
-	<p><%= f.submit 'Save' %></p>
+	<p><%= f.submit 'Save' %> <a href="javascript:history.back()"><%= l(:button_back) %></a></p>
+
 <% end %>
 </fieldset>

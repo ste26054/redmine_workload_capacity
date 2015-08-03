@@ -18,7 +18,7 @@ module RedmineWorkloadCapacity
 
 			def wl_memberships
 				wl_project_window_ids = WlProjectWindow.pluck(:project_id)
-				return self.memberships.to_a.delete_if {|m| !m.project_id.in?(wl_project_window_ids) || !WlUser.wl_member?(m) }
+				return self.memberships.to_a.delete_if {|m| !m.project_id.in?(wl_project_window_ids) || !m.project.module_enabled?(:workload_capacity) || !WlUser.wl_member?(m) }
 			end
 
 			def wl_allocs
