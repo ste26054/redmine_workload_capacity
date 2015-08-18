@@ -49,7 +49,7 @@ class WlUserOvertimesController < ApplicationController
   private
 
   def wl_user_overtime_params
-    params.require(:wl_user_overtime).permit(:start_date, :end_date, :overtime_hours)
+    params.require(:wl_user_overtime).permit(:start_date, :end_date, :overtime_hours, :include_sat, :include_sun, :include_bank_holidays)
   end
 
   def set_user

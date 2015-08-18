@@ -1,3 +1,18 @@
+<table style="float:right">
+	<tbody>
+		<tr>
+			<td>Total Allocation:</td>
+			<td>
+				<div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;;background-color: #FFEA93;"></div>
+			</td><td>&lt;100%</td>
+			<td>
+				<div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;;background-color: #ffc4c4;"></div>
+			</td><td>&gt;100%</td>
+		</tr>
+	</tbody>
+</table>
+
+
 <table class="list">
 	<thead>
 		<tr>
@@ -29,7 +44,7 @@
 			<% total_alloc.each_with_index do |alloc, i| %>
 				<% custom_alloc = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).overlaps(alloc[:start_date], alloc[:end_date]) %>
 
-				<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" if (total_alloc[i][:percent_alloc] > 100) %>">
+				<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" if (total_alloc[i][:percent_alloc] > 100) %> <%= "allocation-below" if (total_alloc[i][:percent_alloc] < 100) %>">
 				<td></td>
 				<td><%= render_member_project_allocation(member, alloc[:start_date], alloc[:end_date]) %></td>
 				<td>
@@ -48,13 +63,16 @@
 				</td>
 				<td>
 					<% if custom_alloc.empty? %>
+						<% custom_link = { :start_date => alloc[:start_date], :end_date => alloc[:end_date], :percent_alloc => remaining_alloc[i][:percent_alloc]} %>
 						<% if total_alloc[i][:percent_alloc] > 100 %>
-							<% custom_link = { :start_date => alloc[:start_date], :end_date => alloc[:end_date], :percent_alloc => remaining_alloc[i][:percent_alloc]} %>
-
 							<div class="tooltip">
 								<%= link_to 'Smart Allocation', project_user_wl_custom_allocations_path(project, member.user,:wl_custom_allocation => custom_link), :class => 'icon icon-summary', :method => :post %>
 		        				<span class="tip"><%= render_smart_allocation_tooltip(custom_link) %></span>
 		  		    		</div>
+
+		  		    	<% else %>
+		  		    		<%= link_to 'Custom Project Allocation', new_project_user_wl_custom_allocation_path(project, member.user, :wl_custom_allocation => custom_link), :class => 'icon icon-add' %>
+
 						<% end %>
 					<% else %>
 						<%= link_to 'Edit', edit_project_user_wl_custom_allocation_path(project, member.user, custom_alloc.first), :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_custom_allocation_path(project, member.user, custom_alloc.first), method: :delete, :class => 'icon icon-del' %>

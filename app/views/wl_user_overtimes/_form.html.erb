@@ -14,6 +14,12 @@
 
 	<p>Start Date: <%= f.text_field :start_date %><%= calendar_for('wl_user_overtime_start_date')%> End Date: <%= f.text_field :end_date %><%= calendar_for('wl_user_overtime_end_date')%></p>
 	<p>Overtime (hours): <%= f.text_field :overtime_hours %></p>
+	<fieldset>
+		<legend>Include:</legend>
+		<p>Saturdays: <%= f.check_box :include_sat %> Sundays: <%= f.check_box :include_sun %> User Bank Holidays: <%= f.check_box :include_bank_holidays %></p>
+	</fieldset>
+	
+	
 	
 	<p><%= f.submit 'Save' %> <a href="javascript:history.back()"><%= l(:button_back) %></a></p>
 <% end %>

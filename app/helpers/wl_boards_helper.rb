@@ -8,7 +8,10 @@ module WlBoardsHelper
 	def render_details_tooltip(details, member)
 		output = "".html_safe
 		details.each do |element|
-			output << "<strong>#{link_to_project_workload(element[:wl_project_window].project)}</strong>:".html_safe
+			member_project = element[:wl_project_window].project.id == member.project.id
+			output << "<strong>".html_safe if member_project
+			output << "#{link_to_project_workload(element[:wl_project_window].project)}:".html_safe
+			output << "</strong>".html_safe if member_project
 			output << " #{element[:percent_alloc]}%".html_safe
 			output << " (#{member.user.weekly_working_hours * element[:percent_alloc] / 100.0}h/week)</br>".html_safe
 		end

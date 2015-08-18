@@ -18,8 +18,8 @@
 
 	<%- options = (0..100).step(5).to_a %>
 	<% if custom_allocation.new_record? %>
-		<p>Start Date: <%= f.text_field :start_date, :value => params[:start_date] %><%= calendar_for('wl_custom_allocation_start_date')%> End Date: <%= f.text_field :end_date, :value => params[:end_date] %><%= calendar_for('wl_custom_allocation_end_date')%></p>
-		<p>Custom allocation: <%= f.select :percent_alloc, options, :selected => params[:percent_alloc] %>%</p>
+		<p>Start Date: <%= f.text_field :start_date, :value => params[:wl_custom_allocation][:start_date] %><%= calendar_for('wl_custom_allocation_start_date')%> End Date: <%= f.text_field :end_date, :value => params[:wl_custom_allocation][:end_date] %><%= calendar_for('wl_custom_allocation_end_date')%></p>
+		<p>Custom allocation: <%= f.select :percent_alloc, options, :selected => params[:wl_custom_allocation][:percent_alloc] %>%</p>
 	<% else %>
 		<p>Start Date: <%= f.text_field :start_date %><%= calendar_for('wl_custom_allocation_start_date')%> End Date: <%= f.text_field :end_date %><%= calendar_for('wl_custom_allocation_end_date')%></p><p>Custom allocation: <%= f.select :percent_alloc, options %>%</p>
 	<% end %>

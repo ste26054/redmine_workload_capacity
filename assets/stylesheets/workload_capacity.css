@@ -1,3 +1,9 @@
 .overtime {
 	font-weight: bold;
 }
+
+tr.odd.allocation-below, table.list tbody tr.odd.allocation-below:hover { font-weight: bold; }
+tr.odd.allocation-below { background: #FBEDB2; }
+tr.even.allocation-below, table.list tbody tr.even.allocation-below:hover { font-weight: bold; }
+tr.even.allocation-below { background: #FFF7D4; }
+tr.odd.allocation-below td, tr.even.allocation-below td { border-color: #FFEA93; }

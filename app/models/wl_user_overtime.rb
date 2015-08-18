@@ -13,12 +13,15 @@ class WlUserOvertime < ActiveRecord::Base
   validates :user_id, presence: true
   validates :overtime_hours, presence: true, numericality: { :greater_than => 0 }
 
+  validates :include_sat, inclusion: [true, false]
+  validates :include_sun, inclusion: [true, false]
+  validates :include_bank_holidays, inclusion: [true, false]
 
   validate :end_date_not_before_start_date
   validate :dates_not_beyond_project_window
   validate :custom_alloc_per_user_uniq_within_period
 
-  attr_accessible :start_date, :end_date, :overtime_hours, :wl_project_window_id, :user_id
+  attr_accessible :start_date, :end_date, :overtime_hours, :wl_project_window_id, :user_id, :include_sat, :include_sun, :include_bank_holidays
 
 private
   
