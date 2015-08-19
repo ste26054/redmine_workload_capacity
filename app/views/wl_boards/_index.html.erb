@@ -86,8 +86,8 @@
 			<% user_overtimes.each_with_index do |overtime, i| %>
 				<tr class="<%= cycle("odd", "even") %>">
 				<td></td>
-				<td><%= render_member_overtime(member, overtime.overtime_hours, overtime.start_date, overtime.end_date) %></td>
-				<td>User Overtime (<%= overtime.overtime_hours %>h)</td>
+				<td><%= render_member_overtime(member, overtime) %></td>
+				<td><%= render_member_overtime_allocation(overtime) %></td>
 				<td><%= format_date(overtime.start_date) %></td>
 				<td><%= format_date(overtime.end_date) %></td>
 				<td>-</td>

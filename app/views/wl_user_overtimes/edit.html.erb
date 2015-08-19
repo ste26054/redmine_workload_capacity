@@ -1,2 +1,2 @@
-<h2>Edit an overtime entry for <%= @user.name %></h2>
-<%= render 'form', :user => @user, :project => @project, :user_overtime => @user_overtime %>
+<h2>Edit an overtime entry for <%= @user.name %> (Project Window from <%= format_date(@project.wl_project_window.start_date) %> to <%= format_date(@project.wl_project_window.end_date) %>)</h2>
+<%= render 'form', :user => @user, :project => @project, :user_overtime => @user_overtime, :leave_list => @leave_list %>

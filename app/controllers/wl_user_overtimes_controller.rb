@@ -6,6 +6,7 @@ class WlUserOvertimesController < ApplicationController
   before_action :authenticate
   before_action :set_user
   before_action :retrieve_user_overtime, except: [:new, :create]
+  before_action :retrieve_leave_list, except: [:destroy]
 
   def new
   	@user_overtime ||= WlUserOvertime.new
@@ -62,6 +63,10 @@ class WlUserOvertimesController < ApplicationController
 
   def retrieve_user_overtime
     @user_overtime ||= WlUserOvertime.find(params[:id])
+  end
+
+  def retrieve_leave_list
+    @leave_list ||= WlUser.leave_request_list(@user, @project.wl_project_window)
   end
 
 end

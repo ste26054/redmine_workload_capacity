@@ -16,4 +16,10 @@ module WlUser
 	def self.wl_manage_right?(user, project)
 		return user.allowed_to?(:manage_project_workload, project)
 	end
+
+	def self.leave_request_list(user, wl_project_window)
+    	leave_request_ids = LeaveRequest.for_user(user.id).overlaps(wl_project_window.start_date, wl_project_window.end_date).pluck(:id)
+    	leave_request_ids.delete_if {|l| LeaveRequest.find(l).get_status.in?(["created", "rejected"])}
+    	return LeaveRequest.where(id: leave_request_ids).order(:from_date)
+  end
 end

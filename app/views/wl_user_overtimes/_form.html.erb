@@ -24,3 +24,39 @@
 	<p><%= f.submit 'Save' %> <a href="javascript:history.back()"><%= l(:button_back) %></a></p>
 <% end %>
 </fieldset>
+<br />
+
+<fieldset>
+<legend>List of Leave Requests submitted by the user throughout the project:</legend>
+	<% unless leave_list.empty? %>
+		<div class="autoscroll">
+			<table class="list">
+				<thead>
+				<tr>
+				<th>Id</th>
+				<th>Number of Days</th>
+				<th>Leave From</th>
+				<th>Leave To</th>
+				<th>Reason</th>
+				<th>Status</th>
+				</tr>
+				</thead>
+				<tbody>
+					<% for req in leave_list %>
+						<tr class="<%= cycle("odd", "even") %> <%= req.css_classes %>">
+						<td><%= req.id %></td>
+						<td><%= req.actual_leave_days %></td>
+						<td><%= req.from_date %></td>
+						<td><%= req.to_date %></td>
+						<td><%= req.issue.subject %></td>
+						<td><%= req.get_status %></td>
+						</tr>
+					<% end -%>
+				</tbody>
+
+			</table>
+		</div>
+	<% else %>
+		<ul>No Leave Requests were found.</ul>
+	<% end %>
+</fieldset>
