@@ -40,12 +40,13 @@ module WlBoardsHelper
 
 	def render_member_overtime(member, wl_user_overtime)
 		output = "".html_safe
-		hours_per_week = member.user.weekly_working_hours
-		time_period = (wl_user_overtime.end_date - wl_user_overtime.start_date).to_i + 1
-		extra_hours_per_week = wl_user_overtime.overtime_hours.to_f / time_period * 5.0
-		extra_percent_per_week =  (extra_hours_per_week * 100.0) / hours_per_week
+		user_hours_per_day = member.user.weekly_working_hours / 5.0
+		days_count = wl_user_overtime.overtime_days_count
+
+		extra_hours_per_day = wl_user_overtime.overtime_hours.to_f / days_count
+		extra_percent_per_day =  (extra_hours_per_day * 100.0) / user_hours_per_day
 		output << '<span class="overtime">'.html_safe
-		output << "+#{extra_percent_per_week.round(1)}% (+#{extra_hours_per_week.round(1)}h/week)".html_safe
+		output << "+#{extra_percent_per_day.round(1)}% (+#{extra_hours_per_day.round(1)}h/day)".html_safe
 		output << '</span>'.html_safe
 		return output
 	end
@@ -59,8 +60,21 @@ module WlBoardsHelper
 		tab_incl << 'Sundays'.html_safe if wl_user_overtime.include_sun?
 		tab_incl << 'Bank Holidays'.html_safe if wl_user_overtime.include_bank_holidays?
 
-		output << ' Include: '.html_safe unless tab_incl.empty?
+		output << '<strong> Include: '.html_safe unless tab_incl.empty?
 		output << tab_incl.join(', '.html_safe)
+		output << '</strong>'.html_safe
+		return output
+	end
+
+	def render_member_overtime_tooltip(wl_user_overtime)
+		extra_hours_per_day = (wl_user_overtime.overtime_hours.to_f / wl_user_overtime.overtime_days_count).round(1)
+		user_hours_per_day = (wl_user_overtime.user.weekly_working_hours / 5.0).round(1)
+		extra_percent_per_day =  ((extra_hours_per_day * 100.0) / user_hours_per_day).round(1)
+		output = "".html_safe
+		output << "<strong>User Working Hours:</strong> #{user_hours_per_day}h/day<br/>".html_safe
+		output << "<strong>Actual Working days:</strong> #{wl_user_overtime.overtime_days_count}<br/>".html_safe
+		output << "<strong>Overtime:</strong> #{wl_user_overtime.overtime_hours} hours / #{wl_user_overtime.overtime_days_count} days = #{extra_hours_per_day}h/day<br/>".html_safe
+		output << "<strong>Overtime represents:</strong> #{extra_hours_per_day} / #{user_hours_per_day} = #{extra_percent_per_day}% of User Working Hours per day".html_safe
 		return output
 	end
 	

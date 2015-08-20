@@ -2,8 +2,15 @@
 	font-weight: bold;
 }
 
+.caption {
+    margin-bottom: 5px;
+    float: right;
+}
+
 tr.odd.allocation-below, table.list tbody tr.odd.allocation-below:hover { font-weight: bold; }
 tr.odd.allocation-below { background: #FBEDB2; }
 tr.even.allocation-below, table.list tbody tr.even.allocation-below:hover { font-weight: bold; }
 tr.even.allocation-below { background: #FFF7D4; }
 tr.odd.allocation-below td, tr.even.allocation-below td { border-color: #FFEA93; }
+
+tr.wl-overtime.needs-attention {color: #F40; font-weight: bold; background: #FFCEB9;}

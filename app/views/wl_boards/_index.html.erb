@@ -1,15 +1,18 @@
-<table style="float:right">
-	<tbody>
+<table class="caption">
+	<thead>
 		<tr>
-			<td>Total Allocation:</td>
+			<td>Caption: </td>
 			<td>
 				<div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;;background-color: #FFEA93;"></div>
-			</td><td>&lt;100%</td>
+			</td><td>Total Allocation &lt;100% </td>
 			<td>
-				<div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;;background-color: #ffc4c4;"></div>
-			</td><td>&gt;100%</td>
+				<div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;;background-color: #900;"></div>
+			</td><td>Total Allocation &gt;100% </td>
+			<td>
+				<div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;;background-color: #F40;"></div>
+			</td><td>Leave Overlapping with Overtime</td>
 		</tr>
-	</tbody>
+	</thead>
 </table>
 
 
@@ -84,9 +87,12 @@
 				<tr><td colspan="7"></td></tr>
 			<% end %>
 			<% user_overtimes.each_with_index do |overtime, i| %>
-				<tr class="<%= cycle("odd", "even") %>">
+				<tr class="<%= cycle("odd", "even") %> <%= overtime.css_classes %>">
 				<td></td>
-				<td><%= render_member_overtime(member, overtime) %></td>
+				<td><div class="tooltip"><%= render_member_overtime(member, overtime) %>
+					<span class="tip"><%= render_member_overtime_tooltip(overtime) %></span>
+		  		    </div>
+		  		</td>
 				<td><%= render_member_overtime_allocation(overtime) %></td>
 				<td><%= format_date(overtime.start_date) %></td>
 				<td><%= format_date(overtime.end_date) %></td>

@@ -1,3 +1,14 @@
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'workload_capacity', :plugin => 'redmine_workload_capacity' %>
+<% end %>
+
+<p>
+	Project Window from <%= format_date(project.wl_project_window.start_date) %> to <%= format_date(project.wl_project_window.end_date) %>
+</p>
+<p>
+	User Working hours: <%= user.weekly_working_hours %>h/week (<%= user.weekly_working_hours / 5.0 %>h/day)
+</p>
+
 <fieldset>
 <%= form_for [project, user_overtime], :url => (user_overtime.new_record? ? project_user_wl_user_overtimes_path : project_user_wl_user_overtime_path) do |f| %>
 
@@ -16,7 +27,7 @@
 	<p>Overtime (hours): <%= f.text_field :overtime_hours %></p>
 	<fieldset>
 		<legend>Include:</legend>
-		<p>Saturdays: <%= f.check_box :include_sat %> Sundays: <%= f.check_box :include_sun %> User Bank Holidays: <%= f.check_box :include_bank_holidays %></p>
+		<p>Saturdays: <%= f.check_box :include_sat %> Sundays: <%= f.check_box :include_sun %> User Bank Holidays (<%= LeavesHolidaysLogic.user_params(user, :region) %>): <%= f.check_box :include_bank_holidays %></p>
 	</fieldset>
 	
 	
@@ -43,7 +54,7 @@
 				</thead>
 				<tbody>
 					<% for req in leave_list %>
-						<tr class="<%= cycle("odd", "even") %> <%= req.css_classes %>">
+						<tr class="<%= cycle("odd", "even") %> <%= user_overtime.css_classes(req.from_date, req.to_date) unless user_overtime.new_record? %>">
 						<td><%= req.id %></td>
 						<td><%= req.actual_leave_days %></td>
 						<td><%= req.from_date %></td>
