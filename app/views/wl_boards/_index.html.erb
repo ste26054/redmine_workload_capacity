@@ -20,11 +20,11 @@
 	<thead>
 		<tr>
 			<th>User</th>
-			<th>Project Allocation %</th>
 			<th>Allocation Type</th>
 			<th>Start Date</th>
 			<th>End Date</th>
 			<th>Total Allocation %</th>
+			<th>Project Allocation %</th>
 			<th>Actions</th>
 		</tr>
 	</thead>
@@ -50,7 +50,6 @@
 
 				<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" if (total_alloc[i][:percent_alloc] > 100) %> <%= "allocation-below" if (total_alloc[i][:percent_alloc] < 100) %>">
 				<td></td>
-				<td><%= render_member_project_allocation(member, alloc[:start_date], alloc[:end_date]) %></td>
 				<td>
 					<% if custom_alloc.empty? %>
 						Default Project Allocation
@@ -65,6 +64,7 @@
 		        		<span class="tip"><%= render_details_tooltip(alloc[:details], member) %></span>
 		  		    </div>
 				</td>
+				<td><%= render_member_project_allocation(member, alloc[:start_date], alloc[:end_date]) %></td>
 				<td>
 					<% if custom_alloc.empty? %>
 						<% custom_link = { :start_date => alloc[:start_date], :end_date => alloc[:end_date], :percent_alloc => remaining_alloc[i][:percent_alloc]} %>
