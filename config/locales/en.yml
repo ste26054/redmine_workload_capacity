@@ -12,3 +12,4 @@ en:
   error_set: "An error occured. Please check that your parameters are correct"
   error_dates: "End date cannot take place before Start date"
   error_custom_alloc_boundary: "is outside project windows"
+  notice_custom_project_windows_set: "The custom project windows was correctly set for %{user} in %{project}"

@@ -11,6 +11,8 @@ class WlProjectWindow < ActiveRecord::Base
   has_many :wl_project_allocations, :dependent => :destroy
   has_many :wl_custom_allocations, :dependent => :destroy
 
+  #has_many :wl_custom_project_windows, :dependent => :destroy
+
   before_update :check_custom_allocations
   after_save :update_overlaps
   after_destroy :update_overlaps

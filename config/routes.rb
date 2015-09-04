@@ -9,6 +9,8 @@ resources :projects do
 		resource :wl_project_allocation
  		resources :wl_custom_allocations
  		resources :wl_user_overtimes
+
+ 		resource :wl_custom_project_window, :except => [:show]
  	end
 
 end
