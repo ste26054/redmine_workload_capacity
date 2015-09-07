@@ -9,7 +9,7 @@ class WlUserOvertimesController < ApplicationController
   before_action :retrieve_leave_list, except: [:destroy]
 
   def new
-  	@user_overtime ||= WlUserOvertime.new
+  	@user_overtime = WlUserOvertime.new
   end
 
   def create

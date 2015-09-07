@@ -11,7 +11,14 @@ module WlCommonValidation
 	  		errors.add(:start_date, l(:error_custom_alloc_boundary)) if start_date < wl_project_window.start_date
 	  	end
 	end
-	
+
+	def dates_not_beyond_custom_project_window
+		custom_project_window = WlCustomProjectWindow.find_by(user_id: user.id, wl_project_window_id: wl_project_window.id)
+	  	if custom_project_window && end_date && start_date
+	  		errors.add(:end_date, l(:error_custom_alloc_boundary_c, :from => custom_project_window.start_date, :to => custom_project_window.end_date)) if end_date > custom_project_window.end_date
+	  		errors.add(:start_date, l(:error_custom_alloc_boundary_c, :from => custom_project_window.start_date, :to => custom_project_window.end_date)) if start_date < custom_project_window.start_date
+	  	end
+	end	
 
 	def custom_alloc_uniq_within_period
 	  	overlaps = self.class.overlaps(start_date, end_date)

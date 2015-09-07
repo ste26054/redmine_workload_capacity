@@ -1,3 +1,5 @@
 <h2>Edit custom Project Window for user <%= @user.name %> in project <%= @project.name %> (Default Project Window from <%= format_date(@project.wl_project_window.start_date) %> to <%= format_date(@project.wl_project_window.end_date) %>)</h2>
 
 <%= render 'form', :project => @project, :custom_project_window => @custom_project_window, :user => @user %>
+
+<p><%= link_to 'Delete Custom Project Window', project_user_wl_custom_project_window_path(@project, @user, @custom_project_window), method: :delete, :class => 'icon icon-del' %></p>

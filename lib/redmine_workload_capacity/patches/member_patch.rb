@@ -16,14 +16,20 @@ module RedmineWorkloadCapacity
 		module MemberInstanceMethods
 			include WlLogic
 
+			def wl_custom_project_window?
+				custom_project_window = WlCustomProjectWindow.find_by(user_id: self.user.id, wl_project_window_id: self.project.wl_project_window)
+				return custom_project_window != nil
+			end
+
+			def wl_custom_project_window
+				return WlCustomProjectWindow.find_by(user_id: self.user.id, wl_project_window_id: self.project.wl_project_window)
+			end
+
+
+
 			def wl_reload
 				self.project.wl_reload
 			end
-
-			def wl_allocation
-				return WlLogic.wl_member_allocation(self)
-			end
-
 
 			def wl_member?
 				return WlUser.wl_member?(self)
@@ -31,7 +37,6 @@ module RedmineWorkloadCapacity
 
 			# Returns the project allocation object
 			def wl_project_allocation
-				#return WlProjectAllocation.create_with(percent_alloc: 100).find_or_create_by(user_id: self.user_id, wl_project_window_id: self.project.wl_project_window.id)
 				return WlProjectAllocation.find_by(user_id: self.user_id, wl_project_window_id: self.project.wl_project_window.id)
 			end
 
@@ -61,7 +66,12 @@ module RedmineWorkloadCapacity
 			# Returns the total cross project allocation table, bound to current project window
 			def wl_global_table_allocation
 				user_table_alloc = self.user.wl_table_allocation
-				user_project_window = self.project.wl_project_window
+
+				if self.wl_custom_project_window?
+					user_project_window = self.wl_custom_project_window
+				else
+					user_project_window = self.project.wl_project_window
+				end
 				user_table_alloc.delete_if {|e| user_project_window.start_date > e[:end_date] || user_project_window.end_date < e[:start_date]}
 				return user_table_alloc
 			end

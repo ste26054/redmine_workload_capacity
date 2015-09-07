@@ -25,7 +25,7 @@ module RedmineWorkloadCapacity
 				hsh = []
 
 				self.wl_memberships.each do |wl_member|
-					alloc = wl_member.wl_allocation 
+					alloc = WlLogic.wl_member_allocation(wl_member)
 					hsh << alloc unless alloc.empty?
 				end
 				return hsh
