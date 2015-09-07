@@ -23,8 +23,8 @@
 			<th>Allocation Type</th>
 			<th>Start Date</th>
 			<th>End Date</th>
-			<th>Total Allocation %</th>
 			<th>Project Allocation %</th>
+			<th>Total Allocation %</th>
 			<th>Actions</th>
 		</tr>
 	</thead>
@@ -59,12 +59,13 @@
 				</td>
 				<td><%= format_date(alloc[:start_date]) %></td>
 				<td><%= format_date(alloc[:end_date]) %></td>
+				
+				<td><%= render_member_project_allocation(member, alloc[:start_date], alloc[:end_date]) %></td>
 				<td>
 					<div class="tooltip"><%= total_alloc[i][:percent_alloc] %>
 		        		<span class="tip"><%= render_details_tooltip(alloc[:details], member) %></span>
 		  		    </div>
 				</td>
-				<td><%= render_member_project_allocation(member, alloc[:start_date], alloc[:end_date]) %></td>
 				<td>
 					<% if custom_alloc.empty? %>
 						<% custom_link = { :start_date => alloc[:start_date], :end_date => alloc[:end_date], :percent_alloc => remaining_alloc[i][:percent_alloc]} %>
@@ -90,14 +91,14 @@
 			<% user_overtimes.each_with_index do |overtime, i| %>
 				<tr class="<%= cycle("odd", "even") %> <%= overtime.css_classes %>">
 				<td></td>
+				<td><%= render_member_overtime_allocation(overtime) %></td>
+				<td><%= format_date(overtime.start_date) %></td>
+				<td><%= format_date(overtime.end_date) %></td>
 				<td><div class="tooltip"><%= render_member_overtime(member, overtime) %>
 					<span class="tip"><%= render_member_overtime_tooltip(overtime) %></span>
 		  		    </div>
 		  		</td>
-				<td><%= render_member_overtime_allocation(overtime) %></td>
-				<td><%= format_date(overtime.start_date) %></td>
-				<td><%= format_date(overtime.end_date) %></td>
-				<td>-</td>
+		  		<td>-</td>
 				<td><%= link_to 'Edit', edit_project_user_wl_user_overtime_path(project, member.user, overtime), :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_user_overtime_path(project, member.user, overtime), method: :delete, :class => 'icon icon-del' %></td>
 				</tr>
 			<% end %>
