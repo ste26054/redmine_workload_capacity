@@ -14,6 +14,8 @@ class WlProjectWindow < ActiveRecord::Base
   has_many :wl_custom_project_windows, :dependent => :destroy
 
   before_update :check_custom_allocations
+  before_update :check_overtimes
+  before_update :check_custom_project_windows
   after_save :update_overlaps
   after_destroy :update_overlaps
   after_create :create_project_allocations
@@ -24,6 +26,8 @@ class WlProjectWindow < ActiveRecord::Base
 
   validate :end_date_not_before_start_date
   validate :check_custom_allocations
+  validate :check_overtimes
+  validate :check_custom_project_windows
 
   attr_accessible :start_date, :end_date, :project_id
 private
@@ -45,7 +49,7 @@ private
 		custom_allocs.find_each do |c|
 
 			if self.start_date > c.end_date || self.end_date < c.start_date
-				errors.add(:base, "Custom allocation \##{c.id} from #{c.start_date} to #{c.end_date} needs to be deleted first")
+				errors.add(:base, "Custom allocation \##{c.id} for #{c.user.name} from #{c.start_date} to #{c.end_date} needs to be moved first")
 			else
 				if self.start_date > c.start_date
 		  			c.update(start_date: self.start_date)
@@ -54,6 +58,26 @@ private
 				if self.end_date < c.end_date
 					c.update(end_date: self.end_date)
 				end
+			end
+		end
+	end
+
+	def check_overtimes
+		overtimes = WlUserOvertime.where(wl_project_window_id: self.id)
+
+		overtimes.find_each do |c|
+			if self.start_date > c.start_date || self.end_date < c.end_date
+				errors.add(:base, "Overtime \##{c.id} for #{c.user.name} from #{c.start_date} to #{c.end_date} needs to be moved first")
+			end
+		end
+	end
+
+	def check_custom_project_windows
+		custom_project_window = WlCustomProjectWindow.where(wl_project_window_id: self.id)
+
+		custom_project_window.find_each do |c|
+			if self.start_date > c.start_date || self.end_date < c.end_date
+				errors.add(:base, "Custom Project Window for #{c.user.name} from #{c.start_date} to #{c.end_date} needs to be moved first")
 			end
 		end
 	end

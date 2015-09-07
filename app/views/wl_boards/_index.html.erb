@@ -92,14 +92,16 @@
 			<% user_overtimes.each_with_index do |overtime, i| %>
 				<tr class="<%= cycle("odd", "even") %> <%= overtime.css_classes %>">
 				<td></td>
-				<td><div class="tooltip"><%= render_member_overtime(member, overtime) %>
-					<span class="tip"><%= render_member_overtime_tooltip(overtime) %></span>
-		  		    </div>
-		  		</td>
 				<td><%= render_member_overtime_allocation(overtime) %></td>
 				<td><%= format_date(overtime.start_date) %></td>
 				<td><%= format_date(overtime.end_date) %></td>
 				<td>-</td>
+				<td><div class="tooltip"><%= render_member_overtime(member, overtime) %>
+					<span class="tip"><%= render_member_overtime_tooltip(overtime) %></span>
+		  		    </div>
+		  		</td>
+				
+
 				<td><%= link_to 'Edit', edit_project_user_wl_user_overtime_path(project, member.user, overtime), :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_user_overtime_path(project, member.user, overtime), method: :delete, :class => 'icon icon-del' %></td>
 				</tr>
 			<% end %>
