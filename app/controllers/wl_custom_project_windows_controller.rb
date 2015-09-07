@@ -5,7 +5,7 @@ class WlCustomProjectWindowsController < ApplicationController
 	before_action :set_project
 	before_action :set_user
 	before_action :authenticate
-	before_action :set_wl_project_window
+	before_action :set_wl_project_window 
 	before_action :retrieve_custom_project_window
 
 	def new
@@ -19,7 +19,7 @@ class WlCustomProjectWindowsController < ApplicationController
 	def create
 		@custom_project_window = WlCustomProjectWindow.new(wl_custom_project_window_params)
 		@custom_project_window.user_id = @user.id
-		@custom_project_window.wl_project_windows_id = @wl_project_window.id
+		@custom_project_window.wl_project_window_id = @wl_project_window.id
 		if @custom_project_window.save
 			flash[:notice] = l(:notice_custom_project_windows_set, :project => @project.name, :user => @user.name)
 			redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
@@ -66,7 +66,7 @@ private
 	end
 
 	def retrieve_custom_project_window
-		@custom_project_window ||= WlCustomProjectWindow.find_by(wl_project_windows_id: @wl_project_window.id, user_id: @user.id)
+		@custom_project_window ||= WlCustomProjectWindow.find_by(wl_project_window_id: @wl_project_window.id, user_id: @user.id)
 	end
 
 end

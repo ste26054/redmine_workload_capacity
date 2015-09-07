@@ -77,5 +77,15 @@ module WlBoardsHelper
 		output << "<strong>Overtime represents:</strong> #{extra_hours_per_day} / #{user_hours_per_day} = #{extra_percent_per_day}% of User Working Hours per day".html_safe
 		return output
 	end
+
+	def link_to_custom_project_window(project, user)
+		obj = WlCustomProjectWindow.find_by(user_id: user.id, wl_project_window_id: project.wl_project_window)
+
+		if obj
+			return link_to "Edit Custom Project Window (#{format_date(obj.start_date)} - #{format_date(obj.end_date)})", edit_project_user_wl_custom_project_window_path(project, user), :class => 'icon icon-edit'
+		else
+			return link_to 'Add Custom Project Window', new_project_user_wl_custom_project_window_path(project, user), :class => 'icon icon-add'
+		end
+	end
 	
 end

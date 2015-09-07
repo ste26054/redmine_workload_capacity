@@ -1,16 +1,19 @@
 class WlCustomProjectWindow < ActiveRecord::Base
 	unloadable
+	include WlCommonValidation
 	
 	belongs_to :wl_project_window
 	belongs_to :user
 
-	attr_accessible :start_date, :end_date, :wl_project_windows_id, :user_id
-
 	validates :start_date, date: true, presence: true
   	validates :end_date, date: true, presence: true
-  	validates :wl_project_windows_id, presence: true
+  	validates :wl_project_window_id, presence: true
   	validates :user_id, presence: true
 
+	validate :end_date_not_before_start_date
+	validate :dates_not_beyond_project_window
+
+	attr_accessible :start_date, :end_date, :wl_project_window_id, :user_id
 private
 
 

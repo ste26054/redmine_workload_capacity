@@ -38,10 +38,12 @@
 			<tr class="<%= cycle("odd", "even") %>" style="font-weight: bold;">
 				<td><%= member.user.name %></td>
 				<td colspan="6">
-				<% custom_link = { :start_date => nil, :end_date => nil, :percent_alloc => nil} %>
+					<% custom_link = { :start_date => nil, :end_date => nil, :percent_alloc => nil} %>
+					
 					<%= link_to 'Edit Default Project Allocation', new_project_user_wl_project_allocation_path(project, member.user), :class => 'icon icon-edit' %>
 					<%= link_to 'Add Custom Project Allocation', new_project_user_wl_custom_allocation_path(project, member.user, :wl_custom_allocation => custom_link), :class => 'icon icon-add' %>
 					<%= link_to 'Add Overtime Entry', new_project_user_wl_user_overtime_path(project, member.user), :class => 'icon icon-time-add' %>
+					<%= link_to_custom_project_window(project, member.user) %>
 				</td>
 			</tr>
 
