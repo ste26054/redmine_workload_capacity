@@ -14,9 +14,9 @@ Redmine::Plugin.register :redmine_workload_capacity do
                               :after => :gantt,
                               :param => :project_id
 
-  project_module :workload_capacity do
-  	permission :manage_project_workload, {:wl_boards => [:index]}
-  	permission :appear_in_project_workload, {:wl_boards => [:index]}
+  project_module :allocation_capacity do
+  	permission :manage_project_allocation, {:wl_boards => [:index]}
+  	permission :appear_in_project_allocation, {:wl_boards => [:index]}
   end
   
 end
