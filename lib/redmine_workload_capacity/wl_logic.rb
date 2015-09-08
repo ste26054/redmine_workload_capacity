@@ -44,9 +44,15 @@ module WlLogic
 	end
 
 	def self.generate_allocations_table(member)
-		#return [] if member.wl_project_allocation == nil
 		dates = []
-		dates << member.project.wl_project_window
+
+		wl_custom_project_window = member.wl_custom_project_window
+
+		if wl_custom_project_window == nil
+			dates << member.project.wl_project_window
+		else
+			dates << wl_custom_project_window
+		end
 
 		custom_allocs = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: member.project.wl_project_window.id)
 			
@@ -69,7 +75,15 @@ module WlLogic
 					entry[:percent_alloc] = 100
 				end
 			end
+
 			entry[:wl_project_window] = member.project.wl_project_window
+
+			unless wl_custom_project_window == nil
+				entry[:wl_custom_project_window] = wl_custom_project_window
+			end
+
+			
+			
 			table << entry
 		end
 		return table
@@ -79,7 +93,13 @@ module WlLogic
 		dates = []
 
 		user.wl_allocs.each do |alloc|
-			dates << alloc[:default_alloc].wl_project_window
+			if alloc[:custom_project_window] != nil
+				dates << alloc[:custom_project_window]
+			else
+				dates << alloc[:default_alloc].wl_project_window
+			end
+			
+
 			alloc[:custom_allocs].each do |custom|
 				dates << custom
 			end
@@ -101,7 +121,11 @@ module WlLogic
 				m.wl_table_allocation.each do |wtl|
 					if (wtl[:start_date]..wtl[:end_date]).overlaps?(tr)
 						entry[:percent_alloc] += wtl[:percent_alloc]
-						entry[:details] << {wl_project_window: wtl[:wl_project_window], percent_alloc: wtl[:percent_alloc]}
+						entry[:details] << {
+							wl_project_window: wtl[:wl_project_window], 
+							wl_custom_project_window: wtl[:wl_custom_project_window], 
+							percent_alloc: wtl[:percent_alloc]
+						}
 					end
 				end
 			end
@@ -145,6 +169,9 @@ module WlLogic
 			custom_allocs.find_each do |alloc|
 				hsh[:custom_allocs] << alloc
 			end
+
+			hsh[:custom_project_window] = member.wl_custom_project_window
+
 		end
 		return hsh
 	end
