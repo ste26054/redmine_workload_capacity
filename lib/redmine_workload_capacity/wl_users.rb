@@ -2,19 +2,19 @@ module WlUser
 	using RedmineWorkloadCapacity::Refinements::UserRefinement
 	
 	def self.wl_users_for_project(project)
-		 project.users.to_a.delete_if {|u| !u.allowed_to?(:appear_in_project_workload, project)}.uniq
+		 project.users.to_a.delete_if {|u| !u.allowed_to?(:appear_in_project_allocation, project)}.uniq
 	end
 
 	def self.wl_members_for_project(project)
-		project.members.to_a.delete_if {|m| !m.user.allowed_to?(:appear_in_project_workload, project)}.uniq
+		project.members.to_a.delete_if {|m| !m.user.allowed_to?(:appear_in_project_allocation, project)}.uniq
 	end
 
 	def self.wl_member?(member)
-		return member.user.allowed_to?(:appear_in_project_workload, member.project)
+		return member.user.allowed_to?(:appear_in_project_allocation, member.project)
 	end
 
 	def self.wl_manage_right?(user, project)
-		return user.allowed_to?(:manage_project_workload, project)
+		return user.allowed_to?(:manage_project_allocation, project)
 	end
 
 	def self.leave_request_list(user, wl_project_window)
