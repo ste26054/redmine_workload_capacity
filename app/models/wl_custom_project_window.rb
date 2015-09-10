@@ -1,5 +1,6 @@
 class WlCustomProjectWindow < ActiveRecord::Base
 	unloadable
+	include WlScopeExtension::Dates
 	include WlCommonValidation
 	
 	belongs_to :wl_project_window
@@ -16,6 +17,7 @@ class WlCustomProjectWindow < ActiveRecord::Base
 	validate :dates_not_beyond_project_window
 	validate :check_custom_allocations
 	validate :check_overtimes
+	validate :custom_alloc_per_user_uniq_within_period
 
 	attr_accessible :start_date, :end_date, :wl_project_window_id, :user_id
 private

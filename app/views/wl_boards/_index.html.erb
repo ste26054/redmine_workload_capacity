@@ -43,7 +43,7 @@
 					<%= link_to 'Edit Default Project Allocation', new_project_user_wl_project_allocation_path(project, member.user), :class => 'icon icon-edit' %>
 					<%= link_to 'Add Custom Project Allocation', new_project_user_wl_custom_allocation_path(project, member.user, :wl_custom_allocation => custom_link), :class => 'icon icon-add' %>
 					<%= link_to 'Add Overtime Entry', new_project_user_wl_user_overtime_path(project, member.user), :class => 'icon icon-time-add' %>
-					<%= link_to_custom_project_window(project, member.user) %>
+					<%= link_to 'Add Custom Project Window', new_project_user_wl_custom_project_window_path(project, member.user), :class => 'icon icon-add' %>
 				</td>
 			</tr>
 
@@ -86,6 +86,23 @@
 					<% end %></td>
 				</tr>
 			<% end %>
+			<% user_custom_pw = WlCustomProjectWindow.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).order(:start_date) %>
+			<% if user_custom_pw.count > 0 %>
+				<tr><td colspan="7"></td></tr>
+			<% end %>
+			<% user_custom_pw.each_with_index do |pw, i| %>
+				<tr class="<%= cycle("odd", "even") %>">
+				<td></td>
+				<td>Custom Project Window</td>
+				<td><%= format_date(pw.start_date) %></td>
+				<td><%= format_date(pw.end_date) %></td>
+				<td>-</td>
+		  		<td>-</td>
+				<td><%= link_to 'Edit', edit_project_user_wl_custom_project_window_path(project, member.user, pw), :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_custom_project_window_path(project, member.user, pw), method: :delete, :class => 'icon icon-del' %></td>
+				</tr>
+			<% end %>
+
+
 			<% user_overtimes = WlUserOvertime.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).order(:start_date) %>
 			<% if user_overtimes.count > 0 %>
 				<tr><td colspan="7"></td></tr>
@@ -104,6 +121,7 @@
 				<td><%= link_to 'Edit', edit_project_user_wl_user_overtime_path(project, member.user, overtime), :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_user_overtime_path(project, member.user, overtime), method: :delete, :class => 'icon icon-del' %></td>
 				</tr>
 			<% end %>
+
 		<% else %>
 			<tr class="<%= cycle("odd", "even") %> priority-highest">
 				<td><%= member.user.name %></td>

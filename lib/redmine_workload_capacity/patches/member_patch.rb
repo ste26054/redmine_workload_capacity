@@ -16,11 +16,13 @@ module RedmineWorkloadCapacity
 		module MemberInstanceMethods
 			include WlLogic
 
+			# Checks if the member has one custom project window set
 			def wl_custom_project_window?
 				custom_project_window = WlCustomProjectWindow.find_by(user_id: self.user.id, wl_project_window_id: self.project.wl_project_window)
 				return custom_project_window != nil
 			end
 
+			# Retrieve the custom project window associated to the member
 			def wl_custom_project_window
 				return WlCustomProjectWindow.find_by(user_id: self.user.id, wl_project_window_id: self.project.wl_project_window)
 			end
