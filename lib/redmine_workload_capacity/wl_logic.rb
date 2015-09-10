@@ -1,5 +1,12 @@
 module WlLogic
 
+	# Splits multiple dates periods which may overlap into separate time periods without overlap
+	# EX: Input: [{start_date: 2015-01-01, end_date: 2015-01-31}, 
+	#             {start_date: 2015-01-20, end_date: 2015-02-10}]
+	# Output: [{:start_date=>Thu, 01 Jan 2015, :end_date=>Mon, 19 Jan 2015}, 
+	#          {:start_date=>Tue, 20 Jan 2015, :end_date=>Sat, 31 Jan 2015}, 
+	#          {:start_date=>Sun, 01 Feb 2015, :end_date=>Tue, 10 Feb 2015}]
+	# OK
 	def self.get_time_periods(dates)
 
 		periods = dates.map {|o| o[:start_date]..o[:end_date]}
@@ -23,19 +30,20 @@ module WlLogic
 		end
 
 		time_periods = (from_dates + to_dates + dates_boundaries_before + dates_boundaries_after).flatten.sort.each_slice(2).to_a
-		#time_periods.delete_if {|t| WlProjectWindow.overlaps(t[0], t[1]).empty? } 
-		return time_periods
+		return time_periods.map {|p| { start_date: p[0], end_date: p[1] } }
 	end
 
+	# Generates an overlap table which gathers all defined project windows and then says which project window occurs during the different overlaps
+	# OK
 	def self.generate_overlaps_table
 		table = []
 		dates = WlProjectWindow.order(:start_date)
 		self.get_time_periods(dates).each do |overlap|
-			projects_window_associated = WlProjectWindow.overlaps(overlap[0], overlap[1])
+			projects_window_associated = WlProjectWindow.overlaps(overlap[:start_date], overlap[:end_date])
 			unless projects_window_associated.empty?
 				entry = {}
-				entry[:start_date] = overlap[0]
-				entry[:end_date] = overlap[1]
+				entry[:start_date] = overlap[:start_date]
+				entry[:end_date] = overlap[:end_date]
 				entry[:project_window_ids] = projects_window_associated.map {|o| o.id}
 				table << entry
 			end
@@ -43,29 +51,30 @@ module WlLogic
 		return table
 	end
 
-	def self.generate_allocations_table(member)
+	# Gives the allocation table for a member within a project, during his project window(s)
+	def self.generate_allocations_table_member(member)
 		dates = []
 
-		wl_custom_project_window = member.wl_custom_project_window
+		wl_custom_project_windows = WlCustomProjectWindow.where(user_id: member.user.id, wl_project_window_id: member.project.wl_project_window).to_a
 
-		if wl_custom_project_window == nil
+		if wl_custom_project_windows.empty?
 			dates << member.project.wl_project_window
 		else
-			dates << wl_custom_project_window
+			dates << wl_custom_project_windows
 		end
 
 		custom_allocs = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: member.project.wl_project_window.id)
 			
-		custom_allocs.find_each do |alloc|
-			dates << alloc
-		end
+		dates << custom_allocs.to_a
+
 		table = []
-		self.get_time_periods(dates).each do |time_period|
+		self.get_time_periods(dates.flatten).each do |time_period|
 			entry = {}
-			entry[:start_date] = time_period[0]
-			entry[:end_date] = time_period[1]
+			entry[:start_date] = time_period[:start_date]
+			entry[:end_date] = time_period[:end_date]
 			
-			custom_allocation = custom_allocs.overlaps(time_period[0], time_period[1])
+			custom_allocation = custom_allocs.overlaps(time_period[:start_date], time_period[:end_date])
+
 			unless custom_allocation.empty?
 				entry[:percent_alloc] = custom_allocation.first.percent_alloc
 			else
@@ -77,36 +86,29 @@ module WlLogic
 			end
 
 			entry[:wl_project_window] = member.project.wl_project_window
+			entry[:wl_custom_project_windows] = wl_custom_project_windows
 
-			unless wl_custom_project_window == nil
-				entry[:wl_custom_project_window] = wl_custom_project_window
-			end
-
-			
-			
 			table << entry
 		end
 		return table
 	end
 
+	# Gives the allocation table for a user, for all his projects bound to sufficient permissions, at project window defined, the project module is activated
 	def self.generate_allocations_table_user(user)
 		dates = []
 
-		user.wl_allocs.each do |alloc|
-			if alloc[:custom_project_window] != nil
-				dates << alloc[:custom_project_window]
+		user.wl_user_allocations_extract.each do |alloc|
+			unless alloc[:custom_project_windows].empty?
+				dates << alloc[:custom_project_windows]
 			else
 				dates << alloc[:default_alloc].wl_project_window
 			end
-			
-
-			alloc[:custom_allocs].each do |custom|
-				dates << custom
-			end
+		
+			dates << alloc[:custom_allocs]
 		end
 
-		time_periods = self.get_time_periods(dates)
-		time_ranges = time_periods.map {|o| o[0]..o[1]}
+		time_periods = self.get_time_periods(dates.flatten)
+		time_ranges = time_periods.map {|o| o[:start_date]..o[:end_date]}
 
 		table = []
 
@@ -118,14 +120,20 @@ module WlLogic
 			entry[:percent_alloc] = 0
 			entry[:details] = []
 			user.wl_memberships.each do |m|
-				m.wl_table_allocation.each do |wtl|
+				WlLogic.generate_allocations_table_member(m).each do |wtl|
 					if (wtl[:start_date]..wtl[:end_date]).overlaps?(tr)
 						entry[:percent_alloc] += wtl[:percent_alloc]
-						entry[:details] << {
+
+						custom_project_windows = wtl[:wl_custom_project_windows]
+						custom_project_windows.delete_if {|c| !(c[:start_date]..c[:end_date]).overlaps?(tr)}
+
+						hsh = {
 							wl_project_window: wtl[:wl_project_window], 
-							wl_custom_project_window: wtl[:wl_custom_project_window], 
+							wl_custom_project_windows: custom_project_windows, 
 							percent_alloc: wtl[:percent_alloc]
 						}
+
+						entry[:details] << hsh
 					end
 				end
 			end
@@ -154,26 +162,6 @@ module WlLogic
 		return WlLogic.get_overlaps_from_db.delete_if {|o| !window_id.in?(o[:project_window_ids])}
 	end
 
-	def self.wl_member_allocation(member)
-		project_window = member.project.wl_project_window
-		hsh = {}
-		project_alloc = member.wl_project_allocation
-		#raise "project allocation not defined for user #{user.login}" if project_alloc == nil
-		if project_alloc
-			hsh[:project_id] = member.project.id
-			hsh[:default_alloc] = project_alloc
-			hsh[:custom_allocs] = []
 
-			custom_allocs = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: project_window.id)
-			
-			custom_allocs.find_each do |alloc|
-				hsh[:custom_allocs] << alloc
-			end
-
-			hsh[:custom_project_window] = member.wl_custom_project_window
-
-		end
-		return hsh
-	end
 
 end

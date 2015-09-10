@@ -16,16 +16,19 @@ module RedmineWorkloadCapacity
 		module UserInstanceMethods
 			include WlUser
 
+			# Returns memberships of the user with a project window defined, where the allocation module is activated, where the user has sufficient permissions
 			def wl_memberships
 				wl_project_window_ids = WlProjectWindow.pluck(:project_id)
 				return self.memberships.to_a.delete_if {|m| !m.project_id.in?(wl_project_window_ids) || !m.project.module_enabled?(:allocation_capacity) || !WlUser.wl_member?(m) }
 			end
 
-			def wl_allocs
+			# Generates a table of the various allocations of the user (project, custom) for all of his wl_projects
+			# Gets default project allocation + all custom allocations set
+			def wl_user_allocations_extract
 				hsh = []
 
 				self.wl_memberships.each do |wl_member|
-					alloc = WlLogic.wl_member_allocation(wl_member)
+					alloc = wl_member.wl_member_allocations_extract
 					hsh << alloc unless alloc.empty?
 				end
 				return hsh

@@ -40,7 +40,7 @@ class WlCustomProjectWindowsController < ApplicationController
 
 	def destroy
 		@custom_project_window.destroy
-		redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+		redirect_to :controller => 'wl_boards', :action => 'index'
 	end
 
 private
