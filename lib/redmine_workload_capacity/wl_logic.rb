@@ -85,8 +85,10 @@ module WlLogic
 				end
 			end
 
+			custom_project_windows = wl_custom_project_windows.dup.delete_if {|c| !(c[:start_date]..c[:end_date]).overlaps?(time_period[:start_date]..time_period[:end_date])}
+
 			entry[:wl_project_window] = member.project.wl_project_window
-			entry[:wl_custom_project_windows] = wl_custom_project_windows
+			entry[:wl_custom_project_windows] = custom_project_windows
 
 			table << entry
 		end

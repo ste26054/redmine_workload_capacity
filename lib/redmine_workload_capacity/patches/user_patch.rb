@@ -34,7 +34,7 @@ module RedmineWorkloadCapacity
 				return hsh
 			end
 
-			# TO CACHE
+			# Gives the allocation table for a user, for all his projects bound to sufficient permissions, at project window defined, the project module is activated
 			def wl_table_allocation
 				wl_table_allocation =  WlLogic.generate_allocations_table_user(self)
 			end

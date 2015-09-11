@@ -55,15 +55,16 @@ module RedmineWorkloadCapacity
 			def wl_global_table_allocation
 				user_table_alloc = self.user.wl_table_allocation
 
-				wl_custom_project_windows = WlCustomProjectWindow.where(user_id: self.user.id, wl_project_window_id: self.project.wl_project_window)
+				#wl_custom_project_windows = WlCustomProjectWindow.where(user_id: self.user.id, wl_project_window_id: self.project.wl_project_window)
 
 				user_project_window = self.project.wl_project_window
 
-				if wl_custom_project_windows.empty?
+				#if wl_custom_project_windows.empty?
 					user_table_alloc.delete_if {|e| user_project_window.start_date > e[:end_date] || user_project_window.end_date < e[:start_date]}
-				else
+				#else
 
-				end
+				#end
+
 				return user_table_alloc
 			end
 
