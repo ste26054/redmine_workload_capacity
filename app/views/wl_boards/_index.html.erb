@@ -15,7 +15,6 @@
 	</thead>
 </table>
 
-
 <table class="list">
 	<thead>
 		<tr>
@@ -29,6 +28,7 @@
 		</tr>
 	</thead>
 	<tbody>
+
 	<% wl_members.each do |member| %>
 		<% if member.wl_project_allocation? %>
 			<% total_alloc = member.wl_global_table_allocation %>
@@ -65,7 +65,7 @@
 				<td><%= render_member_project_allocation(member, alloc[:start_date], alloc[:end_date]) %></td>
 				<td>
 					<div class="tooltip"><%= total_alloc[i][:percent_alloc] %>
-		        		<span class="tip"><%= render_details_tooltip(alloc[:details], member) %></span>
+		        		<span class="tip"><%= render_details_tooltip(alloc[:details], member)  %></span> 
 		  		    </div>
 				</td>
 				<td>
