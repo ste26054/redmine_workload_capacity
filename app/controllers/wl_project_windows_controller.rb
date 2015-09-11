@@ -50,7 +50,7 @@ class WlProjectWindowsController < ApplicationController
 private
 
   def wl_project_window_params
-	  params.require(:wl_project_window).permit(:start_date, :end_date)
+	  params.require(:wl_project_window).permit(:start_date, :end_date, :role_id)
   end
 
   def set_project

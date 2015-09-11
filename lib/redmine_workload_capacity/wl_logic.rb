@@ -176,4 +176,16 @@ module WlLogic
 		return hsh
 	end
 
+	def self.users_for_project_role(project, role)
+		users = []
+		members = project.members.to_a
+		members.each do |member|
+			role_ids = member.roles.map{ |role| role.id }
+			if role.id.in?(role_ids)
+				users << member.user
+			end
+		end	
+		return users
+	end
+
 end

@@ -7,13 +7,32 @@ module WlBoardsHelper
 
 	def render_details_tooltip(details, member)
 		output = "".html_safe
+
 		details.each do |element|
 			member_project = element[:wl_project_window].project.id == member.project.id
+
+		project = Project.find(element[:wl_project_window].project.id)
+		role = nil
+		role_id = element[:wl_project_window].role_id
+		wl_role_user_names = ""
+		if Role.exists?(role_id)
+			role = Role.find(role_id)
+			wl_role_user_names = WlLogic.users_for_project_role(project, role).map{ |user| link_to	user.firstname+" "+user.lastname, User.find(user.id)}.join(', ')
+		end
+
 			output << '<strong>'.html_safe if member_project
 			output << "#{link_to_project_workload(element[:wl_project_window].project)}:".html_safe
 			output << '</strong>'.html_safe if member_project
 			output << " #{element[:percent_alloc]}%".html_safe
 			output << " (#{member.user.weekly_working_hours * element[:percent_alloc] / 100.0}h/week)</br>".html_safe
+			
+			unless role.nil?
+				output << '<strong>'.html_safe if member_project
+				output << " #{role.name}:  ".html_safe
+				output << '</strong>'.html_safe if member_project
+				output << "#{wl_role_user_names}</br>".html_safe 
+			end
+
 		end
 		return output
 	end
