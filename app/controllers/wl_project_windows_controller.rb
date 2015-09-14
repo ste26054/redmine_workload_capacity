@@ -5,6 +5,8 @@ class WlProjectWindowsController < ApplicationController
   before_action :set_project
   before_action :authenticate
   before_action :retrieve_project_window
+  before_action :get_available_project_roles, only: [:new, :edit, :create]
+
 
   def new
   	if @project_window
@@ -60,5 +62,10 @@ private
   def retrieve_project_window
   	@project_window ||= WlProjectWindow.find_by(project_id: @project.id)
   end
+
+  def get_available_project_roles
+    @available_project_roles ||= @project.members.to_a.map{ |member| member.roles.to_a.map{ |role| [role.name, role.id] }.flatten }.uniq
+  end
+
 
 end
