@@ -6,14 +6,10 @@ class WlCustomProjectWindowsController < ApplicationController
 	before_action :set_user
 	before_action :authenticate
 	before_action :set_wl_project_window 
-	before_action :retrieve_custom_project_window
+	before_action :retrieve_custom_project_window, except: [:new, :create]
 
 	def new
-		if @custom_project_window
-			redirect_to edit_project_user_wl_custom_project_window_path(@project, @user)
-		else
-			@custom_project_window ||= WlCustomProjectWindow.new
-		end
+		@custom_project_window = WlCustomProjectWindow.new
 	end
 
 	def create
@@ -44,7 +40,7 @@ class WlCustomProjectWindowsController < ApplicationController
 
 	def destroy
 		@custom_project_window.destroy
-		redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+		redirect_to :controller => 'wl_boards', :action => 'index'
 	end
 
 private
@@ -66,7 +62,7 @@ private
 	end
 
 	def retrieve_custom_project_window
-		@custom_project_window ||= WlCustomProjectWindow.find_by(wl_project_window_id: @wl_project_window.id, user_id: @user.id)
+		@custom_project_window ||= WlCustomProjectWindow.find_by(wl_project_window_id: @wl_project_window.id, user_id: @user.id, id: params[:id])
 	end
 
 end

@@ -21,5 +21,5 @@ module WlUser
     	leave_request_ids = LeaveRequest.for_user(user.id).overlaps(wl_project_window.start_date, wl_project_window.end_date).pluck(:id)
     	leave_request_ids.delete_if {|l| LeaveRequest.find(l).get_status.in?(["created", "rejected"])}
     	return LeaveRequest.where(id: leave_request_ids).order(:from_date)
-  end
+    end
 end
