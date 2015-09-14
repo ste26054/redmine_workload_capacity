@@ -95,8 +95,7 @@ private
 	end
 
 	def check_role_id
-		# errors.add(:base, l(:error_role_id_project_window_unknown)) unless Role.exists?(role_id)
-		 errors.add(:base, "tralalaaa ") unless Role.exists?(role_id)
+		errors.add(:base, l(:error_role_id_project_window_unknown)) unless Role.exists?(role_id)
 	end	
 
 end
