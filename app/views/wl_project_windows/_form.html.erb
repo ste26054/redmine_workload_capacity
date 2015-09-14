@@ -13,7 +13,8 @@
 
 <p>Start: <%= f.text_field :start_date %><%= calendar_for('wl_project_window_start_date') %>    	End: <%= f.text_field :end_date %><%= calendar_for('wl_project_window_end_date') %></p>
 <p>Role to be displayed on the Allocation Dashboard - Total Allocation value's tooltip 
-	 <%- options = Role.all.givable.map { |role| [role.name, role.id] } %>
+	<!--<%- options = Role.all.givable.map{ |role| [role.name, role.id] } %> -->
+	<%- options = available_project_roles %> 
 	<%= f.select :role_id, options, :multiple => false, :prompt => "Please select" %>
 </p>
 <p><%= f.submit 'Save' %> <a href="javascript:history.back()"><%= l(:button_back) %></a></p>
