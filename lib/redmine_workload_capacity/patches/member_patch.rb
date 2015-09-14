@@ -16,17 +16,6 @@ module RedmineWorkloadCapacity
 		module MemberInstanceMethods
 			include WlLogic
 
-			def wl_custom_project_window?
-				custom_project_window = WlCustomProjectWindow.find_by(user_id: self.user.id, wl_project_window_id: self.project.wl_project_window)
-				return custom_project_window != nil
-			end
-
-			def wl_custom_project_window
-				return WlCustomProjectWindow.find_by(user_id: self.user.id, wl_project_window_id: self.project.wl_project_window)
-			end
-
-
-
 			def wl_reload
 				self.project.wl_reload
 			end
@@ -46,10 +35,9 @@ module RedmineWorkloadCapacity
 				#return true
 			end
 
-			# Returns the current project allocation table
-			# TO CACHE
+			# Gives the allocation table for a member within a project, during his project window(s)
 			def wl_table_allocation
-				return WlLogic.generate_allocations_table(self)
+				return WlLogic.generate_allocations_table_member(self)
 			end
 
 			def wl_project_allocation_between(from, to)
@@ -60,20 +48,36 @@ module RedmineWorkloadCapacity
 				table_periods.each_with_index do |t|
 					return t[:percent_alloc] if (t[:start_date]..t[:end_date]).overlaps?(time_period) && from >= t[:start_date] && to <= t[:end_date]
 				end
-				return nil
+				return 0
 			end
 
 			# Returns the total cross project allocation table, bound to current project window
 			def wl_global_table_allocation
 				user_table_alloc = self.user.wl_table_allocation
 
-				if self.wl_custom_project_window?
-					user_project_window = self.wl_custom_project_window
+				wl_custom_project_windows = WlCustomProjectWindow.where(user_id: self.user.id, wl_project_window_id: self.project.wl_project_window)
+
+				user_project_window = self.project.wl_project_window
+
+				if wl_custom_project_windows.empty?
+					windows = [user_project_window]
 				else
-					user_project_window = self.project.wl_project_window
+					windows = wl_custom_project_windows.to_a
 				end
-				user_table_alloc.delete_if {|e| user_project_window.start_date > e[:end_date] || user_project_window.end_date < e[:start_date]}
-				return user_table_alloc
+
+				allocs = []
+
+				user_table_alloc = self.user.wl_table_allocation
+
+				user_table_alloc.each do |alloc|
+					windows.each do |window|
+						if alloc[:start_date] >= window[:start_date] && alloc[:end_date] <= window[:end_date]
+							allocs << alloc
+						end
+					end
+				end
+
+				return allocs
 			end
 
 			# Returns the total remaining cross project allocation table, excluding current project allocations, bound to current project window
@@ -95,6 +99,29 @@ module RedmineWorkloadCapacity
 				end
 
 				return output
+			end
+
+			# Generates a table of the various allocations of the member (project, custom) within the project
+			# Gets default project allocation + all custom allocations + all custom project windows set
+			def wl_member_allocations_extract
+				project_window = self.project.wl_project_window
+				hsh = {}
+				project_alloc = self.wl_project_allocation
+
+				if project_alloc
+					hsh[:project_id] = self.project.id
+					hsh[:default_alloc] = project_alloc
+					hsh[:custom_allocs] = []
+
+					custom_allocs = WlCustomAllocation.where(user_id: self.user_id, wl_project_window_id: project_window.id)
+					
+					custom_allocs.find_each do |alloc|
+						hsh[:custom_allocs] << alloc
+					end
+
+					hsh[:custom_project_windows] = WlCustomProjectWindow.where(user_id: self.user.id, wl_project_window_id: self.project.wl_project_window)
+				end
+				return hsh
 			end
 		end
 	end

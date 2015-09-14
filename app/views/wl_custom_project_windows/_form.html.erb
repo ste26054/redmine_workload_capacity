@@ -1,5 +1,5 @@
 <fieldset>
-<%= form_for custom_project_window, :url => project_user_wl_custom_project_window_path do |f| %>
+<%= form_for custom_project_window, :url => (custom_project_window.new_record? ? project_user_wl_custom_project_windows_path : project_user_wl_custom_project_window_path) do |f| %>
 
 	<% if custom_project_window.errors.any? %>
 		<div class="flash error">
