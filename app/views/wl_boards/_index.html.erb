@@ -18,7 +18,8 @@
 <table class="list">
 	<thead>
 		<tr>
-			<th>User</th>
+			<th>Project Member</th>
+			<th>Role</th>
 			<th>Allocation Type</th>
 			<th>Start Date</th>
 			<th>End Date</th>
@@ -37,13 +38,14 @@
 
 			<tr class="<%= cycle("odd", "even") %>" style="font-weight: bold;">
 				<td><%= member.user.name %></td>
+				<td><%= member.roles.map{ |role| role.name }.join(", ") %></td>
 				<td colspan="6">
 					<% custom_link = { :start_date => nil, :end_date => nil, :percent_alloc => nil} %>
 					
 					<%= link_to 'Edit Default Project Allocation', new_project_user_wl_project_allocation_path(project, member.user), :class => 'icon icon-edit' %>
 					<%= link_to 'Add Custom Project Allocation', new_project_user_wl_custom_allocation_path(project, member.user, :wl_custom_allocation => custom_link), :class => 'icon icon-add' %>
-					<%= link_to 'Add Overtime Entry', new_project_user_wl_user_overtime_path(project, member.user), :class => 'icon icon-time-add' %>
 					<%= link_to 'Add Custom Project Window', new_project_user_wl_custom_project_window_path(project, member.user), :class => 'icon icon-add' %>
+					<%= link_to 'Add Overtime Entry', new_project_user_wl_user_overtime_path(project, member.user), :class => 'icon icon-time-add' %>
 				</td>
 			</tr>
 
@@ -51,7 +53,7 @@
 				<% custom_alloc = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).overlaps(alloc[:start_date], alloc[:end_date]) %>
 
 				<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" if (total_alloc[i][:percent_alloc] > 100) %> <%= "allocation-below" if (total_alloc[i][:percent_alloc] < 100) %>">
-				<td></td>
+				<td></td><td></td>
 				<td>
 					<% if custom_alloc.empty? %>
 						Default Project Allocation
@@ -88,11 +90,11 @@
 			<% end %>
 			<% user_custom_pw = WlCustomProjectWindow.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).order(:start_date) %>
 			<% if user_custom_pw.count > 0 %>
-				<tr><td colspan="7"></td></tr>
+				<tr><td colspan="8"></td></tr>
 			<% end %>
 			<% user_custom_pw.each_with_index do |pw, i| %>
 				<tr class="<%= cycle("odd", "even") %>">
-				<td></td>
+				<td></td><td></td>
 				<td>Custom Project Window</td>
 				<td><%= format_date(pw.start_date) %></td>
 				<td><%= format_date(pw.end_date) %></td>
@@ -105,11 +107,11 @@
 
 			<% user_overtimes = WlUserOvertime.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).order(:start_date) %>
 			<% if user_overtimes.count > 0 %>
-				<tr><td colspan="7"></td></tr>
+				<tr><td colspan="8"></td></tr>
 			<% end %>
 			<% user_overtimes.each_with_index do |overtime, i| %>
 				<tr class="<%= cycle("odd", "even") %> <%= overtime.css_classes %>">
-				<td></td>
+				<td></td><td></td>
 				<td><%= render_member_overtime_allocation(overtime) %></td>
 				<td><%= format_date(overtime.start_date) %></td>
 				<td><%= format_date(overtime.end_date) %></td>
@@ -125,11 +127,11 @@
 		<% else %>
 			<tr class="<%= cycle("odd", "even") %> priority-highest">
 				<td><%= member.user.name %></td>
-				<td colspan="6"><%= link_to 'Define a Default Project Allocation', new_project_user_wl_project_allocation_path(project, member.user), :class => 'icon icon-add' %></td>
+				<td colspan="7"><%= link_to 'Define a Default Project Allocation', new_project_user_wl_project_allocation_path(project, member.user), :class => 'icon icon-add' %></td>
 			</tr>
 
 		<% end %>
-		<tr><td colspan="7"></td></tr>
+		<tr><td colspan="8"></td></tr>
 	<% end %>	
 	</tbody>
 
