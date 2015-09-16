@@ -6,7 +6,7 @@ Redmine::Plugin.register :redmine_workload_capacity do
 
   name 'Redmine Allocation Capacity plugin'
   author 'Stephane Evrard'
-  description 'A Redmine Plugin for managing work capacity across projects tralalaSS'
+  description 'A Redmine Plugin for managing work capacity across projects'
   version '0.0.1'
 
   menu :project_menu, :workload, { :controller => 'wl_boards', :action => 'index'},
