@@ -16,7 +16,7 @@ class WlProjectWindow < ActiveRecord::Base
   before_update :check_custom_allocations
   before_update :check_overtimes
   before_update :check_custom_project_windows
-  before_update :check_role_id
+  before_update :check_role_ids
   after_save :update_overlaps
   after_destroy :update_overlaps
   after_create :create_project_allocations
@@ -24,16 +24,18 @@ class WlProjectWindow < ActiveRecord::Base
   validates :start_date, date: true, presence: true
   validates :end_date, date: true, presence: true
   validates :project_id, presence: true
-  validates :role_id, presence: true
+  validates :role_ids, presence: true
 
   validate :end_date_not_before_start_date
   validate :check_custom_allocations
   validate :check_overtimes
   validate :check_custom_project_windows
-  validate :check_role_id
+  validate :check_role_ids
 
-  attr_accessible :start_date, :end_date, :project_id, :role_id
-private
+  attr_accessible :start_date, :end_date, :project_id, :role_ids
+
+  serialize :role_ids
+
 
 	def update_overlaps
 		WlOverlap.destroy_all
@@ -94,8 +96,8 @@ private
 		end
 	end
 
-	def check_role_id
-		errors.add(:base, l(:error_role_id_project_window_unknown)) unless Role.exists?(role_id)
+	def check_role_ids
+		errors.add(:base, l(:error_role_id_project_window_blanck)) if role_ids == [""]
 	end	
 
 end

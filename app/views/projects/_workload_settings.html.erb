@@ -1,11 +1,14 @@
 <% unless @project.module_enabled?(:allocation_capacity) %>
-	<h3>Please enable the Workload Capacity module first</h3>
+	<h3>Please enable the Allocation Capacity module first</h3>
 <% else %>
 	<h2>Project Windows:</h2>
 
 	<fieldset>
 	<% if @project.wl_project_window != nil %>
 		<h3>From: <%= format_date(@project.wl_project_window.start_date) %> To: <%= format_date(@project.wl_project_window.end_date) %> </h3>
+		 <p>Selected Role(s): 
+		 	<%- list_id = @project.wl_project_window.role_ids %>
+		 	<%= list_id.map { |id| Role.find(id) }.join(", ") %></p> 
 		<%= link_to 'Edit', edit_project_wl_project_window_path(@project), :class => 'icon icon-edit' %>
 		<%= link_to 'Delete', project_wl_project_window_path(@project), method: :delete,  :class => 'icon icon-del' %>
 	<% else %>

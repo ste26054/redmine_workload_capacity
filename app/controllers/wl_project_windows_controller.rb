@@ -19,7 +19,7 @@ class WlProjectWindowsController < ApplicationController
   def create
   	@project_window = WlProjectWindow.new(wl_project_window_params)
   	@project_window.project_id = @project.id
-  	if @project_window.save
+    if @project_window.save
   		flash[:notice] = l(:notice_project_windows_set, :project => @project.name)
   		#redirect_to :controller => 'projects', :action => 'settings', :id => @project.id, :tab => 'workload'
       redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
@@ -52,7 +52,7 @@ class WlProjectWindowsController < ApplicationController
 private
 
   def wl_project_window_params
-	  params.require(:wl_project_window).permit(:start_date, :end_date, :role_id)
+	  params.require(:wl_project_window).permit(:start_date, :end_date, :role_ids => [])
   end
 
   def set_project
@@ -64,7 +64,7 @@ private
   end
 
   def get_available_project_roles
-    @available_project_roles ||= @project.members.to_a.map{ |member| member.roles.to_a.map{ |role| [role.name, role.id] }.flatten }.uniq
+    @available_project_roles ||= @project.members.to_a.map{ |member| member.roles.to_a.map{ |role| [role.name, role.id] }}.flatten(1).uniq.sort
   end
 
 

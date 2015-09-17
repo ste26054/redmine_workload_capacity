@@ -14,4 +14,4 @@ en:
   error_custom_alloc_boundary: "is outside project windows"
   error_custom_alloc_boundary_c: "is outside custom project windows (%{from} - %{to})"
   notice_custom_project_windows_set: "The custom project windows was correctly set for %{user} in %{project}"
-  error_role_id_project_window_unknown: "Couldn't find this Role"
+  error_role_id_project_window_blanck: "Please select one or many roles"
