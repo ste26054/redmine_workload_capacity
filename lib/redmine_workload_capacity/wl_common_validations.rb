@@ -13,11 +13,37 @@ module WlCommonValidation
 	end
 
 	def dates_not_beyond_custom_project_window
-		custom_project_window = WlCustomProjectWindow.find_by(user_id: user.id, wl_project_window_id: wl_project_window.id)
-	  	if custom_project_window && end_date && start_date
-	  		errors.add(:end_date, l(:error_custom_alloc_boundary_c, :from => custom_project_window.start_date, :to => custom_project_window.end_date)) if end_date > custom_project_window.end_date
-	  		errors.add(:start_date, l(:error_custom_alloc_boundary_c, :from => custom_project_window.start_date, :to => custom_project_window.end_date)) if start_date < custom_project_window.start_date
+		custom_project_windows = WlCustomProjectWindow.where(user_id: user.id, wl_project_window_id: wl_project_window.id).to_a
+	  	
+	  	valid_date = 0
+	  	start_valid = 0
+	  	end_valid = 0
+
+	  	custom_project_windows.each do |custom_project_window|
+	  		start_local_valid = false
+	  		end_local_valid = false
+	  		if custom_project_window && end_date && start_date
+	  			if start_date >= custom_project_window.start_date && start_date <= custom_project_window.end_date 
+	  				start_local_valid = true
+	  				start_valid +=1
+	  			else
+	  				start_local_valid = false
+	  			end	
+	  			if end_date >= custom_project_window.start_date && end_date <= custom_project_window.end_date
+					end_local_valid = true
+					end_valid +=1
+				else
+					end_local_valid = false
+	  			end	
+	  			if start_local_valid && end_local_valid 
+	  				valid_date +=1
+	  			end
+	  		end
 	  	end
+		errors.add( "End date", l(:error_custom_alloc_boundary_c)) if valid_date == 0 && end_valid == 0
+		errors.add( "Start date", l(:error_custom_alloc_boundary_c)) if valid_date == 0 && start_valid == 0
+		
+		errors.add( "" , l(:error_not_valid_date)) if valid_date == 0 && end_valid > 0 && start_valid > 0
 	end	
 
 	def custom_alloc_uniq_within_period
