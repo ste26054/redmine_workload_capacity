@@ -28,3 +28,33 @@
 
 <% end %>
 </fieldset>
+
+<br />
+
+<fieldset>
+<legend>List of custom project windows for <%= user.name %> on this project</legend>
+	<% unless custom_project_window_list.empty? %> 
+		<div class="autoscroll">
+			<table class="list">
+				<thead>
+					<tr>
+						<th>Start date</th>
+						<th>End date</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%- custom_project_window_list.each do |custom_project_window| %>
+						<tr>
+							<td><%= format_date(custom_project_window.start_date) %></td>
+							<td><%= format_date(custom_project_window.end_date) %></td>
+						</tr>
+					<%- end %>
+				</tbody>	
+			</table>
+		</div>
+	<% else %> 
+		<ul>No custom project window were found.</ul> 
+	<% end %> 
+
+
+</fieldset>

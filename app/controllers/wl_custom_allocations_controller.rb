@@ -6,6 +6,7 @@ class WlCustomAllocationsController < ApplicationController
   before_action :set_user
   before_action :authenticate
   before_action :retrieve_custom_alloc, except: [:new, :create]
+  before_action :retrieve_custom_project_window_list
 
   def new
   	@custom_allocation ||= WlCustomAllocation.new
@@ -62,6 +63,10 @@ class WlCustomAllocationsController < ApplicationController
 
   def retrieve_custom_alloc
     @custom_allocation ||= WlCustomAllocation.find(params[:id])
+  end
+
+  def retrieve_custom_project_window_list
+    @custom_project_window_list ||= WlCustomProjectWindow.where(user_id: @user.id, wl_project_window_id: @project.wl_project_window.id).order(:start_date).to_a
   end
 
 end
