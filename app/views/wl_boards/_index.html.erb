@@ -36,7 +36,7 @@
 			<% remaining_alloc = member.wl_remaining_table_allocation %>
 			<% project_alloc = member.wl_table_allocation %>
 
-			<tr class="<%= cycle("odd", "even") %>" style="font-weight: bold;">
+			<tr class="<%= cycle("odd", "even") %>" style="font-weight: bold; ">
 				<td><%= member.user.name %></td>
 				<td><%= member.roles.map{ |role| role.name }.join(", ") %></td>
 				<td colspan="6">
@@ -98,7 +98,7 @@
 				</td></tr>
 			<% end %>
 			<% user_custom_pw.each_with_index do |pw, i| %>
-				<tr class="hascontextmenu <%= cycle('odd', 'even') %>" >
+				<tr class="<%= cycle('odd', 'even') %>">
 				<td></td><td></td>
 				<td>Custom Project Window</td>
 				<td><%= format_date(pw.start_date) %></td>
@@ -112,7 +112,7 @@
 
 			<% user_overtimes = WlUserOvertime.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).order(:start_date) %>
 			<% if user_overtimes.count > 0 %>
-				<tr><td colspan="8"></td></tr>
+				<tr class="group" ><td colspan="8"></td></tr>
 			<% end %>
 			<% user_overtimes.each_with_index do |overtime, i| %>
 				<tr class="<%= cycle("odd", "even") %> <%= overtime.css_classes %>">
@@ -136,7 +136,7 @@
 			</tr>
 
 		<% end %>
-		<tr><td colspan="8"></td></tr>
+		<tr class ="group"><td colspan="8" ></td></tr>
 	<% end %>	
 	</tbody>
 

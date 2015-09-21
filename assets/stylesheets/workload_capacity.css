@@ -14,3 +14,5 @@ tr.even.allocation-below { background: #ffea93; }
 tr.odd.allocation-below td, tr.even.allocation-below td { border-color: #FFEA93; }
 
 tr.wl-overtime.needs-attention {color: #F40; font-weight: bold; background: #FFCEB9;}
+
+tr.group td{ padding: 0.2em 0 0.2em 0 !important; }
