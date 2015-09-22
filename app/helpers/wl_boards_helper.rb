@@ -19,13 +19,13 @@ module WlBoardsHelper
 			
 			project = Project.find(element[:wl_project_window].project.id)
 			role = nil
-			role_id_list = element[:wl_project_window].role_ids
+			role_id_list = element[:wl_project_window].tooltip_role_ids
 			wl_role_user_names = ""
 			if role_id_list.is_a?(Array)
 				role_id_list.each do |role_id|
 					if Role.exists?(role_id)
 						role = Role.find(role_id)
-						wl_role_user_names = WlLogic.users_for_project_role(project, role).map{ |user| link_to	user.firstname+" "+user.lastname, User.find(user.id)}.join(', ')
+						wl_role_user_names = WlUser.users_for_project_role(project, role).map{ |user| link_to	user.firstname+" "+user.lastname, User.find(user.id)}.join(', ')
 					
 						unless role.nil?
 							output << '<strong>'.html_safe if member_project

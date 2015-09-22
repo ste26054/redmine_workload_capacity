@@ -38,7 +38,7 @@
 
 			<tr class="<%= cycle("odd", "even") %>" style="font-weight: bold; ">
 				<td><%= member.user.name %></td>
-				<td><%= member.roles.map{ |role| role.name }.join(", ") %></td>
+				<td><%= member.roles.map{ |role| role.name }.sort.join(", ") %></td>
 				<td colspan="6">
 					<% custom_link = { :start_date => nil, :end_date => nil, :percent_alloc => nil} %>
 					
