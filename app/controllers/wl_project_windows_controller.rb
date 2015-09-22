@@ -5,8 +5,7 @@ class WlProjectWindowsController < ApplicationController
   before_action :set_project
   before_action :authenticate
   before_action :retrieve_project_window
-  before_action :get_available_project_roles, only: [:new, :edit, :create]
-
+  before_action :retrieve_available_project_roles, only: [:new, :edit, :create]
 
   def new
   	if @project_window
@@ -52,7 +51,7 @@ class WlProjectWindowsController < ApplicationController
 private
 
   def wl_project_window_params
-	  params.require(:wl_project_window).permit(:start_date, :end_date, :role_ids => [])
+	  params.require(:wl_project_window).permit(:start_date, :end_date, :tooltip_role_ids => [], :display_role_ids => [])
   end
 
   def set_project
@@ -63,9 +62,10 @@ private
   	@project_window ||= WlProjectWindow.find_by(project_id: @project.id)
   end
 
-  def get_available_project_roles
+  def retrieve_available_project_roles
     @available_project_roles ||= @project.members.to_a.map{ |member| member.roles.to_a.map{ |role| [role.name, role.id] }}.flatten(1).uniq.sort
   end
 
+ 
 
 end

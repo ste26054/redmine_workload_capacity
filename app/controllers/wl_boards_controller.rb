@@ -13,7 +13,10 @@ class WlBoardsController < ApplicationController
   	unless @project.wl_window?
   	 	flash[:error] = l(:error_project_windows_not_set)
   	 	redirect_to :controller => 'projects', :action => 'settings', :id => @project.id, :tab => 'workload'
-  	end
+    
+      return
+
+    end
     
   	@wl_members ||= @project.wl_members
 
