@@ -26,19 +26,40 @@ private
 	def check_custom_allocations
 		custom_allocs = WlCustomAllocation.where(wl_project_window_id: self.wl_project_window.id, user_id: self.user.id)
 
-		custom_allocs.find_each do |c|
+		custom_windows = WlCustomProjectWindow.where(user_id: user_id, wl_project_window_id: wl_project_window_id)
 
-			if self.start_date > c.end_date || self.end_date < c.start_date
-				errors.add(:base, "Custom allocation \##{c.id} for #{c.user.name} from #{c.start_date} to #{c.end_date} needs to be moved first")
-			else
-				if self.start_date > c.start_date
-		  			c.update(start_date: self.start_date)
+		custom_allocs.find_each do |c_a|
+
+			c_a_valid = false
+			custom_windows.find_each do |c_w|
+				if c_w.start_date <= c_a.start_date && c_w.end_date >= c_a.end_date
+					c_a_valid = true
 				end
+				
+			end 
 
-				if self.end_date < c.end_date
-					c.update(end_date: self.end_date)
+			unless c_a_valid
+				unless self.start_date <= c_a.start_date && self.end_date >= c_a.end_date
+					errors.add(:base, "Custom allocation \##{c_a.id} for #{c_a.user.name} from #{c_a.start_date} to #{c_a.end_date} needs to be moved first")
 				end
 			end
+
+
+
+
+			#if self.start_date > c_a.end_date || self.end_date < c_a.start_date
+			#	errors.add(:base, "Custom allocation \##{c.id} for #{c.user.name} from #{c.start_date} to #{c.end_date} needs to be moved first")
+			#else
+			#	if self.start_date > c.start_date
+		  	#		c_a.update(start_date: self.start_date)
+			#	end
+#
+			#	if self.end_date < c.end_date
+			#		c_a.update(end_date: self.end_date)
+			#	end
+			#end
+
+
 		end
 	end
 

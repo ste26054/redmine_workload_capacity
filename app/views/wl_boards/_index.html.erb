@@ -66,7 +66,7 @@
 				
 				<td><%= render_member_project_allocation(member, alloc[:start_date], alloc[:end_date]) %></td>
 				<td>
-					<div class="tooltip"><%= total_alloc[i][:percent_alloc] %>
+					<div class="tooltip"> <% if total_alloc[i][:percent_alloc] > 100 %> [!] <% end %> <%= total_alloc[i][:percent_alloc] %>
 		        		<span class="tip"><%= render_details_tooltip(alloc[:details], member)  %></span> 
 		  		    </div>
 				</td>
@@ -94,7 +94,6 @@
 					<span class="expander" onclick="toggleRowGroup(this);">&nbsp;</span>
       				Custom Project Windows 
        				<span class="count"><%= user_custom_pw.count %></span>
-        			<%= link_to_function("#{l(:button_collapse_all)}/#{l(:button_expand_all)}", "toggleAllRowGroups(this)", :class => 'toggle-all') %>
 				</td></tr>
 			<% end %>
 			<% user_custom_pw.each_with_index do |pw, i| %>
