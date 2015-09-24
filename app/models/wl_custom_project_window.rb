@@ -54,12 +54,25 @@ private
 	end
 
 	def check_overtimes
+		#same logic in check_custom_allocations
 		overtimes = WlUserOvertime.where(wl_project_window_id: self.wl_project_window.id, user_id: self.user.id)
 
-		overtimes.find_each do |c|
-			#if overtime is out of the current custom project window period for the start date or end date
-			if self.start_date > c.start_date || self.end_date < c.end_date 
-				errors.add(:base, "Overtime \##{c.id} for #{c.user.name} from #{c.start_date} to #{c.end_date} needs to be moved first")
+		custom_windows = WlCustomProjectWindow.where(user_id: user_id, wl_project_window_id: wl_project_window_id)
+		custom_windows = custom_windows.where.not(id: self.id)
+
+		overtimes.find_each do |overtime|
+			
+			overtime_valid = false
+			custom_windows.find_each do |c_w|
+				if c_w.start_date <= overtime.start_date && c_w.end_date >= overtime.end_date
+					overtime_valid = true
+				end
+			end 
+
+			unless overtime_valid
+				unless self.start_date <= overtime.start_date && self.end_date >= overtime.end_date
+					errors.add(:base, "Overtime \##{overtime.id} for #{overtime.user.name} from #{overtime.start_date} to #{overtime.end_date} needs to be moved first")
+				end
 			end
 		end
 	end
