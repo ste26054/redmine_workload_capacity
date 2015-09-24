@@ -39,9 +39,14 @@ class WlCustomProjectWindowsController < ApplicationController
 	end
 
 	def destroy
-		@custom_project_window.destroy
+		if @custom_project_window.destroy
+			flash[:notice] = l(:notice_custom_allocation_deleted, :user => @user.name)
+ 		else
+ 			flash[:error] = l(:error_delete_cpw)
+ 	   end
 		redirect_to :controller => 'wl_boards', :action => 'index'
 	end
+
 
 private
 
