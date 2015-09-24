@@ -99,7 +99,7 @@ private
 	end
 
 	def check_tooltip_and_display_role_ids
-		errors.add(:base, l(:error_role_id_project_window_blanck)) if tooltip_role_ids == [""] && display_role_ids == [""]
+		errors.add(:base, l(:error_role_id_project_window_blanck)) if tooltip_role_ids == [""] || display_role_ids == [""]
 	end	
 
 end
