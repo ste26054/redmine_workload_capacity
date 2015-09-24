@@ -18,6 +18,7 @@ class WlProjectWindow < ActiveRecord::Base
   before_update :check_custom_project_windows
   before_update :check_tooltip_and_display_role_ids
   after_save :update_overlaps
+  after_save :update_dashboard
   after_destroy :update_overlaps
   after_create :create_project_allocations
 
@@ -101,5 +102,71 @@ private
 	def check_tooltip_and_display_role_ids
 		errors.add(:base, l(:error_role_id_project_window_blanck)) if tooltip_role_ids == [""] || display_role_ids == [""]
 	end	
+
+	def update_dashboard
+		changes = self.changes
+		if changes.has_key?("display_role_ids")
+
+			new_role_list = changes["display_role_ids"][1]
+			old_role_list = changes["display_role_ids"][0]
+	
+			new_user_ids_list = user_ids_from_role_ids_list(new_role_list)
+			old_user_ids_list = user_ids_from_role_ids_list(old_role_list)
+
+			user_ids_list_to_add = []
+			user_ids_list_to_add = new_user_ids_list - old_user_ids_list
+			user_ids_list_to_remove = []
+			user_ids_list_to_remove = old_user_ids_list - new_user_ids_list
+
+			unless user_ids_list_to_add.empty?
+				# there is new added, please create new project allocation for them
+					user_ids_list_to_add.each do |user_id|
+						parameters = {percent_alloc: 100, user_id: user_id, wl_project_window_id: self.id}
+						obj =  WlProjectAllocation.new(parameters)
+						obj.save
+					end	
+				
+			end
+			unless user_ids_list_to_remove.empty?
+				# need to delete users that are not called
+				# project allocation, custom project window if exists, custom allocation if exists and overtime if exists
+				# the order of deleting actions on different tables is quite important
+	
+				user_ids_list_to_remove.each do |user_id|
+					parameters = {wl_project_window_id: self.id, user_id: user_id}
+
+					#Custom Project Allocation if exists
+					WlCustomAllocation.where(parameters).destroy_all
+
+					#Overtime if exists
+					WlUserOvertime.where(parameters).destroy_all
+
+					#Custom project window if exists
+					WlCustomProjectWindow.where(parameters).destroy_all
+
+					#Default Project Allocation
+					WlProjectAllocation.find_by(parameters).destroy
+				end	
+			end
+		
+		end
+	end
+
+
+private
+def user_ids_from_role_ids_list(role_ids_list)
+	wl_users = []
+	unless role_ids_list.empty?
+		 	role_ids_list.each do |role_id|
+		 		role = Role.find(role_id)
+		 		wl_users << WlUser.users_for_project_role(self.project, role)
+		 		wl_users.flatten(1)
+		 	end
+		 	wl_users = wl_users.flatten.uniq
+	end
+	return wl_users.map{ |wl_user| wl_user.id}
+end
+
+	
 
 end
