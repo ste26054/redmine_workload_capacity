@@ -2,17 +2,31 @@
 en:
   label_workload: "Allocation"
 
-  notice_project_windows_set: "The project windows was correctly set for %{project}"
+  #Project Window
+  notice_project_windows_set: "The project window was correctly set for %{project}"
+  error_project_windows_not_set: "Error: You must define a project window before continuing"
+  error_custom_alloc_boundary: "is outside project window"
+
+  #Custom Project Window
+  notice_custom_window_deleted: "The custom project window was successfully deleted for %{user}"
+  notice_custom_project_windows_set: "The custom project window was correctly set for %{user} in %{project}"
+  error_delete_cpw: "Can not delete the custom project window. Please check if there is any related custom project allocation or overtime"
+  error_custom_alloc_boundary_c: "is outside of any custom project window period. Please check with the custom project window list"
+
+  #Project Allocation
+  notice_project_allocation_set: "The default project allocation was correctly set for %{project}"
+  
+  #Custom Allocation
   notice_custom_allocation_set: "The custom allocation was correctly set for %{user}"
   notice_custom_allocation_deleted: "The custom allocation was successfully deleted for %{user}"
+  
+  #Overtime
   notice_user_overtime_set: "The overtime was correctly set for %{user}"
   notice_user_overtime_deleted: "The overtime was successfully deleted for %{user}"
-  notice_project_allocation_set: "The default project allocation was correctly set for %{project}"
-  error_project_windows_not_set: "Error: You must define a project window before continuing"
+  
+  #Common
   error_set: "An error occured. Please check that your parameters are correct"
   error_dates: "End date cannot take place before Start date"
-  error_custom_alloc_boundary: "is outside project windows"
-  error_custom_alloc_boundary_c: "is outside of any custom project window period. Please check with the custom project window list"
-  notice_custom_project_windows_set: "The custom project windows was correctly set for %{user} in %{project}"
   error_role_id_project_window_blanck: "Please select one or many roles"
   error_not_valid_date: "Please check date entry"
+  
