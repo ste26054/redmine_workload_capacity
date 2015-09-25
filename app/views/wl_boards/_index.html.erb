@@ -38,8 +38,8 @@
 
 			<tr class="<%= cycle("odd", "even") %>" style="font-weight: bold; ">
 				<td><%= member.user.name  %>
-				<%- recent_allocation = (Date.today - member.wl_project_allocation.created_at.to_date).to_i %>
-				<% if recent_allocation < 7 %>
+				<%- recent_allocation = (Date.today - member.wl_project_allocation.created_at.to_date).to_i if member.wl_project_allocation.created_at %>
+				<% if recent_allocation && recent_allocation < 7 %>
   				<%= image_tag "new.gif", :plugin => "redmine_workload_capacity" %>
 				<% end %>
 				</td>
