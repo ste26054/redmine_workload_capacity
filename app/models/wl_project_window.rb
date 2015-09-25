@@ -105,7 +105,7 @@ private
 
 	def update_dashboard
 		changes = self.changes
-		if changes.has_key?("display_role_ids")
+		if  changes.has_key?("display_role_ids") && changes["display_role_ids"][0] != nil
 
 			new_role_list = changes["display_role_ids"][1]
 			old_role_list = changes["display_role_ids"][0]
@@ -156,7 +156,7 @@ private
 private
 def user_ids_from_role_ids_list(role_ids_list)
 	wl_users = []
-	unless role_ids_list.empty?
+	unless role_ids_list && role_ids_list.empty?
 		 	role_ids_list.each do |role_id|
 		 		role = Role.find(role_id)
 		 		wl_users << WlUser.users_for_project_role(self.project, role)
