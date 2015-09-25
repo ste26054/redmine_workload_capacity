@@ -37,7 +37,12 @@
 			<% project_alloc = member.wl_table_allocation %>
 
 			<tr class="<%= cycle("odd", "even") %>" style="font-weight: bold; ">
-				<td><%= member.user.name %></td>
+				<td><%= member.user.name  %>
+				<%- recent_allocation = (Date.today - member.wl_project_allocation.created_at.to_date).to_i %>
+				<% if recent_allocation < 7 %>
+  				<%= image_tag "new.gif", :plugin => "redmine_workload_capacity" %>
+				<% end %>
+				</td>
 				<td><%= member.roles.map{ |role| role.name }.sort.join(", ") %></td>
 				<td colspan="6">
 					<% custom_link = { :start_date => nil, :end_date => nil, :percent_alloc => nil} %>
