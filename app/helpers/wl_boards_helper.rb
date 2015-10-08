@@ -99,5 +99,63 @@ module WlBoardsHelper
 		output << "<strong>Overtime represents:</strong> #{extra_hours_per_day} / #{user_hours_per_day} = #{extra_percent_per_day}% of User Working Hours per day".html_safe
 		return output
 	end
+
+	def display_new_label(member)
+
+		output = "".html_safe
+
+		created_date = (Date.today - member.wl_project_allocation.created_at.to_date).to_i if member.wl_project_allocation.created_at 
+		#if !member.wl_project_allocation.updated_at 
+		
+		if created_date && created_date < 7 
+			updated_date = (member.wl_project_allocation.updated_at.to_time - member.wl_project_allocation.created_at.to_time).to_i if !member.wl_project_allocation.updated_at.nil? 
+			if updated_date == 0.0 
+  				output <<  "#{image_tag "new.gif", :plugin => "redmine_workload_capacity"}".html_safe
+  			end
+		end 
+
+
+		return output
+	end
+
+  	def averageProjectAllocation(wl_members)
+  	 	count_member_with_alloc  = 0
+  	 	sum_members_average_project_alloc = 0
+  	 	sum_members_average_total_alloc = 0
+  	 	wl_members.each do |member|
+
+			member_average_project_alloc = 0  	 		
+  	 		member_average_total_alloc = 0
+
+  	 		if member.wl_project_allocation?
+  	 			count_member_with_alloc = count_member_with_alloc+1
+  	 			total_alloc = member.wl_global_table_allocation
+					
+					sum_project_alloc = 0
+  	 				sum_total_alloc = 0
+  	 				
+  	 			total_alloc.each_with_index do |alloc, i|
+  	 				working_days = member.user.working_days_count(alloc[:start_date], alloc[:end_date])
+
+  	 				p_allocation = member.wl_project_allocation_between(alloc[:start_date], alloc[:end_date])
+  	 				sum_project_alloc += p_allocation*working_days
+
+					total_allocation = alloc[:percent_alloc]
+  	 				sum_total_alloc += total_allocation*working_days
+  	 			end
+  	 			
+  	 			window = WlProjectWindow.find_by(project_id: member.project_id)
+  	 			window_working_days = member.user.working_days_count(window.start_date, window.end_date)
+
+				member_average_project_alloc = sum_project_alloc/window_working_days
+  	 			member_average_total_alloc = sum_total_alloc/window_working_days
+  	 		end
+  	 		sum_members_average_project_alloc += member_average_project_alloc
+  	 		sum_members_average_total_alloc += member_average_total_alloc
+  	 	end
+  	 	result = {:average_pa => sum_members_average_project_alloc/count_member_with_alloc, :average_ta => sum_members_average_total_alloc/count_member_with_alloc}
+  	 	return result
+  	end
+
 	
 end
