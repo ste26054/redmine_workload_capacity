@@ -24,21 +24,13 @@ class WlUserOvertime < ActiveRecord::Base
   validate :custom_alloc_per_user_uniq_within_period
   validate :dates_not_beyond_custom_project_window
 
+  after_create :update_project_allocation
+
   attr_accessible :start_date, :end_date, :overtime_hours, :wl_project_window_id, :user_id, :include_sat, :include_sun, :include_bank_holidays
 
 
   def overtime_days_count
-    user_region = LeavesHolidaysLogic.user_params(user, :region)
-    dates_interval = (start_date..end_date).to_a
-
-    return dates_interval.count if include_sat? && include_sun? && include_bank_holidays?
-
-    dates_interval.delete_if {|i| i.wday == 6 && !include_sat? || #delete date from array if day of week is a saturday (6)
-                                  i.wday == 0 && !include_sun? || #delete date from array if day of week is a sunday (0)
-                                  !include_bank_holidays? && i.holiday?(user_region.to_sym, :observed)
-    }
-
-    return dates_interval.count
+    user.working_days_count(start_date, end_date, include_sat, include_sun, include_bank_holidays)
   end
 
   def css_classes(from = nil, to = nil)
@@ -51,4 +43,8 @@ class WlUserOvertime < ActiveRecord::Base
 
 private
   
+  def update_project_allocation
+    self.user.wl_project_allocations.find_by(wl_project_window_id: wl_project_window_id).touch()
+  end
+
 end

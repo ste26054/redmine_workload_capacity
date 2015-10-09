@@ -23,6 +23,8 @@ class WlCustomProjectWindow < ActiveRecord::Base
 	#validate :check_existing_allocation
 	#validate :check_existing_overtime
 
+	after_create :update_project_allocation
+
 	attr_accessible :start_date, :end_date, :wl_project_window_id, :user_id
 private
 
@@ -101,5 +103,9 @@ private
 		end
 		
 	end
+
+	def update_project_allocation
+    	self.user.wl_project_allocations.find_by(wl_project_window_id: wl_project_window_id).touch()
+    end
 
 end

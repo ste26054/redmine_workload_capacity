@@ -19,8 +19,9 @@
 	<thead>
 		<tr>
 			<th>Project Member</th>
+			<th>Region</th>
 			<th>Role</th>
-			<th>Allocation Type</th>
+			<th><span class="expander" title="Allocation Type" onclick="toggleGroup();">&nbsp;</span><span class= "tog"> Allocation Type</span></th>
 			<th>Start Date</th>
 			<th>End Date</th>
 			<th>Project Allocation %</th>
@@ -37,13 +38,14 @@
 			<% project_alloc = member.wl_table_allocation %>
 
 			<tr class="<%= cycle("odd", "even") %>" style="font-weight: bold; ">
-				<td><%= member.user.name  %>
-				<%- recent_allocation = (Date.today - member.wl_project_allocation.created_at.to_date).to_i if member.wl_project_allocation.created_at %>
-				<% if recent_allocation && recent_allocation < 7 %>
-  				<%= image_tag "new.gif", :plugin => "redmine_workload_capacity" %>
-				<% end %>
+				<td><%= link_to member.user.name, User.find(member.user.id)  %>
+			
+  				<%= display_new_label(member) %>
+				
 				</td>
+				<td><%= member.user.leave_preferences.region %></td>
 				<td><%= member.roles.map{ |role| role.name }.sort.join(", ") %></td>
+			
 				<td colspan="6">
 					<% custom_link = { :start_date => nil, :end_date => nil, :percent_alloc => nil} %>
 					
@@ -58,12 +60,12 @@
 				<% custom_alloc = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).overlaps(alloc[:start_date], alloc[:end_date]) %>
 
 				<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" if (total_alloc[i][:percent_alloc] > 100) %> <%= "allocation-below" if (total_alloc[i][:percent_alloc] < 100) %>">
-				<td></td><td></td>
+				<td></td><td></td><td></td>
 				<td>
 					<% if custom_alloc.empty? %>
-						Default Project Allocation
+						<span class= "tog">Default Project Allocation</span>
 					<% else %>
-						Custom Project Allocation
+						<span class= "tog">Custom Project Allocation</span>
 					<% end %>
 				</td>
 				<td><%= format_date(alloc[:start_date]) %></td>
@@ -95,7 +97,7 @@
 			<% end %>
 			<% user_custom_pw = WlCustomProjectWindow.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).order(:start_date) %>
 			<% if user_custom_pw.count > 0 %>
-				<tr class="group open"><td colspan="8">
+				<tr class="group open"><td colspan="9">
 					<span class="expander" onclick="toggleRowGroup(this);">&nbsp;</span>
       				Custom Project Windows 
        				<span class="count"><%= user_custom_pw.count %></span>
@@ -103,8 +105,8 @@
 			<% end %>
 			<% user_custom_pw.each_with_index do |pw, i| %>
 				<tr class="<%= cycle('odd', 'even') %>">
-				<td></td><td></td>
-				<td>Custom Project Window</td>
+				<td></td><td></td><td></td>
+				<td><span class= "tog">Custom Project Window</span></td>
 				<td><%= format_date(pw.start_date) %></td>
 				<td><%= format_date(pw.end_date) %></td>
 				<td>-</td>
@@ -116,12 +118,12 @@
 
 			<% user_overtimes = WlUserOvertime.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).order(:start_date) %>
 			<% if user_overtimes.count > 0 %>
-				<tr class="group" ><td colspan="8"></td></tr>
+				<tr class="group" ><td colspan="8"></td><td><span class= "tog"></span></td></tr>
 			<% end %>
 			<% user_overtimes.each_with_index do |overtime, i| %>
 				<tr class="<%= cycle("odd", "even") %> <%= overtime.css_classes %>">
-				<td></td><td></td>
-				<td><%= render_member_overtime_allocation(overtime) %></td>
+				<td></td><td></td><td></td>
+				<td><span class= "tog"><%= render_member_overtime_allocation(overtime) %><span></td>
 				<td><%= format_date(overtime.start_date) %></td>
 				<td><%= format_date(overtime.end_date) %></td>
 				<td><div class="tooltip"><%= render_member_overtime(member, overtime) %>
@@ -132,16 +134,20 @@
 				<td><%= link_to 'Edit', edit_project_user_wl_user_overtime_path(project, member.user, overtime), :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_user_overtime_path(project, member.user, overtime), method: :delete, :class => 'icon icon-del' %></td>
 				</tr>
 			<% end %>
-
 		<% else %>
 			<tr class="<%= cycle("odd", "even") %> priority-highest">
-				<td><%= member.user.name %></td>
-				<td colspan="7"><%= link_to 'Define a Default Project Allocation', new_project_user_wl_project_allocation_path(project, member.user), :class => 'icon icon-add' %></td>
+				<td><%= link_to member.user.name, User.find(member.user.id) %></td><td><%= member.user.leave_preferences.region %></td><td><%= member.roles.map{ |role| role.name }.sort.join(", ") %></td>
+				<td colspan="6"><%= link_to 'Define a Default Project Allocation', new_project_user_wl_project_allocation_path(project, member.user), :class => 'icon icon-add' %></td>
 			</tr>
 
 		<% end %>
-		<tr class ="group"><td colspan="8" ></td></tr>
-	<% end %>	
-	</tbody>
+		<tr class ="group"><td><span class= "tog"></span></td><td colspan="8" ></td></tr>
+	<% end %>
 
+
+
+	</tbody>
+	<tfoot>
+		<tr style="font-weight: bold;"><td>Average</td><td><span class= "tog"></span></td><td colspan="4" ></td><td><%= averageProjectAllocation(wl_members)[:average_pa] %></td><td><%= averageProjectAllocation(wl_members)[:average_ta] %></td><td></td></tr>
+  	</tfoot>
 </table>

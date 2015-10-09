@@ -18,10 +18,15 @@ class WlCustomAllocation < ActiveRecord::Base
   validate :custom_alloc_per_user_uniq_within_period
   validate :dates_not_beyond_custom_project_window
 
+  after_create :update_project_allocation
+
   attr_accessible :start_date, :end_date, :percent_alloc, :wl_project_window_id, :user_id
 
 private
 
+def update_project_allocation
+  self.user.wl_project_allocations.find_by(wl_project_window_id: wl_project_window_id).touch()
 
+end
 
 end

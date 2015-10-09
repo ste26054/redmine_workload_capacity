@@ -1,0 +1,5 @@
+function toggleGroup(){
+
+    $(".tog").toggle();
+    
+}
