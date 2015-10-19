@@ -148,6 +148,6 @@
 
 	</tbody>
 	<tfoot>
-		<tr style="font-weight: bold;"><td>Average</td><td><span class= "tog"></span></td><td colspan="4" ></td><td><%= averageProjectAllocation(wl_members)[:average_pa] %></td><td><%= averageProjectAllocation(wl_members)[:average_ta] %></td><td></td></tr>
+		<tr style="font-weight: bold;"><td title="Total of project members">Total: <%= averageProjectAllocation(wl_members)[:total_alloc_members] %></td><td><span class= "tog"></span></td><td colspan="4" ></td><td title="Average project allocation (%)">Average: <%= averageProjectAllocation(wl_members)[:average_pa] %></td><td></td><td></td></tr>
   	</tfoot>
 </table>
