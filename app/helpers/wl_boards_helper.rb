@@ -54,7 +54,7 @@ module WlBoardsHelper
 		overtimes_exist = !WlUserOvertime.where(user_id: member.user_id, wl_project_window_id: member.project.wl_project_window.id).overlaps(start_date, end_date).empty?
 		output = "".html_safe
 		output << '<span class="overtime">'.html_safe if overtimes_exist
-		output << "#{alloc_btw} (#{hours_week.round(1)}h/week)"
+		output << "#{alloc_btw}% (#{hours_week.round(1)}h/week)"
 		output << "<strong> *</strong>".html_safe if overtimes_exist
 		output << '</span>'.html_safe if overtimes_exist
 		return output

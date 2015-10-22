@@ -24,8 +24,8 @@
 			<th><span class="expander" title="Allocation Type" onclick="toggleGroup();">&nbsp;</span><span class= "tog"> Allocation Type</span></th>
 			<th>Start Date</th>
 			<th>End Date</th>
-			<th>Project Allocation %</th>
-			<th>Total Allocation %</th>
+			<th>Project Allocation</th>
+			<th>Total Allocation</th>
 			<th>Actions</th>
 		</tr>
 	</thead>
@@ -73,7 +73,7 @@
 				
 				<td><%= render_member_project_allocation(member, alloc[:start_date], alloc[:end_date]) %></td>
 				<td>
-					<div class="tooltip"> <% if total_alloc[i][:percent_alloc] > 100 %> [!] <% end %> <%= total_alloc[i][:percent_alloc] %>
+					<div class="tooltip"> <% if total_alloc[i][:percent_alloc] > 100 %> [!] <% end %> <%= total_alloc[i][:percent_alloc] %>%
 		        		<span class="tip"><%= render_details_tooltip(alloc[:details], member)  %></span> 
 		  		    </div>
 				</td>
@@ -148,6 +148,6 @@
 
 	</tbody>
 	<tfoot>
-		<tr style="font-weight: bold;"><td title="Total of project members">Total: <%= averageProjectAllocation(wl_members)[:total_alloc_members] %></td><td><span class= "tog"></span></td><td colspan="4" ></td><td title="Average project allocation (%)">Average: <%= averageProjectAllocation(wl_members)[:average_pa] %></td><td></td><td></td></tr>
+		<tr style="font-weight: bold;"><td title="Total of project members">Total: <%= averageProjectAllocation(wl_members)[:total_alloc_members] %> members</td><td><span class= "tog"></span></td><td colspan="4" ></td><td title="Average project allocation (%)">Average project allocation: <%= averageProjectAllocation(wl_members)[:average_pa] %>%</td><td></td><td></td></tr>
   	</tfoot>
 </table>
