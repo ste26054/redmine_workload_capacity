@@ -19,7 +19,7 @@ module RedmineWorkloadCapacity
 			# Returns memberships of the user with a project window defined, where the allocation module is activated, where the user has sufficient permissions
 			def wl_memberships
 				wl_project_window_ids = WlProjectWindow.pluck(:project_id)
-				return self.memberships.to_a.delete_if {|m| !m.project_id.in?(wl_project_window_ids) || !m.project.module_enabled?(:allocation_capacity) || !WlUser.wl_member?(m) }
+				return self.memberships.to_a.delete_if {|m| !m.project_id.in?(wl_project_window_ids) || !m.project.module_enabled?(:allocation) || !WlUser.wl_member?(m) }
 			end
 
 			# Generates a table of the various allocations of the user (project, custom) for all of his wl_projects
