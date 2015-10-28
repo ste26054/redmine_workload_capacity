@@ -43,21 +43,6 @@ module RedmineWorkloadCapacity
 				return WlUser.wl_manage_right?(self, project)
 			end
 
-			def working_days_count(from_date, to_date, include_sat = false, include_sun = false, include_bank_holidays = false)
-				user_region = LeavesHolidaysLogic.user_params(self, :region)
-				dates_interval = (from_date..to_date).to_a
-				
-				return dates_interval.count if include_sat && include_sun && include_bank_holidays
-
-    			dates_interval.delete_if {|i| i.wday == 6 && !include_sat || #delete date from array if day of week is a saturday (6)
-                			              i.wday == 0 && !include_sun || #delete date from array if day of week is a sunday (0)
-                            		      !include_bank_holidays && i.holiday?(user_region.to_sym, :observed)
-    									 }
-
-    			return dates_interval.count
-
-			end
-
 		end
 	end
 end

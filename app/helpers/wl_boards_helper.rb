@@ -48,15 +48,42 @@ module WlBoardsHelper
 		return output
 	end
 
-	def render_member_project_allocation(member, start_date, end_date)
+	def render_member_project_allocation(member, start_date, end_date, overtime_notification = true)
 		alloc_btw = member.wl_project_allocation_between(start_date, end_date)
 		hours_week = member.user.weekly_working_hours * alloc_btw / 100.0
-		overtimes_exist = !WlUserOvertime.where(user_id: member.user_id, wl_project_window_id: member.project.wl_project_window.id).overlaps(start_date, end_date).empty?
+		if overtime_notification
+			overtimes_exist = !WlUserOvertime.where(user_id: member.user_id, wl_project_window_id: member.project.wl_project_window.id).overlaps(start_date, end_date).empty?
+		else
+			overtimes_exist = false
+		end
 		output = "".html_safe
 		output << '<span class="overtime">'.html_safe if overtimes_exist
 		output << "#{alloc_btw}% (#{hours_week.round(1)}h/week)"
 		output << "<strong> *</strong>".html_safe if overtimes_exist
 		output << '</span>'.html_safe if overtimes_exist
+		return output
+	end
+
+	def dashboard_row(member, start_date, end_date, total_alloc, details, overtime = nil)		
+		
+		output = "".html_safe
+
+		output << '<tr><td colspan="3"></td>'.html_safe
+		output << "<td>#{format_date(start_date)}</td>".html_safe
+		output << "<td>#{format_date(end_date)}</td>".html_safe
+		output << "<td>#{render_member_project_allocation(member, start_date, end_date, overtime.nil?)}</td>".html_safe
+		output << '<td><div class="tooltip">'.html_safe
+		output << "#{total_alloc}%".html_safe
+		output << '<span class="tip">'.html_safe
+		output << "#{render_details_tooltip(details, member)}</span></div></td>".html_safe
+		unless overtime.nil?
+			output << '<td><div class="tooltip">'.html_safe
+			output << "#{render_member_overtime(member, overtime)}".html_safe
+			output << '<span class="tip">'.html_safe
+			output << "#{render_member_overtime_tooltip(overtime)}</span></div></td></tr>".html_safe
+		else
+			output << '<td></td></tr>'.html_safe
+		end
 		return output
 	end
 
@@ -118,45 +145,12 @@ module WlBoardsHelper
 		return output
 	end
 
-  	def averageProjectAllocation(wl_members)
-  	 	count_member_with_alloc  = 0
-  	 	sum_members_average_project_alloc = 0
-  	 	#sum_members_average_total_alloc = 0
-  	 	wl_members.each do |member|
-
-			member_average_project_alloc = 0  	 		
-  	 		#member_average_total_alloc = 0
-
-  	 		if member.wl_project_allocation?
-  	 			count_member_with_alloc = count_member_with_alloc+1
-  	 			total_alloc = member.wl_global_table_allocation
-					
-					sum_project_alloc = 0
-  	 				#sum_total_alloc = 0
-  	 				
-  	 			total_alloc.each_with_index do |alloc, i|
-  	 				working_days = member.user.working_days_count(alloc[:start_date], alloc[:end_date])
-
-  	 				p_allocation = member.wl_project_allocation_between(alloc[:start_date], alloc[:end_date])
-  	 				sum_project_alloc += p_allocation*working_days
-
-					#total_allocation = alloc[:percent_alloc]
-  	 				#sum_total_alloc += total_allocation*working_days
-  	 			end
-  	 			
-  	 			window = WlProjectWindow.find_by(project_id: member.project_id)
-  	 			window_working_days = member.user.working_days_count(window.start_date, window.end_date)
-
-				member_average_project_alloc = sum_project_alloc/window_working_days
-  	 			#member_average_total_alloc = sum_total_alloc/window_working_days
-  	 		end
-  	 		sum_members_average_project_alloc += member_average_project_alloc
-  	 		#sum_members_average_total_alloc += member_average_total_alloc
-  	 	end
-  	 	#result = {:total_alloc_members => count_member_with_alloc, :average_pa => sum_members_average_project_alloc/count_member_with_alloc, :average_ta => sum_members_average_total_alloc/count_member_with_alloc}
-  	 	result = {:total_alloc_members => count_member_with_alloc, :average_pa => sum_members_average_project_alloc/count_member_with_alloc}
-  	 	return result
-  	end
-
-	
+  	def index_tabs        
+  
+     tabs = [
+        {:name => 'wldashboard', :partial => 'wl_boards/dashboard_index', :label => :label_wldashboard},
+        {:name => 'wlconfigure', :partial => 'wl_boards/configure_index', :label => :label_wlconfigure},
+        {:name => 'wlcheck', :partial => 'wl_boards/check_index', :label => :label_wlcheck}
+         ]
+    end 
 end

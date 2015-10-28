@@ -21,7 +21,7 @@ class WlProjectAllocationsController < ApplicationController
 
     if @project_allocation.save
       flash[:notice] = l(:notice_project_allocation_set, :project => @project.name)
-      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
     else
       flash[:error] = l(:error_set)
       render :new
@@ -34,7 +34,7 @@ class WlProjectAllocationsController < ApplicationController
   def update
     if @project_allocation.update(wl_project_allocation_params)
       flash[:notice] = l(:notice_project_allocation_set, :project => @project.name)
-      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
     else
       flash[:error] = l(:error_set)
       render :edit

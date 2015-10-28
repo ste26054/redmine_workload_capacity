@@ -18,7 +18,7 @@ class WlCustomProjectWindowsController < ApplicationController
 		@custom_project_window.wl_project_window_id = @wl_project_window.id
 		if @custom_project_window.save
 			flash[:notice] = l(:notice_custom_project_windows_set, :project => @project.name, :user => @user.name)
-			redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+			redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
 		else
 			flash[:error] = l(:error_set)
 			render :new
@@ -31,7 +31,7 @@ class WlCustomProjectWindowsController < ApplicationController
 	def update
 		if @custom_project_window.update(wl_custom_project_window_params)
 			flash[:notice] = l(:notice_custom_project_windows_set, :project => @project.name, :user => @user.name)
-			redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+			redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
 		else
 			flash[:error] = l(:error_set)
 			render :new
@@ -44,7 +44,7 @@ class WlCustomProjectWindowsController < ApplicationController
  		else
  			flash[:error] = l(:error_delete_cpw)
  	   end
-		redirect_to :controller => 'wl_boards', :action => 'index'
+		redirect_to :controller => 'wl_boards', :action => 'index', :tab => "wlconfigure"
 	end
 
 

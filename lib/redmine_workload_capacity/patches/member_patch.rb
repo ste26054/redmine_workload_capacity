@@ -51,6 +51,14 @@ module RedmineWorkloadCapacity
 				return 0
 			end
 
+			def wl_sum_alloc_on_working_days(from_date, to_date)
+	
+				working_days = self.user.working_days_count(from_date, to_date)
+  	 			p_allocation = self.wl_project_allocation_between(from_date, to_date)
+  	 			return p_allocation*working_days
+								
+			end
+
 			# Returns the total cross project allocation table, bound to current project window
 			def wl_global_table_allocation
 				user_table_alloc = self.user.wl_table_allocation

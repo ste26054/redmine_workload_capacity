@@ -2,6 +2,11 @@
 en:
   label_workload: "Allocation"
 
+  #Tabs
+  label_wldashboard: "Dashboard"
+  label_wlconfigure: "Configure"
+  label_wlcheck: "Check"
+
   #Project Window
   notice_project_windows_set: "The project window was correctly set for %{project}"
   error_project_windows_not_set: "Error: You must define a project window before continuing"
