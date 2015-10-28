@@ -18,7 +18,7 @@ class WlUserOvertimesController < ApplicationController
     @user_overtime.wl_project_window_id = @project.wl_project_window.id
   	if @user_overtime.save
       flash[:notice] = l(:notice_user_overtime_set, :user => @user.name)
-      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
     else
       flash[:error] = l(:error_set)
       render :new
@@ -31,7 +31,7 @@ class WlUserOvertimesController < ApplicationController
   def update
   	if @user_overtime.update(wl_user_overtime_params)
       flash[:notice] = l(:notice_user_overtime_set, :user => @user.name)
-      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
     else
       flash[:error] = l(:error_set)
       render :edit
@@ -44,7 +44,7 @@ class WlUserOvertimesController < ApplicationController
     else
       flash[:error] = l(:error_set)
     end
-    redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+    redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
   end
 
   private

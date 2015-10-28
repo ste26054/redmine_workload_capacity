@@ -31,11 +31,18 @@
 	</thead>
 	<tbody>
 
+		<!-- To calculate the average project allocation in the footer -->
+		<% pw_sum_alloc = 0 %>
+		<!-- _________________________________________________________ -->
+
+
 	<% wl_members.each do |member| %>
 		<% if member.wl_project_allocation? %>
 			<% total_alloc = member.wl_global_table_allocation %>
 			<% remaining_alloc = member.wl_remaining_table_allocation %>
 			<% project_alloc = member.wl_table_allocation %>
+
+			
 
 			<tr class="<%= cycle("odd", "even") %>" style="font-weight: bold; ">
 				<td><%= link_to member.user.name, User.find(member.user.id)  %>
@@ -56,10 +63,19 @@
 				</td>
 			</tr>
 
+			<!-- To calculate the average project allocation in the footer -->
+			<% member_sum_alloc = 0 %>
+			<!-- _________________________________________________________ -->
+
 			<% total_alloc.each_with_index do |alloc, i| %>
+
+				<!-- To calculate the average project allocation in the footer -->
+ 				<% member_sum_alloc += member.wl_sum_alloc_on_working_days(alloc[:start_date], alloc[:end_date]) %>
+				<!-- _________________________________________________________ -->
+
 				<% custom_alloc = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).overlaps(alloc[:start_date], alloc[:end_date]) %>
 
-				<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" if (total_alloc[i][:percent_alloc] > 100) %> <%= "allocation-below" if (total_alloc[i][:percent_alloc] < 100) %>">
+				<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" if (alloc[:percent_alloc] > 100) %> <%= "allocation-below" if (alloc[:percent_alloc] < 100) %>">
 				<td></td><td></td><td></td>
 				<td>
 					<% if custom_alloc.empty? %>
@@ -73,14 +89,14 @@
 				
 				<td><%= render_member_project_allocation(member, alloc[:start_date], alloc[:end_date]) %></td>
 				<td>
-					<div class="tooltip"> <% if total_alloc[i][:percent_alloc] > 100 %> [!] <% end %> <%= total_alloc[i][:percent_alloc] %>%
+					<div class="tooltip"> <% if alloc[:percent_alloc] > 100 %> [!] <% end %> <%= alloc[:percent_alloc] %>%
 		        		<span class="tip"><%= render_details_tooltip(alloc[:details], member)  %></span> 
 		  		    </div>
 				</td>
 				<td>
 					<% if custom_alloc.empty? %>
 						<% custom_link = { :start_date => alloc[:start_date], :end_date => alloc[:end_date], :percent_alloc => remaining_alloc[i][:percent_alloc]} %>
-						<% if total_alloc[i][:percent_alloc] > 100 %>
+						<% if alloc[:percent_alloc] > 100 %>
 							<div class="tooltip">
 								<%= link_to 'Smart Allocation', project_user_wl_custom_allocations_path(project, member.user,:wl_custom_allocation => custom_link), :class => 'icon icon-summary', :method => :post %>
 		        				<span class="tip"><%= render_smart_allocation_tooltip(custom_link) %></span>
@@ -95,6 +111,12 @@
 					<% end %></td>
 				</tr>
 			<% end %>
+
+			<!-- To calculate the average project allocation in the footer -->
+ 			<% pw_working_days = member.user.working_days_count(project.wl_project_window.start_date, project.wl_project_window.end_date) %>
+ 			<% pw_sum_alloc += member_sum_alloc/pw_working_days %>
+			<!-- _________________________________________________________ -->
+
 			<% user_custom_pw = WlCustomProjectWindow.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).order(:start_date) %>
 			<% if user_custom_pw.count > 0 %>
 				<tr class="group open"><td colspan="9">
@@ -148,6 +170,6 @@
 
 	</tbody>
 	<tfoot>
-		<tr style="font-weight: bold;"><td title="Total of project members">Total: <%= averageProjectAllocation(wl_members)[:total_alloc_members] %> members</td><td><span class= "tog"></span></td><td colspan="4" ></td><td title="Average project allocation (%)">Average project allocation: <%= averageProjectAllocation(wl_members)[:average_pa] %>%</td><td></td><td></td></tr>
+		<tr style="font-weight: bold;"><td title="Total of project members">Total: <%= total_members = wl_members.count %> members</td><td><span class= "tog"></span></td><td colspan="4" ></td><td title="Average project allocation (%)">Average project allocation: <%= pw_sum_alloc/total_members %>% </td><td></td><td></td></tr>
   	</tfoot>
 </table>

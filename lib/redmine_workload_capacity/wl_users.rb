@@ -29,15 +29,17 @@ module WlUser
 
 	def self.wl_members_for_project(project)
 		wl_members = []
-		wl_users = wl_users_for_project(project)
 		
-		unless wl_users.empty?
-			wl_users.each do |wl_user|
-				wl_members << Member.where(user_id: wl_user.id, project_id: project.id)
-				wl_members.flatten(1)
-			end
-			return wl_members.flatten
-		end
+		display_role_ids_list = WlProjectWindowLogic.retrieve_display_role_ids_list(project)
+		 unless display_role_ids_list.empty?
+		 	display_role_ids_list.each do |role_id|
+		 		role = Role.find(role_id)
+		 		wl_members << role.members.where(project_id: project.id)
+		 		wl_members.flatten
+		 	end
+		 	return wl_members.flatten.uniq.delete_if{|member| !member.user.active?}
+		 end
+		 
 	end
 
 	def self.wl_member?(member)

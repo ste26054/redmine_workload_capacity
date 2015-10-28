@@ -1,11 +1,15 @@
- <%= javascript_include_tag 'index', :plugin => "redmine_workload_capacity" %>
+<h2>Allocation</h2>
+<script type="text/javascript">
+   wldashboardUrl = '<%=url_for(:controller => "wl_boards", :action => "index", :tab => "wldashboard")%>';
+   wlconfigureUrl = '<%=url_for(:controller => "wl_boards", :action => "index", :tab => "wlconfigure")%>'; 
+   wlcheckUrl = '<%=url_for(:controller => "wl_boards", :action => "index", :tab => "wlcheck")%>'; 
+</script>
 
-<h2>Allocation Dashboard from <%= format_date(@project.wl_project_window.start_date) %> to <%= format_date(@project.wl_project_window.end_date) %> (<%= link_to 'Edit', edit_project_wl_project_window_path(@project) %>)</h2>
+<%= render_tabs index_tabs %>
 
-<p><strong>Note:</strong> <strong>"*"</strong> symbol in a Project Allocation column means a user has one or several overtimes during the time period considered.</p>
-
-<%= render 'index', :project => @project, :wl_members => @wl_members %>
+<!-- <%= render 'dashboard_index', :project => @project, :wl_members => @wl_members %>-->
 
 <% content_for :header_tags do %>
     <%= stylesheet_link_tag 'workload_capacity', :plugin => 'redmine_workload_capacity' %>
+    <%= javascript_include_tag 'index', :plugin => "redmine_workload_capacity" %>
 <% end %>

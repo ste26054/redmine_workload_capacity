@@ -18,7 +18,7 @@ class WlCustomAllocationsController < ApplicationController
     @custom_allocation.wl_project_window_id = @project.wl_project_window.id
   	if @custom_allocation.save
       flash[:notice] = l(:notice_custom_allocation_set, :user => @user.name)
-      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
     else
       flash[:error] = l(:error_set)
       render :new
@@ -31,7 +31,7 @@ class WlCustomAllocationsController < ApplicationController
   def update
   	if @custom_allocation.update(wl_custom_allocation_params)
       flash[:notice] = l(:notice_custom_allocation_set, :user => @user.name)
-      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
     else
       flash[:error] = l(:error_set)
       render :edit
@@ -44,7 +44,7 @@ class WlCustomAllocationsController < ApplicationController
     else
       flash[:error] = l(:error_set)
     end
-    redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id
+    redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
   end
 
   private
