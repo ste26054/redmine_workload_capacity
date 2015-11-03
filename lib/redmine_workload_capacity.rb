@@ -9,6 +9,8 @@ Rails.configuration.to_prepare do
 
   require 'redmine_workload_capacity/wl_project_window_logic'
   require 'redmine_workload_capacity/wl_users'
+    
+  require 'redmine_workload_capacity/helpers/wl_timetable'
 
   require 'redmine_workload_capacity/patches/project_patch'
   require 'redmine_workload_capacity/patches/member_patch'

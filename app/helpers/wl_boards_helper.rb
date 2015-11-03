@@ -150,7 +150,34 @@ module WlBoardsHelper
      tabs = [
         {:name => 'wldashboard', :partial => 'wl_boards/dashboard_index', :label => :label_wldashboard},
         {:name => 'wlconfigure', :partial => 'wl_boards/configure_index', :label => :label_wlconfigure},
-        {:name => 'wlcheck', :partial => 'wl_boards/check_index', :label => :label_wlcheck}
+        # {:name => 'wlcheck', :partial => 'wl_boards/check_index', :label => :label_wlcheck}
+         {:name => 'wlcheck', :partial => 'wl_check_loggedtime/check_page', :label => :label_wlcheck}
          ]
     end 
+
+    def render_wl_tabs(tabs, selected=params[:tab])
+	    if tabs.any?
+	      unless tabs.detect {|tab| tab[:name] == selected}
+	        selected = nil
+	      end
+	      selected ||= tabs.select { |e| e[:controller] == params[:controller]}.first[:name]
+	  
+	      render :partial => 'wl_commons/tabs', :locals => {:tabs => tabs, :selected_tab => selected}
+	    else
+	      content_tag 'p', l(:label_no_data), :class => "nodata"
+	    end
+	end
+
+	def wl_tabs
+		tabs = []
+
+		tabs = [
+	        {:name => 'wldashboard', :controller => 'wl_boards', :action => 'index', :tab => "wldashboard"  , :label => :label_wldashboard},
+	        {:name => 'wlconfigure', :controller => 'wl_boards', :action => 'index', :tab => "wlconfigure" , :label => :label_wlconfigure},
+	        {:name => 'wlcheck', :controller => 'wl_check_loggedtime', :action => 'show', :tab => "wlcheck", :label => :label_wlcheck}
+        ]
+
+		return tabs
+	end
+
 end

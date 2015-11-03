@@ -1,14 +1,10 @@
 <h2>Allocation</h2>
 <div class="tabular2"><%= render_wl_tabs wl_tabs %></div>
 
-<% if params[:tab].nil? 
- tab="wldashboard"
-  else
-   tab = params[:tab] 
-   end %>
-<%= render "#{tab}_index", :project => @project, :wl_members => @wl_members %>
+<%= render 'timetable', :timeline => @timeline, :action => 'show'  %>
 
 <% content_for :header_tags do %>
     <%= stylesheet_link_tag 'workload_capacity', :plugin => 'redmine_workload_capacity' %>
     <%= javascript_include_tag 'index', :plugin => "redmine_workload_capacity" %>
+    <%= stylesheet_link_tag 'leaves_holidays', :plugin => 'redmine_leaves_holidays' %>
 <% end %>
