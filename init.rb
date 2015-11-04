@@ -3,6 +3,7 @@ require 'redmine_workload_capacity'
 
 Redmine::Plugin.register :redmine_workload_capacity do
 	requires_redmine_plugin :redmine_leaves_holidays, :version_or_higher => '0.1'
+  requires_redmine_plugin :redmine_wktime, :version => '1.8.1'
 	requires_redmine :version_or_higher => "3.0.0"
 
   name 'Redmine Allocation plugin'

@@ -210,6 +210,8 @@ module RedmineWorkloadCapacity
         #total_weeks = (end_date.to_time.to_f - start_date.to_time.to_f)/(1.week)
 
         if member.wl_project_allocation?
+          logged_time_table = get_logged_time_table(user.id, @project)
+
           table_alloc = member.wl_global_table_allocation
 
           table_alloc.each_with_index do |alloc,i|
@@ -237,24 +239,26 @@ module RedmineWorkloadCapacity
                   #bank holiday
                    is_holiday_date = holiday_date(current_date)
 
-              
+                  #logged_hours for current_date
+                  logged_hours = logged_time_table[current_date]
+                  logged_hours = 0.0 if logged_hours.nil?
 
                   #week end - overtime only
                   if current_date.cwday == 6 || current_date.cwday == 7
                     unless overtime.nil?
                       #dont forget bank holiday
                       if (overtime[:include_sat] && current_date.cwday == 6 ) || (overtime[:include_sun] && current_date.cwday == 7) || (overtime[:include_bank_holidays] && is_holiday_date)
-                        compare_hours(user, options, current_date, 0, extra_hours_per_day) 
+                        compare_hours(user, options, current_date, logged_hours, 0, extra_hours_per_day) 
                       end
                     end
 
                   else
                   #other days
                     if !is_holiday_date #&& extra_hours_per_day!=0  &&
-                      compare_hours(user, options, current_date, alloc_day, extra_hours_per_day)
+                      compare_hours(user, options, current_date, logged_hours, alloc_day, extra_hours_per_day)
                     elsif is_holiday_date && extra_hours_per_day!=0 && overtime[:include_bank_holidays]
                       #case the current date is a bank holiday and not on the week end and there is overtime for bank holiday
-                      compare_hours(user, options, current_date, 0, extra_hours_per_day)
+                      compare_hours(user, options, current_date, logged_hours, 0, extra_hours_per_day)
                     end
                       
 
@@ -276,9 +280,19 @@ module RedmineWorkloadCapacity
 
       def get_logged_time(user, project_id, current_date)
         TimeEntry.all.where(user_id: user.id, project_id: project_id, spent_on: current_date).sum(:hours)
+        #TimeEntryQuery.new(project: Project.find(project_id)).results_scope.where(user_id: user.id, spent_on: current_date).sum(:hours)
+        #TimeEntryQuery.new(project: Project.find(37)).results_scope.where(user_id: "159").group(:spent_on).sum(:hours)
+
       end
 
-      def compare_hours(user, options, current_date, allocated_hours, extra_hours = 0)
+      def get_logged_time_table(user_id, project)
+        #TimeEntry.all.where(user_id: user.id, project_id: project_id, spent_on: current_date).sum(:hours)
+        #TimeEntryQuery.new(project: Project.find(project_id)).results_scope.where(user_id: user.id, spent_on: current_date).sum(:hours)
+        TimeEntryQuery.new(project: project).results_scope.where(user_id: user_id).group(:spent_on).sum(:hours)
+
+      end
+
+      def compare_hours(user, options, current_date, logged_hours, allocated_hours, extra_hours = 0)
         output_tooltip = ""
         output_field = ""
         reference_hours = allocated_hours
@@ -286,7 +300,7 @@ module RedmineWorkloadCapacity
           output_field << " * "
           reference_hours = allocated_hours + extra_hours
         end
-        logged_hours = get_logged_time(user, @project.id, current_date)
+        #logged_hours = get_logged_time(user, @project.id, current_date)
 
         #leave
         leave_time = get_logged_time(user, @leave_project_id, current_date).round(1)
@@ -294,26 +308,31 @@ module RedmineWorkloadCapacity
         base_hours = (user.weekly_working_hours/5).round(1)
 
         unless leave_time == base_hours
-          if logged_hours==0.0
-              line(current_date, current_date, options, 2, "<strong>nil******</strong>#{leave_time}___#{base_hours} ", output_field)
-          else
+          unless reference_hours == 0.0 # there is at least some allocated hours and/or overtime extra hours
             output_tooltip << "Logged time (hours): #{logged_hours.round(1)}"
             output_tooltip << "<br />Allocation time (hours): #{allocated_hours}"
-            if extra_hours > 0
-              output_tooltip << "<br />Overtime (hours): #{extra_hours}"
-              output_tooltip << "<br />Reference time (hours): #{allocated_hours}+#{extra_hours} = #{reference_hours}"
-            end
-            ratio = (logged_hours/reference_hours).round(2)
-            output_tooltip << "<br /><strong>Ratio</strong>: #{logged_hours.round(1)}/#{reference_hours} = <strong>#{ratio}</strong> "
-            
-            if logged_hours < reference_hours
-              line(current_date, current_date, options, 1, output_tooltip, output_field)
-            else 
-              line(current_date, current_date, options, 0, output_tooltip, output_field)
+            if logged_hours==0.0
+                line(current_date, current_date, options, 2, output_tooltip, output_field)
+            else
+              # output_tooltip << "Logged time (hours): #{logged_hours.round(1)}"
+              # output_tooltip << "<br />Allocation time (hours): #{allocated_hours}"
+              if extra_hours > 0
+                output_tooltip << "<br />Overtime (hours): #{extra_hours}"
+                output_tooltip << "<br />Reference time (hours): #{allocated_hours}+#{extra_hours} = #{reference_hours}"
+              end
+              ratio = (logged_hours/reference_hours).round(2)
+              output_tooltip << "<br /><strong>Ratio</strong>: #{logged_hours.round(1)}/#{reference_hours} = <strong>#{ratio}</strong> "
+              
+              if logged_hours < reference_hours
+                line(current_date, current_date, options, 1, output_tooltip, output_field)
+              else 
+                line(current_date, current_date, options, 0, output_tooltip, output_field)
+              end
             end
           end
         else
-          line(current_date, current_date, options, 4, "Leave Holiday: #{leave_time}", "")
+          #leave for a whole day
+          line(current_date, current_date, options, 4, "Leave Holiday: #{leave_time}hours - full day", "")
         end
       end
 
