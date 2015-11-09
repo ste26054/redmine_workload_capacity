@@ -237,7 +237,7 @@ module RedmineWorkloadCapacity
                     extra_hours_per_day = 0
                   end
                   #bank holiday
-                   is_holiday_date = holiday_date(current_date)
+                   is_holiday_date = holiday_date_for_user(user,current_date)
 
                   #logged_hours for current_date
                   logged_hours = logged_time_table[current_date]
@@ -311,22 +311,23 @@ module RedmineWorkloadCapacity
           unless reference_hours == 0.0 # there is at least some allocated hours and/or overtime extra hours
             output_tooltip << "Logged time (hours): #{logged_hours.round(1)}"
             output_tooltip << "<br />Allocation time (hours): #{allocated_hours}"
+            if extra_hours > 0
+              output_tooltip << "<br />Overtime (hours): #{extra_hours}"
+              output_tooltip << "<br />Reference time (hours): #{allocated_hours}+#{extra_hours} = #{reference_hours}"
+            end
+            ratio = (logged_hours/reference_hours).round(2)
+            output_tooltip << "<br /><strong>Ratio</strong>: #{logged_hours.round(1)}/#{reference_hours} = <strong>#{ratio}</strong> "
+
             if logged_hours==0.0
+              #BLACK color: there is no logged time
+                line(current_date, current_date, options, 3, output_tooltip, output_field)
+            else              
+              if (ratio <= 0.9) || (ratio >= 1.10) # RED
                 line(current_date, current_date, options, 2, output_tooltip, output_field)
-            else
-              # output_tooltip << "Logged time (hours): #{logged_hours.round(1)}"
-              # output_tooltip << "<br />Allocation time (hours): #{allocated_hours}"
-              if extra_hours > 0
-                output_tooltip << "<br />Overtime (hours): #{extra_hours}"
-                output_tooltip << "<br />Reference time (hours): #{allocated_hours}+#{extra_hours} = #{reference_hours}"
-              end
-              ratio = (logged_hours/reference_hours).round(2)
-              output_tooltip << "<br /><strong>Ratio</strong>: #{logged_hours.round(1)}/#{reference_hours} = <strong>#{ratio}</strong> "
-              
-              if logged_hours < reference_hours
-                line(current_date, current_date, options, 1, output_tooltip, output_field)
-              else 
+              elsif  (ratio >= 0.95) && (ratio <= 1.05) # GREEN
                 line(current_date, current_date, options, 0, output_tooltip, output_field)
+              else #AMBER
+                 line(current_date, current_date, options, 1, output_tooltip, output_field)
               end
             end
           end
@@ -369,9 +370,14 @@ module RedmineWorkloadCapacity
          LeavePreference.where(user_id: @wl_users).distinct.pluck(:region)
       end
 
-      # Optimise for date_from - date_to period
+      # Optimise for date_from - date_to period for all users
       def holiday_date(date)
          countries.map {|c| date.holiday?(c.to_sym, :observed)}.any?
+      end
+
+      def holiday_date_for_user(user, date)
+          region = user.leave_preferences.region.to_sym
+          date.holiday?(region, :observed)
       end
 
       def country_holiday_list(date)
@@ -475,14 +481,16 @@ module RedmineWorkloadCapacity
           style << "left:#{coords[:bar_start]}px;"
           style << "width:#{coords[:bar_end] - coords[:bar_start] - 1}px;"
           style << "height:16px;"
-          if check_status == 0
+          if check_status == 0 # Good, ratio = [0.95;1.05]
             style << "background-color: #19A347;" # green
-          elsif check_status == 1
+          elsif check_status == 1 # Warning, ratio = [0.90;0.95] && [1.05;1.10]
             style << "background-color: #FF9933;" # orange
-          elsif check_status == 4 #leave
-            style << "background-color: #DADADA;" # grey
-          else
+          elsif check_status == 2 # Bad, ratio = [0;0.90] && [1.10; +infini]
             style << "background-color: #CC0000;" # red
+          elsif check_status == 4 #leave holiday for full day only
+            style << "background-color: #DADADA;" # grey
+          else # case that check_status == 3: there is no logged time
+            style << "background-color: #131214;" # black
           end
           s << "#{ratio}".html_safe
           output << view.content_tag(:div, s.html_safe,

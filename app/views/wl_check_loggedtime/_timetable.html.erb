@@ -33,20 +33,24 @@
 <table class="caption">
   <thead>
     <tr>
-      <td>Caption: </td> 
-      <td>
-        <div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #19A347;"></div>
-      </td><td>Logged hours &gt; Allocation hours </td>
-      <td>
-        <div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #FF9933;"></div>
-      </td><td>Logged hours &lt; Allocation hours</td>
-      <td>
-        <div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #CC0000;"></div>
-      </td><td>No logging hours</td>
+      <td colspan = "10">Caption [Ratio = Logged time / Project Allocated time]: </td> 
     </tr>
-    <tr><td></td><td><div style="border-radius: 8px;width: 28px;">' * '</div></td>
-      <td colspan = "5">There is an overtime </td>
+    <tr>
+      <td><div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #19A347;"></div></td>
+      <td>0.95 &lt; ratio &lt; 1.05</td>
+      <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #FF9933;"></div></td>
+      <td>0.90 &lt; ratio &lt; 0.95 or 1.05 &lt; ratio &lt; 1.10</td>
+      <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #CC0000;"></div></td>
+      <td>ratio &lt; 0.90 or 1.10 &lt; ratio</td>
+      <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #131214;"></div></td>
+      <td>No logged time</td>
+      <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #DADADA;"></div></td>
+      <td>Full Day Leave</td>
     </tr>
+    <tr>
+      <td colspan = "10">' * ' There is an overtime </td>
+    </tr>
+    
   </thead>
 </table>
 

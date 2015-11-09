@@ -11,16 +11,17 @@ class WlCheckLoggedtimeController < ApplicationController
 
 
   def show
-   
-  # render plain: @project.wl_project_window.start_date
-  #   return
-  h2 = {:project => @project}
-    
+
+    h2 = {:project => @project}
+
     @timeline = RedmineWorkloadCapacity::Helpers::WlTimetable.new(params.merge(h2) )
+    @timeline.project ||= @project
+    if !User.current.wl_manage_right?(@project) && Member.find_by(user_id: User.current.id, project_id: @project.id).wl_member?
+      @timeline.wl_users ||= [User.current]
+    else
       @timeline.wl_users ||= @project.wl_users
-       @timeline.project ||= @project
+    end
    
-    #@wl_users ||= @project.wl_users
   end
 
   private

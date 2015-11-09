@@ -14,10 +14,12 @@ Redmine::Plugin.register :redmine_workload_capacity do
   menu :project_menu, :workload, { :controller => 'wl_boards', :action => 'index'},
                               :caption => :label_workload,
                               :after => :gantt,
-                              :param => :project_id
+                              :param => :project_id,
+                              :if => Proc.new {|p| User.current.wl_manage_right?(p) || Member.find_by(user_id: User.current.id, project_id: p.id).wl_member?}
 
   project_module :allocation do
-  	permission :manage_project_allocation, {:wl_boards => [:index]}
+    permission :manage_project_allocation, {:wl_boards => [:index]}
+    permission :view_allocation, {:wl_boards => [:index]}, :public => true
   end
   
 end
