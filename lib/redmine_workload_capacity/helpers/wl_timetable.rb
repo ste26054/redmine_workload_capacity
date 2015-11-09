@@ -366,7 +366,6 @@ module RedmineWorkloadCapacity
       end
 
       def countries
-         # @wl_users.distinct.pluck(:region)
          LeavePreference.where(user_id: @wl_users).distinct.pluck(:region)
       end
 
@@ -381,8 +380,7 @@ module RedmineWorkloadCapacity
       end
 
       def country_holiday_list(date)
-        # TODO
-        # countries.delete_if {|c| !date.holiday?(c.to_sym, :observed)}
+         countries.delete_if {|c| !date.holiday?(c.to_sym, :observed)}
       end
 
       def leave_date(date)

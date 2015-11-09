@@ -215,7 +215,7 @@
       <%
            is_holiday_date = timeline.holiday_date(timeline.date_from + i)
         title = ""
-           title = "#{format_date(timeline.date_from + i)}: Bank Holiday " if is_holiday_date
+           title = "#{format_date(timeline.date_from + i)}: Bank Holiday (#{timeline.country_holiday_list(timeline.date_from + i).join(", ")})" if is_holiday_date
            #(#{timeline.country_holiday_list(timeline.date_from + i).join(", ")})
         width =  zoom - 1
         style  = ""
