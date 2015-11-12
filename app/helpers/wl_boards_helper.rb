@@ -132,7 +132,6 @@ module WlBoardsHelper
 		output = "".html_safe
 
 		created_date = (Date.today - member.wl_project_allocation.created_at.to_date).to_i if member.wl_project_allocation.created_at 
-		#if !member.wl_project_allocation.updated_at 
 		
 		if created_date && created_date < 7 
 			updated_date = (member.wl_project_allocation.updated_at.to_time - member.wl_project_allocation.created_at.to_time).to_i if !member.wl_project_allocation.updated_at.nil? 
@@ -145,12 +144,31 @@ module WlBoardsHelper
 		return output
 	end
 
-  	def index_tabs        
-  
-     tabs = [
-        {:name => 'wldashboard', :partial => 'wl_boards/dashboard_index', :label => :label_wldashboard},
-        {:name => 'wlconfigure', :partial => 'wl_boards/configure_index', :label => :label_wlconfigure},
-        {:name => 'wlcheck', :partial => 'wl_boards/check_index', :label => :label_wlcheck}
-         ]
-    end 
+
+
+    def render_wl_tabs(tabs, selected=params[:tab])
+	    if tabs.any?
+	      unless tabs.detect {|tab| tab[:name] == selected}
+	        selected = nil
+	      end
+	      selected ||= tabs.select { |e| e[:controller] == params[:controller]}.first[:name]
+	  
+	      render :partial => 'wl_commons/tabs', :locals => {:tabs => tabs, :selected_tab => selected}
+	    else
+	      content_tag 'p', l(:label_no_data), :class => "nodata"
+	    end
+	end
+
+	def wl_tabs
+		tabs = []
+  		
+	    if User.current.wl_manage_right?(@project)
+				tabs <<  {:name => 'wldashboard', :controller => 'wl_boards', :action => 'index', :tab => "wldashboard"  , :label => :label_wldashboard}
+	    		tabs << {:name => 'wlconfigure', :controller => 'wl_boards', :action => 'index', :tab => "wlconfigure" , :label => :label_wlconfigure}
+		end
+		tabs << {:name => 'wlcheck', :controller => 'wl_check_loggedtime', :action => 'show', :tab => "wlcheck", :label => :label_wlcheck}
+
+		return tabs
+	end
+
 end

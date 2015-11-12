@@ -1,0 +1,295 @@
+
+<% timeline.view = self %>
+
+<fieldset><legend><%= l(:label_filter_plural) %></legend>
+<%= form_tag({:controller => 'wl_check_loggedtime', :action => action,
+             :month => params[:month],
+             :year => params[:year], :months => params[:months]},
+             :method => :get, :id => 'query_form') do %>
+
+
+<p class="contextual">
+  <%= timeline_zoom_link(timeline, :in) %>
+  <%= timeline_zoom_link(timeline, :out) %>
+</p>
+
+<p class="buttons">
+<%= l(:button_show) %>
+<%= text_field_tag 'months', timeline.months, :size => 2 %>
+<%= l(:label_months_from) %>
+<%= select_month(timeline.month_from, :prefix => "month", :discard_type => true) %>
+<%= select_year(timeline.year_from, :prefix => "year", :discard_type => true) %>
+<%= hidden_field_tag 'zoom', timeline.zoom %>
+
+<%= link_to_function l(:button_apply), '$("#query_form").submit()',
+                     :class => 'icon icon-checked' %>
+<%= link_to l(:button_clear), { :clear_filters => 1 }, :class => 'icon icon-reload' %>
+
+</p>
+
+<% end %>
+</fieldset>
+
+<table class="caption">
+  <thead>
+    <tr>
+      <td colspan = "10">Caption [Ratio = Logged time / Project Allocated time]: </td> 
+    </tr>
+    <tr>
+      <td><div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #19A347;"></div></td>
+      <td>0.95 &lt; ratio &lt; 1.05</td>
+      <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #FF9933;"></div></td>
+      <td>0.90 &lt; ratio &lt; 0.95 or 1.05 &lt; ratio &lt; 1.10</td>
+      <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #CC0000;"></div></td>
+      <td>ratio &lt; 0.90 or 1.10 &lt; ratio</td>
+      <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #131214;"></div></td>
+      <td>No logged time</td>
+      <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #DADADA;"></div></td>
+      <td>Full Day Leave</td>
+    </tr>
+    <tr>
+      <td colspan = "10">' * ' There is an overtime </td>
+    </tr>
+    
+  </thead>
+</table>
+
+<%
+  zoom = 1
+  timeline.zoom.times { zoom = zoom * 2 }
+
+  subject_width = 300
+  header_height = 18
+
+  headers_height = header_height
+  show_weeks = false
+  show_days  = false
+
+  if timeline.zoom > 1
+    show_weeks = true
+    headers_height = 2 * header_height
+    if timeline.zoom > 3
+        show_days = true
+        headers_height = 3 * header_height
+    end
+  end
+
+  # Width of the entire chart
+  g_width = ((timeline.date_to - timeline.date_from + 1) * zoom).to_i
+  timeline.render(:top => headers_height + 20,
+                :zoom => zoom,
+                :g_width => g_width,
+                :subject_width => subject_width)
+  g_height = (20 * (timeline.number_of_rows + 6))
+  t_height = g_height + headers_height
+%>
+<% if timeline.number_of_rows == 0 %>
+  <br />
+  <h3>There is nothing to show</h3>
+<% else %>
+  <table style="width:100%; ">
+  <tr>
+  <td style="width:<%= subject_width %>px; padding:0px;">
+    <%
+      style  = ""
+      style += "position:relative;"
+      style += "height: #{t_height + 24}px;"
+      style += "width: #{subject_width + 1}px;"
+    %>
+    <%= content_tag(:div, :style => style) do %>
+      <%
+        style  = ""
+        style += "right:-2px;"
+        style += "width: #{subject_width}px;"
+        style += "height: #{headers_height + 10}px;"
+        style += 'background: #eee;'
+      %>
+      <%= content_tag(:div, "", :style => style, :class => "gantt_hdr") %>
+      <%
+        style  = ""
+        style += "right:-2px;"
+        style += "width: #{subject_width}px;"
+        style += "height: #{t_height}px;"
+        style += 'border-left: 1px solid #c0c0c0;'
+        style += 'overflow: hidden;'
+      %>
+      <%= content_tag(:div, "", :style => style, :class => "gantt_hdr") %>
+      <%= content_tag(:div, :class => "gantt_subjects") do %>
+        <%= timeline.users.html_safe %>
+      <% end %>
+    <% end %>
+  </td>
+
+  <td>
+  <div style="position:relative;height:<%= t_height + 24 %>px;overflow:auto;" id="gantt_area">
+  <%
+    style  = ""
+    style += "width: #{g_width - 1}px;"
+    style += "height: #{headers_height + 10}px;"
+    style += 'background: #eee;'
+  %>
+  <%= content_tag(:div, '&nbsp;'.html_safe, :style => style, :class => "gantt_hdr") %>
+
+  <% ###### Months headers ###### %>
+  <%
+    month_f = timeline.date_from
+    left = 0
+    height = (show_weeks ? header_height : header_height + g_height)
+  %>
+  <% timeline.months.times do %>
+    <%
+      width = (((month_f >> 1) - month_f) * zoom - 1).to_i
+      style  = ""
+      style += "left: #{left}px;"
+      style += "width: #{width}px;"
+      style += "height: #{height}px;"
+    %>
+    <%= content_tag(:div, :style => style, :class => "gantt_hdr") do %>
+      <%= link_to "#{month_f.year}-#{month_f.month}",
+                  params.merge(:year => month_f.year, :month => month_f.month),
+                  :title => "#{month_name(month_f.month)} #{month_f.year}" %>
+    <% end %>
+    <%
+      left = left + width + 1
+      month_f = month_f >> 1
+    %>
+  <% end %>
+
+  <% ###### Weeks headers ###### %>
+  <% if show_weeks %>
+    <%
+      left = 0
+      height = (show_days ? header_height - 1 : header_height - 1 + g_height)
+    %>
+    <% if timeline.date_from.cwday == 1 %>
+      <%
+        # date_from is monday
+        week_f = timeline.date_from
+      %>
+    <% else %>
+      <%
+        # find next monday after date_from
+        week_f = timeline.date_from + (7 - timeline.date_from.cwday + 1)
+        width = (7 - timeline.date_from.cwday + 1) * zoom - 1
+        style  = ""
+        style += "left: #{left}px;"
+        style += "top: 19px;"
+        style += "width: #{width}px;"
+        style += "height: #{height}px;"
+      %>
+      <%= content_tag(:div, '&nbsp;'.html_safe,
+                      :style => style, :class => "gantt_hdr") %>
+      <% left = left + width + 1 %>
+    <% end %>
+    <% while week_f <= timeline.date_to %>
+      <%
+        width = ((week_f + 6 <= timeline.date_to) ?
+                    7 * zoom - 1 :
+                    (timeline.date_to - week_f + 1) * zoom - 1).to_i
+        style  = ""
+        style += "left: #{left}px;"
+        style += "top: 19px;"
+        style += "width: #{width}px;"
+        style += "height: #{height}px;"
+      %>
+      <%= content_tag(:div, :style => style, :class => "gantt_hdr") do %>
+        <%= content_tag(:small) do %>
+          <%= week_f.cweek if width >= 16 %>
+        <% end %>
+      <% end %>
+      <%
+        left = left + width + 1
+        week_f = week_f + 7
+      %>
+    <% end %>
+  <% end %>
+
+  <% ###### Days headers ####### %>
+  <% if show_days %>
+    <%
+      left = 0
+      height = g_height + header_height - 1
+      wday = timeline.date_from.cwday
+    %>
+    <% (timeline.date_to - timeline.date_from + 1).to_i.times do |i| %>
+      <%
+           is_holiday_date = timeline.holiday_date(timeline.date_from + i)
+        title = ""
+           title = "#{format_date(timeline.date_from + i)}: Bank Holiday (#{timeline.country_holiday_list(timeline.date_from + i).join(", ")})" if is_holiday_date
+           #(#{timeline.country_holiday_list(timeline.date_from + i).join(", ")})
+        width =  zoom - 1
+        style  = ""
+        style += "left: #{left}px;"
+        style += "top:37px;"
+        style += "width: #{width}px;"
+        style += "height: #{height}px;"
+        style += "font-size:0.7em;"
+           style += "font-weight:bold;" if is_holiday_date
+        clss = "gantt_hdr"
+        clss << " nwday" if timeline.non_working_week_days.include?(wday)
+           clss << " holiday" if is_holiday_date
+      %>
+      <%= content_tag(:div, :style => style, :class => clss, :title => title) do %>
+        <p><%= day_letter(wday) %></p>
+        <p><%= (timeline.date_from + i).day %></p>
+        
+      <% end %>
+      <%
+        left = left + width + 1
+        wday = wday + 1
+        wday = 1 if wday > 7
+      %>
+
+    <% end %>
+  <% end %>
+
+  <% if timeline.zoom > 3 %>
+  <%= timeline.lines.html_safe %> 
+  <% else %>
+  <%= timeline.lines_for_weeks.html_safe %>
+  <% end %>
+
+  <% ###### Today red line (excluded from cache) ###### %>
+  <% if Date.today >= timeline.date_from and Date.today <= timeline.date_to %>
+    <%
+      today_left = (((Date.today - @timeline.date_from + 1) * zoom).floor() - 1).to_i
+      style  = ""
+      style += "position: absolute;"
+      style += "height: #{g_height}px;"
+      style += "top: #{headers_height + 1}px;"
+      style += "left: #{today_left}px;"
+      style += "width:10px;"
+      style += "border-left: 1px dashed blue;"
+    %>
+    <%= content_tag(:div, '&nbsp;'.html_safe, :style => style, :id => 'today_line') %>
+  <% end %>
+  <%
+    style  = ""
+    style += "position: absolute;"
+    style += "height: #{g_height}px;"
+    style += "top: #{headers_height + 1}px;"
+    style += "left: 0px;"
+    style += "width: #{g_width - 1}px;"
+
+  %>
+  <%= content_tag(:div, '', :style => style, :id => "gantt_draw_area") %>
+  </div>
+  </td>
+  </tr>
+  </table>
+<% end %>
+
+<table style="width:100%">
+<tr>
+<td style="text-align:left;">
+    <%= link_to_content_update("\xc2\xab " + l(:label_previous) + " #{timeline.months} months",
+                               params.merge(timeline.params_previous),
+                               :accesskey => accesskey(:previous)) %>
+  </td>
+  <td style="text-align:right;">
+    <%= link_to_content_update(l(:label_next) + " #{timeline.months} months" + " \xc2\xbb",
+                               params.merge(timeline.params_next),
+                               :accesskey => accesskey(:next)) %>
+  </td>
+</tr>
+</table>
