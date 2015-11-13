@@ -16,3 +16,5 @@ resources :projects do
 end
 
 get '/projects/:project_id/workload/board', :to => 'wl_boards#index'
+
+get '/projects/:project_id/workload/check', :to => 'wl_check_loggedtime#show'

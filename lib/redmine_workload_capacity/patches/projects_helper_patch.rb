@@ -18,7 +18,7 @@ module RedmineWorkloadCapacity
 		          tabs.push({ :name => 'workload',
 		                      :action => :view_workload,
 		                      :partial => 'projects/workload_settings',
-		                      :label => :label_workload}) if @project.module_enabled?(:allocation)
+		                      :label => :label_workload}) if @project.module_enabled?(:allocation) && User.current.wl_manage_right?(@project)
 
 		          tabs
 		        end

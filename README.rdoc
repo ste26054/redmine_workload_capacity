@@ -1,3 +1,12 @@
 = redmine_allocation
 
-Description goes here
+The aim of this plugin is to manage the allocation of cross project members. It is useful when there are many projects running in parallel and common members have been assigned to those projects. 
+The allocation plugin is organised into 3 tabs:
+- Main Dashboard: summarise all your allocation configuration
+- Configuration page: to configure your allocation 
+- Check page: check loggedtime with allocated time 
+
+Require others plugins:
+requires_redmine :version_or_higher => "3.0.0"
+requires_redmine_plugin :redmine_leaves_holidays, :version_or_higher => '0.1'
+requires_redmine_plugin :redmine_wktime, :version => '1.8.1'
