@@ -5,6 +5,9 @@ class WlProjectWindow < ActiveRecord::Base
   include WlLogic
 
   belongs_to :project
+
+  has_many :wl_user_overtime, :dependent => :destroy
+  
   has_many :wl_common_windows, :dependent => :destroy
   has_many :wl_overlaps, :through => :wl_common_windows
 
@@ -12,6 +15,7 @@ class WlProjectWindow < ActiveRecord::Base
   has_many :wl_custom_allocations, :dependent => :destroy
 
   has_many :wl_custom_project_windows, :dependent => :destroy
+
 
   before_update :check_custom_allocations
   before_update :check_overtimes
