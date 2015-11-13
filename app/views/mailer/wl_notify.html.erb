@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<h1>Notification for <%= @user %></h1>
+
+<% if Rails.env.development? %>
+	<p>Sent to: <%= @recp %></p>
+<% end %>
+
+<hr />
+
+<h2>Please check your logging time on your timesheet for the project <%= @project.name %></h2>
+
+
+

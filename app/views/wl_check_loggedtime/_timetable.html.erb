@@ -243,7 +243,11 @@
     <% end %>
   <% end %>
 
-  <%= timeline.lines.html_safe %>
+  <% if timeline.zoom > 3 %>
+  <%= timeline.lines.html_safe %> 
+  <% else %>
+  <%= timeline.lines_for_weeks.html_safe %>
+  <% end %>
 
   <% ###### Today red line (excluded from cache) ###### %>
   <% if Date.today >= timeline.date_from and Date.today <= timeline.date_to %>

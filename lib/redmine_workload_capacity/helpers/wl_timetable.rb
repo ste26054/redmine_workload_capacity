@@ -53,6 +53,7 @@ module RedmineWorkloadCapacity
         @date_to = (@date_from >> @months) - 1
         @users = ''
         @lines = ''
+        @lines_for_weeks = ''
         @number_of_rows = nil
         @truncated = false
         if options.has_key?(:max_rows)
@@ -95,6 +96,7 @@ module RedmineWorkloadCapacity
         indent = options[:indent] || 4
         @users = '' unless options[:only] == :lines
         @lines = '' unless options[:only] == :users
+        @lines_for_weeks = '' unless options[:only] == :users
         @number_of_rows = 0
         begin
           if @project
@@ -169,6 +171,12 @@ module RedmineWorkloadCapacity
         @lines
       end
 
+      def lines_for_weeks(options={})
+        render(options.merge(:only => :lines_for_weeks)) unless @lines_rendered
+        @lines_for_weeks
+      end
+
+
       # def render_project(project, options={})
       #   unless wl_users.empty?
       #     wl_users.each do |user|
@@ -202,7 +210,7 @@ module RedmineWorkloadCapacity
 
       def line_for_user(user, options)
 
-        member = Member.where(user_id: user.id, project_id: @project.id).first
+        member = Member.find_by(user_id: user.id, project_id: @project.id)
 
         start_date = @date_from 
         end_date =  @date_to
@@ -210,60 +218,94 @@ module RedmineWorkloadCapacity
         #total_weeks = (end_date.to_time.to_f - start_date.to_time.to_f)/(1.week)
 
         if member.wl_project_allocation?
-          logged_time_table = get_logged_time_table(user.id, @project)
 
-          table_alloc = member.wl_global_table_allocation
+          logged_time_table = get_logged_time_table(user.id, @project) #Hash
+          alloc_table = member.wl_global_table_allocation #Array
+          overtime_table = WlUserOvertime.where(user_id: user.id, wl_project_window_id: @project.wl_project_window.id) #Active Record
 
-          table_alloc.each_with_index do |alloc,i|
+          alloc_table.each_with_index do |alloc,i|
             
             start_alloc = alloc[:start_date] 
             end_alloc = alloc[:end_date]
 
             current_date = start_alloc
 
+            ratio_total = 0
+            number_days = 0
             while current_date.between?(start_alloc, end_alloc)
-              
+               
               if current_date.between?(start_date, end_date)
 
                 #alloc hours for a day
-                alloc_day = ((user.weekly_working_hours*alloc[:percent_alloc])/(100*5)).round(1)
+                alloc_hours = ((user.weekly_working_hours*alloc[:percent_alloc])/(100*5)).round(1)
 
-                unless alloc_day==0
+                unless alloc_hours ==0 #Be aware: this alloc_hours is not exactly correct because it is the value for a whole period without taking account of the bank holiday nor week end So for bank holiday and week end, we need to check if there is any overtime
                  
-                  overtime = WlUserOvertime.where(user_id: user.id, wl_project_window_id: @project.wl_project_window.id).overlaps(current_date, current_date).first
+                  #Overtime extra hours value for current date
+                  unless overtime_table.empty?
+                    overtime = overtime_table.overlaps(current_date, current_date).first
+                  else
+                    overtime = nil
+                  end
+
                   unless overtime.nil?
                     extra_hours_per_day = (overtime.overtime_hours.to_f / overtime.overtime_days_count).round(1)
                   else 
                     extra_hours_per_day = 0
                   end
-                  #bank holiday
-                   is_holiday_date = holiday_date_for_user(user,current_date)
+
+                  #bank holiday for current date
+                  is_holiday_date = holiday_date_for_user(user,current_date)
 
                   #logged_hours for current_date
                   logged_hours = logged_time_table[current_date]
                   logged_hours = 0.0 if logged_hours.nil?
 
-                  #week end - overtime only
+                  ratio = 0
+                  ratio_day = 0
+
+                  #_______week end - overtime only
                   if current_date.cwday == 6 || current_date.cwday == 7
                     unless overtime.nil?
-                      #dont forget bank holiday
                       if (overtime[:include_sat] && current_date.cwday == 6 ) || (overtime[:include_sun] && current_date.cwday == 7) || (overtime[:include_bank_holidays] && is_holiday_date)
-                        compare_hours(user, options, current_date, logged_hours, 0, extra_hours_per_day) 
+                        ratio = ratio_calculation(logged_hours, 0, extra_hours_per_day )       
+                        ratio_day = 1                
+                        compare_hours(user, options, current_date, logged_hours, 0, extra_hours_per_day, ratio) 
                       end
                     end
+                    if current_date.cwday == 7 && number_days != 0
 
-                  else
-                  #other days
-                    if !is_holiday_date #&& extra_hours_per_day!=0  &&
-                      compare_hours(user, options, current_date, logged_hours, alloc_day, extra_hours_per_day)
-                    elsif is_holiday_date && extra_hours_per_day!=0 && overtime[:include_bank_holidays]
-                      #case the current date is a bank holiday and not on the week end and there is overtime for bank holiday
-                      compare_hours(user, options, current_date, logged_hours, 0, extra_hours_per_day)
-                    end
+                      week_ratio = (ratio_total/number_days).round(2)
                       
+                      output_field = ""
+                      output_tooltip = ""
+
+                      output_tooltip << "From #{format_date(current_date.beginning_of_week)} to #{format_date(current_date)}"
+                      output_tooltip << "<br />Ratio total this week: #{ratio_total.round(2)}"
+                      output_tooltip << "<br />Number of working days for this week: #{number_days}"
+                      output_tooltip << "<br /><strong>Average Ratio this week</strong>: #{ratio_total.round(2)}/#{number_days} = <strong>#{week_ratio}</strong> "
+  
+                      compare_ratio_nominal(current_date.beginning_of_week, current_date, options, week_ratio, output_tooltip, output_field)
+
+                      ratio_total = 0
+                      number_days = 0
+                    end
+                  #_______other days
+                  else
+                    if !is_holiday_date 
+                      ratio = ratio_calculation(logged_hours, alloc_hours, extra_hours_per_day )
+                      ratio_day = 1 
+                      compare_hours(user, options, current_date, logged_hours, alloc_hours , extra_hours_per_day, ratio)
+                    elsif is_holiday_date && extra_hours_per_day!=0 && overtime[:include_bank_holidays]
+                      ratio = ratio_calculation(logged_hours, 0, extra_hours_per_day )
+                      ratio_day = 1
+                      #case the current date is a bank holiday and not on the week end and there is overtime for bank holiday
+                      compare_hours(user, options, current_date, logged_hours, 0, extra_hours_per_day, ratio)
+                    end
 
                   end
-
+                  ratio_total += ratio
+                  number_days += ratio_day
                 end
 
               end
@@ -292,9 +334,21 @@ module RedmineWorkloadCapacity
 
       end
 
-      def compare_hours(user, options, current_date, logged_hours, allocated_hours, extra_hours = 0)
+      def ratio_calculation(logged_hours, allocated_hours, extra_hours = 0)
+        reference_hours = allocated_hours + extra_hours
+        unless reference_hours == 0.0
+          ratio = (logged_hours/reference_hours).round(2)
+        else
+          ratio = 0
+        end
+        return ratio
+      end
+
+
+      def compare_hours(user, options, current_date, logged_hours, allocated_hours, extra_hours = 0, ratio)
         output_tooltip = ""
         output_field = ""
+
         reference_hours = allocated_hours
         if extra_hours > 0
           output_field << " * "
@@ -315,21 +369,10 @@ module RedmineWorkloadCapacity
               output_tooltip << "<br />Overtime (hours): #{extra_hours}"
               output_tooltip << "<br />Reference time (hours): #{allocated_hours}+#{extra_hours} = #{reference_hours}"
             end
-            ratio = (logged_hours/reference_hours).round(2)
+           # ratio = (logged_hours/reference_hours).round(2)
             output_tooltip << "<br /><strong>Ratio</strong>: #{logged_hours.round(1)}/#{reference_hours} = <strong>#{ratio}</strong> "
 
-            if logged_hours==0.0
-              #BLACK color: there is no logged time
-                line(current_date, current_date, options, 3, output_tooltip, output_field)
-            else              
-              if (ratio <= 0.9) || (ratio >= 1.10) # RED
-                line(current_date, current_date, options, 2, output_tooltip, output_field)
-              elsif  (ratio >= 0.95) && (ratio <= 1.05) # GREEN
-                line(current_date, current_date, options, 0, output_tooltip, output_field)
-              else #AMBER
-                 line(current_date, current_date, options, 1, output_tooltip, output_field)
-              end
-            end
+            compare_ratio_nominal(current_date, current_date, options, ratio, output_tooltip, output_field)
           end
         else
           #leave for a whole day
@@ -337,6 +380,18 @@ module RedmineWorkloadCapacity
         end
       end
 
+      def compare_ratio_nominal(start_date, end_date, options, ratio, output_tooltip, output_field)
+        if ratio == 0.0
+          #BLACK color: there is no logged time
+          line(start_date, end_date, options, 3, output_tooltip, output_field)
+        elsif (ratio <= 0.9) || (ratio >= 1.10) # RED
+          line(start_date, end_date, options, 2, output_tooltip, output_field)
+        elsif  (ratio >= 0.95) && (ratio <= 1.05) # GREEN
+          line(start_date, end_date, options, 0, output_tooltip, output_field)
+        else #AMBER
+          line(start_date, end_date, options, 1, output_tooltip, output_field)
+        end
+      end
       # def subject_for_project(project, options)
       #   subject(project.name, options, project)
       # end
@@ -351,15 +406,31 @@ module RedmineWorkloadCapacity
       # def line_for_role(role, options)
       # end
 
-      def line(start_date, end_date, options, check_status=nil, text, ratio)
+      def line(start_date, end_date, options, check_status=nil, text_tooltip, text_field)
+
         options[:zoom] ||= 1
         options[:g_width] ||= (self.date_to - self.date_from + 1) * options[:zoom]
       
-          coords = coordinates(start_date, end_date, options[:zoom])
- 
-        html_task(options, coords, check_status, text, ratio)
+        coords = coordinates(start_date, end_date, options[:zoom])
 
+        if start_date == end_date
+          html_task(options, coords, check_status, text_tooltip, text_field, true)
+        else
+          html_task(options, coords, check_status, text_tooltip, text_field, false)
+        end
       end
+
+      # def line_week(start_date, end_date, options, check_status=nil, text, ratio)
+      #   options[:zoom] ||= 1
+      #   options[:g_width] ||= (self.date_to - self.date_from + 1) * options[:zoom]
+      
+      #     coords = coordinates(start_date, end_date, options[:zoom])
+        
+      #     text << "__start : #{start_date} __ end: #{end_date} __ zoom: #{options[:zoom]}"
+
+      #   html_task_week(options, coords, check_status, text, ratio)
+
+      # end
 
       def subject(label, options, object=nil)
         html_subject(options, label, object)
@@ -462,7 +533,7 @@ module RedmineWorkloadCapacity
         output
       end
 
-      def html_task(params, coords, check_status, text, ratio)
+      def html_task(params, coords, check_status, text_tooltip, text_field, field_by_day)
         output = ''
         css = "task parent"
 
@@ -470,7 +541,7 @@ module RedmineWorkloadCapacity
         if coords[:bar_start] && coords[:bar_end]
        
           s = view.content_tag(:span,
-                               "#{text}".html_safe,
+                               "#{text_tooltip}".html_safe,
                                :class => "tip")
           style = ""
           style << "position: absolute;"
@@ -490,14 +561,56 @@ module RedmineWorkloadCapacity
           else # case that check_status == 3: there is no logged time
             style << "background-color: #131214;" # black
           end
-          s << "#{ratio}".html_safe
+          s << "#{text_field}".html_safe
           output << view.content_tag(:div, s.html_safe,
                                      :style => style,
                                      :class => "tooltip")
         end
-        @lines << output
-        output
+        if field_by_day
+          @lines << output
+          output
+        else 
+          @lines_for_weeks << output
+          output
+        end
       end
+
+      #       def html_task_week(params, coords, check_status, text, ratio)
+      #   output = ''
+      #   css = "task parent"
+
+      #   #Renders the tooltip
+      #   if coords[:bar_start] && coords[:bar_end]
+       
+      #     s = view.content_tag(:span,
+      #                          "#{text}".html_safe,
+      #                          :class => "tip")
+      #     style = ""
+      #     style << "position: absolute;"
+      #     style << "text-align: center;"
+      #     style << "top:#{params[:top]}px;"
+      #     style << "left:#{coords[:bar_start]}px;"
+      #     style << "width:#{coords[:bar_end] - coords[:bar_start] - 1}px;"
+      #     style << "height:16px;"
+      #     if check_status == 0 # Good, ratio = [0.95;1.05]
+      #       style << "background-color: #19A347;" # green
+      #     elsif check_status == 1 # Warning, ratio = [0.90;0.95] && [1.05;1.10]
+      #       style << "background-color: #FF9933;" # orange
+      #     elsif check_status == 2 # Bad, ratio = [0;0.90] && [1.10; +infini]
+      #       style << "background-color: #CC0000;" # red
+      #     elsif check_status == 4 #leave holiday for full day only
+      #       style << "background-color: #DADADA;" # grey
+      #     else # case that check_status == 3: there is no logged time
+      #       style << "background-color: #131214;" # black
+      #     end
+      #     s << "#{ratio}".html_safe
+      #     output << view.content_tag(:div, s.html_safe,
+      #                                :style => style,
+      #                                :class => "tooltip")
+      #   end
+      #   @lines_for_weeks << output
+      #   output
+      # end
 
     end
   end
