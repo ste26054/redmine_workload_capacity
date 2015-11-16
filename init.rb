@@ -29,9 +29,12 @@ Rails.configuration.to_prepare do
 
   wl_job = Rufus::Scheduler.new(:lockfile => ".wl_check-scheduler.lock")
     unless wl_job.down?
-      # wl_job.cron '0 12 * * 0' do
-      #   Mailer.wl_notify([User.find(159)], Project.find(37), {user: User.find(159)}).deliver
-      # end
+ 
+     # wl_job.cron '* * * * *' do
+     wl_job.cron '0 23 * * 0' do
+       WlCheckMailerTriggers::check_current_week
+       Rails.logger.info "Sheduler finished running Allocation_CheckLoggedTime: #{Time.now}"
+     end
     end
 
   unless ApplicationController.included_modules.include?(RedmineWorkloadCapacity::Patches::MailerPatch)
