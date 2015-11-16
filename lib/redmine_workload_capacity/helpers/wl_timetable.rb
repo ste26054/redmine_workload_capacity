@@ -220,7 +220,7 @@ module RedmineWorkloadCapacity
         if member.wl_project_allocation?
 
           logged_time_table = get_logged_time_table(user.id, @project) #Hash
-          alloc_table = member.wl_global_table_allocation #Array
+          alloc_table = member.wl_table_allocation #Array
           overtime_table = WlUserOvertime.where(user_id: user.id, wl_project_window_id: @project.wl_project_window.id) #Active Record
 
           alloc_table.each_with_index do |alloc,i|
