@@ -324,14 +324,9 @@ module RedmineWorkloadCapacity
 
       def get_logged_time(user, project_id, current_date)
         TimeEntry.all.where(user_id: user.id, project_id: project_id, spent_on: current_date).sum(:hours)
-        #TimeEntryQuery.new(project: Project.find(project_id)).results_scope.where(user_id: user.id, spent_on: current_date).sum(:hours)
-        #TimeEntryQuery.new(project: Project.find(37)).results_scope.where(user_id: "159").group(:spent_on).sum(:hours)
-
       end
 
       def get_logged_time_table(user_id, project)
-        #TimeEntry.all.where(user_id: user.id, project_id: project_id, spent_on: current_date).sum(:hours)
-        #TimeEntryQuery.new(project: Project.find(project_id)).results_scope.where(user_id: user.id, spent_on: current_date).sum(:hours)
         TimeEntryQuery.new(project: project).results_scope.where(user_id: user_id).group(:spent_on).sum(:hours)
 
       end
@@ -421,18 +416,6 @@ module RedmineWorkloadCapacity
           html_task(options, coords, check_status, text_tooltip, text_field, false)
         end
       end
-
-      # def line_week(start_date, end_date, options, check_status=nil, text, ratio)
-      #   options[:zoom] ||= 1
-      #   options[:g_width] ||= (self.date_to - self.date_from + 1) * options[:zoom]
-      
-      #     coords = coordinates(start_date, end_date, options[:zoom])
-        
-      #     text << "__start : #{start_date} __ end: #{end_date} __ zoom: #{options[:zoom]}"
-
-      #   html_task_week(options, coords, check_status, text, ratio)
-
-      # end
 
       def subject(label, options, object=nil)
         html_subject(options, label, object)
@@ -576,43 +559,6 @@ module RedmineWorkloadCapacity
           output
         end
       end
-
-      #       def html_task_week(params, coords, check_status, text, ratio)
-      #   output = ''
-      #   css = "task parent"
-
-      #   #Renders the tooltip
-      #   if coords[:bar_start] && coords[:bar_end]
-       
-      #     s = view.content_tag(:span,
-      #                          "#{text}".html_safe,
-      #                          :class => "tip")
-      #     style = ""
-      #     style << "position: absolute;"
-      #     style << "text-align: center;"
-      #     style << "top:#{params[:top]}px;"
-      #     style << "left:#{coords[:bar_start]}px;"
-      #     style << "width:#{coords[:bar_end] - coords[:bar_start] - 1}px;"
-      #     style << "height:16px;"
-      #     if check_status == 0 # Good, ratio = [0.95;1.05]
-      #       style << "background-color: #19A347;" # green
-      #     elsif check_status == 1 # Warning, ratio = [0.90;0.95] && [1.05;1.10]
-      #       style << "background-color: #FF9933;" # orange
-      #     elsif check_status == 2 # Bad, ratio = [0;0.90] && [1.10; +infini]
-      #       style << "background-color: #CC0000;" # red
-      #     elsif check_status == 4 #leave holiday for full day only
-      #       style << "background-color: #DADADA;" # grey
-      #     else # case that check_status == 3: there is no logged time
-      #       style << "background-color: #131214;" # black
-      #     end
-      #     s << "#{ratio}".html_safe
-      #     output << view.content_tag(:div, s.html_safe,
-      #                                :style => style,
-      #                                :class => "tooltip")
-      #   end
-      #   @lines_for_weeks << output
-      #   output
-      # end
 
     end
   end

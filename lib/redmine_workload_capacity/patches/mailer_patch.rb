@@ -23,11 +23,9 @@ module RedmineWorkloadCapacity
 
 
     		cc = []
-    		subject = "TRalalal Submitted by #{@user.name}"
+    		subject = "Allocation Check for #{@user.name}"
 
         mail :to => recipients, :cc => cc, :subject => subject
-       	#mail :to => [User.find(94)], :cc => cc, :subject => subject
-
     	end
 
     end
