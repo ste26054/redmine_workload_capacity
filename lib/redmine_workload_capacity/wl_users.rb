@@ -23,13 +23,15 @@ module WlUser
 		 		wl_users << self.users_for_project_role(project, role)
 		 		wl_users.flatten(1)
 		 	end
-		 	return wl_users.flatten.uniq
+		 	 wl_users.flatten.uniq
 		 end
+		 return wl_users.flatten.uniq
 	end
 
 	def self.wl_members_for_project(project)
 		wl_members = []
 		members = project.members.to_a
+	
 		display_role_ids_list = WlProjectWindowLogic.retrieve_display_role_ids_list(project)
 		 unless display_role_ids_list.empty?
 		 	display_role_ids_list.each do |role_id|
@@ -41,9 +43,9 @@ module WlUser
 					end
 				end	
 		 	end
-		 	return wl_members.flatten.uniq
+		  wl_members.flatten.uniq
 		 end
-		 
+		 return wl_members.flatten.uniq
 	end
 
 	def self.wl_member?(member)

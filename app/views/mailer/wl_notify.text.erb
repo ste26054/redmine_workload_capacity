@@ -3,4 +3,6 @@
 
 <hr />
 
-<h2>Please check your loggedtime on your timesheet for the project <%= @project.name %></h2>
+<h2>Please update the time you logged last week according to the effort you spend on the project activities <%= @project.name %></h2>
+
+<p>The ratio LoggedTime/AllocatedTime from <%= Date.today.beginning_of_week %> to <%= Date.today.end_of_week %> is up to : <%= @ratio %> </p>

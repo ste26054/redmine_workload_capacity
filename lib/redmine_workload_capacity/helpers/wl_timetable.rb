@@ -274,6 +274,8 @@ module RedmineWorkloadCapacity
                       end
                     end
                     if current_date.cwday == 7 && number_days != 0
+                      ratio_total += ratio
+                      number_days += ratio_day
 
                       week_ratio = (ratio_total/number_days).round(2)
                       
