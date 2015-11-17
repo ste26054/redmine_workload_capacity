@@ -15,6 +15,7 @@ module RedmineWorkloadCapacity
 
 		module MemberInstanceMethods
 			include WlLogic
+			include WlMember
 
 			def wl_reload
 				self.project.wl_reload
