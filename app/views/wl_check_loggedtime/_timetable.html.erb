@@ -29,6 +29,10 @@
 
 <% end %>
 </fieldset>
+<% acceptable_limit_low = @ratio_limits[0] %>
+<% acceptable_limit_high = @ratio_limits[1] %>
+<% danger_limit_low = @ratio_limits[2] %>
+<% danger_limit_high = @ratio_limits[3] %>
 
 <table class="caption">
   <thead>
@@ -37,11 +41,11 @@
     </tr>
     <tr>
       <td><div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #19A347;"></div></td>
-      <td>0.95 &lt;= ratio &lt;= 1.05</td>
+      <td><%= acceptable_limit_low %> &lt;= ratio &lt;= <%= acceptable_limit_high %></td>
       <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #FF9933;"></div></td>
-      <td>0.90 &lt; ratio &lt; 0.95 or 1.05 &lt; ratio &lt; 1.10</td>
+      <td><%= danger_limit_low %> &lt; ratio &lt; <%= acceptable_limit_low %> or <%= acceptable_limit_high %> &lt; ratio &lt; <%= danger_limit_high %></td>
       <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #CC0000;"></div></td>
-      <td>ratio &lt;= 0.90 or 1.10 &lt;= ratio</td>
+      <td>ratio &lt;= <%= danger_limit_low %> or <%= danger_limit_high %> &lt;= ratio</td>
       <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #131214;"></div></td>
       <td>No logged time</td>
       <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #DADADA;"></div></td>

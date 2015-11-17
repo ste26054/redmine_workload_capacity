@@ -20,8 +20,9 @@ module RedmineWorkloadCapacity
       def initialize(options={})
         @leave_project_id = RedmineLeavesHolidays::Setting.defaults_settings(:default_project_id)
         @project = options[:project]
-        @wl_pw_start_date = @project.wl_project_window.start_date if @project.wl_window?
-        @wl_pw_end_date = @project.wl_project_window.end_date if @project.wl_window?
+        wl_pw = @project.wl_project_window
+        @wl_pw_start_date = wl_pw.start_date if @project.wl_window?
+        @wl_pw_end_date = wl_pw.end_date if @project.wl_window?
 
         options = options.dup
         if options[:year] && options[:year].to_i >0
@@ -61,6 +62,14 @@ module RedmineWorkloadCapacity
         else
           @max_rows = 1000
         end
+
+        #Ratio limits
+        @ratio_limits = options[:ratio_limits]
+        @acceptable_limit_low = @ratio_limits[0]
+        @acceptable_limit_high = @ratio_limits[1]
+        @danger_limit_low = @ratio_limits[2]
+        @danger_limit_high = @ratio_limits[3]
+
       end
 
       def common_params
@@ -378,12 +387,13 @@ module RedmineWorkloadCapacity
       end
 
       def compare_ratio_nominal(start_date, end_date, options, ratio, output_tooltip, output_field)
+       
         if ratio == 0.0
           #BLACK color: there is no logged time
           line(start_date, end_date, options, 3, output_tooltip, output_field)
-        elsif (ratio <= 0.9) || (ratio >= 1.10) # RED
+        elsif (ratio <= @danger_limit_low) || (ratio >= @danger_limit_high) # RED
           line(start_date, end_date, options, 2, output_tooltip, output_field)
-        elsif  (ratio >= 0.95) && (ratio <= 1.05) # GREEN
+        elsif  (ratio >= @acceptable_limit_low) && (ratio <= @acceptable_limit_high) # GREEN
           line(start_date, end_date, options, 0, output_tooltip, output_field)
         else #AMBER
           line(start_date, end_date, options, 1, output_tooltip, output_field)

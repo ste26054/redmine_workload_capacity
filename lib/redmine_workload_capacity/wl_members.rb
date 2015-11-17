@@ -52,6 +52,8 @@ module WlMember
 
 		unless date_list.empty?
 			ratio = (daily_ratio_total/date_list.size).round(2)
+		else
+			ratio = nil
 		end
 
  		return ratio
