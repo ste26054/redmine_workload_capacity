@@ -31,14 +31,17 @@ class WlProjectWindow < ActiveRecord::Base
   validates :project_id, presence: true
   validates :tooltip_role_ids, presence: true
   validates :display_role_ids, presence: true
+  validates :acceptable_check_limit, presence: true, numericality: true, inclusion: { in: 0..100 }
+  validates :danger_check_limit, presence: true,  numericality: true, inclusion: { in: 0..100 }
 
   validate :end_date_not_before_start_date
   validate :check_custom_allocations
   validate :check_overtimes
   validate :check_custom_project_windows
   validate :check_tooltip_and_display_role_ids
+  validate :check_acceptable_danger_limits
 
-  attr_accessible :start_date, :end_date, :project_id, :tooltip_role_ids, :display_role_ids
+  attr_accessible :start_date, :end_date, :project_id, :tooltip_role_ids, :display_role_ids, :acceptable_check_limit, :danger_check_limit
 
   serialize :tooltip_role_ids
   serialize :display_role_ids
@@ -106,6 +109,10 @@ private
 	def check_tooltip_and_display_role_ids
 		errors.add(:base, l(:error_role_id_project_window_blanck)) if tooltip_role_ids == [""] || display_role_ids == [""]
 	end	
+
+	def check_acceptable_danger_limits
+		errors.add(:base, l(:error_check_limits)) if acceptable_check_limit >= danger_check_limit
+	end
 
 	def update_dashboard
 		changes = self.changes

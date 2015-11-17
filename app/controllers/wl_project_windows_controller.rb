@@ -51,7 +51,7 @@ class WlProjectWindowsController < ApplicationController
 private
 
   def wl_project_window_params
-	  params.require(:wl_project_window).permit(:start_date, :end_date, :tooltip_role_ids => [], :display_role_ids => [])
+	  params.require(:wl_project_window).permit(:start_date, :end_date, :acceptable_check_limit, :danger_check_limit, :tooltip_role_ids => [], :display_role_ids => [])
   end
 
   def set_project

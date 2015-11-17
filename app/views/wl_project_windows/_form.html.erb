@@ -20,6 +20,10 @@
 	<%- options = available_project_roles %> 
 	<%= f.select :tooltip_role_ids, options, {:include_hidden => false}, {:multiple => true} %>
 </p>
+<p>Acceptable [LoggedTime/allocatedTime] Ratio: <%= f.number_field :acceptable_check_limit, {:min => 0, :max => 100, :step => 1} %> %</p>
+<p>Warning [LoggedTime/allocatedTime] Ratio: <%= f.number_field :danger_check_limit, {:min => 1, :max => 100, :step => 1} %> %</p>
+
+
 <p><%= f.submit 'Save' %> <a href="javascript:history.back()"><%= l(:button_back) %></a></p>
 
 <% end %>

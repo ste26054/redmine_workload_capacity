@@ -4,14 +4,17 @@
 	<h2>Project Windows:</h2>
 
 	<fieldset>
-	<% if @project.wl_project_window != nil %>
-		<h3>From: <%= format_date(@project.wl_project_window.start_date) %> To: <%= format_date(@project.wl_project_window.end_date) %> </h3>
+	<% wl_pw = @project.wl_project_window %>
+	<% if wl_pw != nil %>
+		<h3>From: <%= format_date(wl_pw.start_date) %> To: <%= format_date(wl_pw.end_date) %> </h3>
 		 <p>Selected Role(s) to be displayed on the Allocation Dashboard: 
 		 	<%- list_id = WlProjectWindowLogic.retrieve_display_role_ids_list(@project) %>
 		 	<%= list_id.map { |id| Role.find(id) }.join(", ") %></p> 
 		 <p>Selected Role(s) to be displayed on the Total Allocation value's tooltip: 
 		 	<%- list_id = WlProjectWindowLogic.retrieve_tooltip_role_ids_list(@project) %>
 		 	<%= list_id.map { |id| Role.find(id) }.join(", ") %></p> 
+		 <p>Acceptable [LoggedTime/allocatedTime] Ratio: <%= wl_pw.acceptable_check_limit %>%</p>
+		 <p>Warning [LoggedTime/allocatedTime] Ratio: <%= wl_pw.danger_check_limit %>%</p>
 		<%= link_to 'Edit', edit_project_wl_project_window_path(@project), :class => 'icon icon-edit' %>
 		<%= link_to 'Delete', project_wl_project_window_path(@project), method: :delete,  :class => 'icon icon-del' %>
 	<% else %>
