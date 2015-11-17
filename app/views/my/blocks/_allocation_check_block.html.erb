@@ -1,0 +1,15 @@
+<% wl_members_list = User.current.wl_memberships  %>
+<% unless wl_members_list.empty? %>
+	<% start_week = Date.today.beginning_of_week  %>
+	<% end_week = Date.today.end_of_week  %>
+	<h3>Allocation check (<%= wl_members_list.size %>)</h3>
+	 <ul>
+	<% wl_members_list.each do |wl_member| %>
+	<% wl_project = wl_member.project %>
+  <li>For <strong><%=  wl_project %></strong>, your current week [LoggedTime/AllocatedTime] Ratio: <strong><%= link_to wl_member.get_check_ratio(start_week, end_week), "/projects/#{wl_project.id}/workload/check"  %></strong></li>
+
+	<% end%>
+	</ul>
+<% else %>
+	<h3> No Allocation Check </h3>
+<% end %>
