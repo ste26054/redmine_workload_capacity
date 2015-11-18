@@ -1,6 +1,8 @@
 class WlCheckLoggedtimeController < ApplicationController
   unloadable
   include WlCommon
+
+  menu_item :workload
  
   helper :wl_boards
   helper :wl_check_loggedtime
