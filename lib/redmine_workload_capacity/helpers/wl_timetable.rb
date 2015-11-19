@@ -325,7 +325,7 @@ module RedmineWorkloadCapacity
                       ratio_day = 1
                       #case the current date is a bank holiday and not on the week end and there is overtime for bank holiday
                       compare_hours(user, options, current_date, logged_hours, 0, extra_hours_per_day, ratio)
-               
+                     end  
         else
           #leave for a whole day
           ratio = ratio_calculation(logged_hours, alloc_hours, extra_hours_per_day )
@@ -334,7 +334,7 @@ module RedmineWorkloadCapacity
           ratio_day = 0
         end
                      
-                    end    
+                      
                   end
 
                   ratio_total += ratio
