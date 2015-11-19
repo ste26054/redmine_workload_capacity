@@ -20,9 +20,12 @@
 	<%- options = available_project_roles %> 
 	<%= f.select :tooltip_role_ids, options, {:include_hidden => false}, {:multiple => true} %>
 </p>
-<p>Acceptable [LoggedTime/allocatedTime] Ratio Limit: <%= f.number_field :acceptable_check_limit, {:min => 0, :max => 100, :step => 1} %> %</p>
-<p>Warning [LoggedTime/allocatedTime] Ratio Limit: <%= f.number_field :danger_check_limit, {:min => 1, :max => 100, :step => 1} %> %</p>
 
+<p title="This value helps to calculate the limit between the acceptable ratio (green) and the warning ratio (amber). If the check ratio is amber, a notification will be sent to the Project Manager and the Project Member.
+If a is considered to be the threshold, then the acceptable ratio zone is [1-a%; 1+a%]. Otherwise, the warning zone (amber) surrounds the acceptable ratio zone (green).">[LoggedTime/allocatedTime] <span style="color: #19A347">Acceptable</span>-<span style="color: #FF9933">Warning</span> Ratio Limit: <%= f.number_field :acceptable_check_limit, {:min => 0, :max => 100, :step => 1} %> % </p>
+
+<p title="This value helps to calculate the limit between the warning ratio (amber) and the danger ratio (red). If the check ratio is red, a notification will be sent to the Project Manager.
+If a is considered to be the threshold, then the danger ratio zone (red,black) are [0;1-a%] and 1+a%; 2]. This danger ratio zone surrounds the warning ratio zone (amber).">[LoggedTime/allocatedTime] <span style="color: #FF9933">Warning</span>-<span style="color: #CC0000">Danger</span> Ratio Limit: <%= f.number_field :danger_check_limit, {:min => 1, :max => 100, :step => 1} %> %</p>
 
 <p><%= f.submit 'Save' %> <a href="javascript:history.back()"><%= l(:button_back) %></a></p>
 
