@@ -232,7 +232,6 @@ module RedmineWorkloadCapacity
           alloc_table = member.wl_table_allocation #Array
           overtime_table = WlUserOvertime.where(user_id: user.id, wl_project_window_id: @project.wl_project_window.id) #Active Record
 
-
           ratio_total = 0
           number_days = 0
 
@@ -249,9 +248,7 @@ module RedmineWorkloadCapacity
 
                 #alloc hours for a day
                 alloc_hours = ((user.weekly_working_hours*alloc[:percent_alloc])/(100*5)).round(1)
-                #alloc_value = member.wl_project_allocation_between(current_date, current_date)
-                #alloc_hours = ((user.weekly_working_hours*alloc[:percent_alloc])/(100*5)).round(1)
-
+              
                 unless alloc_hours ==0 #Be aware: this alloc_hours is not exactly correct because it is the value for a whole period without taking account of the bank holiday nor week end So for bank holiday and week end, we need to check if there is any overtime
                  
                   #Overtime extra hours value for current date
@@ -283,73 +280,77 @@ module RedmineWorkloadCapacity
                       if (overtime[:include_sat] && current_date.cwday == 6 ) || (overtime[:include_sun] && current_date.cwday == 7) || (overtime[:include_bank_holidays] && is_holiday_date)
                         ratio = ratio_calculation(logged_hours, 0, extra_hours_per_day )       
                         ratio_day = 1                
-                        compare_hours(user, options, current_date, logged_hours, 0, extra_hours_per_day, ratio) 
+                        draw_daily_line(options, current_date, logged_hours, 0, extra_hours_per_day, ratio) 
                       end
                     end
-                    if current_date.cwday == 7 
-                      if number_days != 0
-                          ratio_total += ratio
-                          number_days += ratio_day
+                    if @zoom < 4 # do the weekly calculation if we display the weekly gantt (zoom out (value= 1,2,3))
+                      if current_date.cwday == 7 
+                        if number_days != 0
+                            ratio_total += ratio
+                            number_days += ratio_day
 
-                          week_ratio = (ratio_total/number_days).round(2)
-                          
-                          output_tooltip = ""
-                          output_field = ""
-                          output_tooltip << "Week from #{format_date(current_date.beginning_of_week)} to #{format_date(current_date)}"
-                          output_tooltip << "<br />Sum of daily ratio: #{ratio_total.round(2)}"
-                          output_tooltip << "<br />Number of working days for this week: #{number_days}"
-                          output_tooltip << "<br /><strong>Average Ratio this week</strong>: #{ratio_total.round(2)}/#{number_days} = <strong>#{week_ratio}</strong> "
-      
-                          compare_ratio_nominal(current_date.beginning_of_week, current_date, options, week_ratio, output_tooltip, output_field)
-
-                          ratio_total = 0
-                          number_days = 0
-                      else
-                           line(current_date.beginning_of_week, current_date, options, 4, "Leave Holiday", "")
+                            week_ratio = (ratio_total/number_days).round(2)  
+                        else
+                            ratio_total = 0
+                            week_ratio = 0
+                        end
+                        draw_weekly_line(options, current_date,ratio_total, number_days, week_ratio)
+                        ratio_total = 0
+                        number_days = 0
                       end
                     end
                   #_______other days
                   else
-                    
 
-        #leave
-        leave_time = get_logged_time(user, @leave_project_id, current_date).round(1)
-        base_hours = (user.weekly_working_hours/5).round(1)
-        unless leave_time == base_hours
-                    if !is_holiday_date 
-                      ratio = ratio_calculation(logged_hours, alloc_hours, extra_hours_per_day )
-                      ratio_day = 1 
-                      compare_hours(user, options, current_date, logged_hours, alloc_hours , extra_hours_per_day, ratio)
-                    elsif is_holiday_date && extra_hours_per_day!=0 && overtime[:include_bank_holidays]
-                      ratio = ratio_calculation(logged_hours, 0, extra_hours_per_day )
-                      ratio_day = 1
-                      #case the current date is a bank holiday and not on the week end and there is overtime for bank holiday
-                      compare_hours(user, options, current_date, logged_hours, 0, extra_hours_per_day, ratio)
-                     end  
-        else
-          #leave for a whole day
-          ratio = ratio_calculation(logged_hours, alloc_hours, extra_hours_per_day )
-          # compare_hours(user, options, current_date, logged_hours, alloc_hours , extra_hours_per_day, ratio)
-          line(current_date, current_date, options, 4, "Leave Holiday: #{leave_time}hours - full day", "")
-          ratio_day = 0
-        end
-                     
-                      
+                    #leave
+                    leave_time = get_logged_time(user, @leave_project_id, current_date).round(2)
+                    base_hours = user.weekly_working_hours/5
+                    if leave_time == base_hours.round(2)
+                      #full day off
+                      ratio = 0
+                      # draw_daily_line(options, current_date, logged_hours, alloc_hours , extra_hours_per_day, ratio)
+                      draw_daily_line(options, current_date, logged_hours, 0 , extra_hours_per_day, ratio)
+                      # line(current_date, current_date, options, 4, "Leave Holiday: #{leave_time}hours - full day", "")
+                      ratio_day = 0
+                    else 
+                      #working day
+
+                      if leave_time == (base_hours/2).round(2)
+                      #half day off
+                         alloc_hours = alloc_hours/2   
+                      else
+                        #no Leave day
+                        #no change of the alloc_hours
+                      end
+
+                      if !is_holiday_date 
+                        ratio = ratio_calculation(logged_hours, alloc_hours, extra_hours_per_day )
+                        ratio_day = 1 
+                        draw_daily_line(options, current_date, logged_hours, alloc_hours , extra_hours_per_day, ratio)
+                      elsif is_holiday_date && extra_hours_per_day!=0 && overtime[:include_bank_holidays]
+                        ratio = ratio_calculation(logged_hours, 0, extra_hours_per_day )
+                        ratio_day = 1
+                        #case the current date is a bank holiday and not on the week end and there is overtime for bank holiday
+                        draw_daily_line(options, current_date, logged_hours, 0, extra_hours_per_day, ratio)
+                      end  
+
+                    end
+     
                   end
 
                   ratio_total += ratio
                   number_days += ratio_day
-                end
+                end # from __ unless alloc_hours ==0 
 
-              end
+              end # from __ if current_date.between?(start_date, end_date)
 
               current_date = current_date+1
 
-            end
+            end # from __  while current_date.between?(start_alloc, end_alloc)
 
-          end
+          end # from __ alloc_table.each_with_index do |alloc,i|
 
-        end
+        end # from __ if member.wl_project_allocation?
  
       end
 
@@ -372,40 +373,54 @@ module RedmineWorkloadCapacity
         return ratio
       end
 
+      def draw_weekly_line(options, current_date,ratio_total, number_days, week_ratio)
+        output_tooltip = ""
+        output_field = ""
 
-      def compare_hours(user, options, current_date, logged_hours, allocated_hours, extra_hours = 0, ratio)
+        if number_days != 0
+
+            output_tooltip = ""
+            output_field = ""
+            output_tooltip << "Week from #{format_date(current_date.beginning_of_week)} to #{format_date(current_date)}"
+            output_tooltip << "<br />Sum of daily ratio: #{ratio_total.round(2)}"
+            output_tooltip << "<br />Number of working days for this week: #{number_days}"
+            output_tooltip << "<br /><strong>Average Ratio this week</strong>: #{ratio_total.round(2)}/#{number_days} = <strong>#{week_ratio}</strong> "
+
+            compare_ratio_nominal(current_date.beginning_of_week, current_date, options, week_ratio, output_tooltip, output_field) 
+        else
+             line(current_date.beginning_of_week, current_date, options, 4, "Leave Holiday", "")
+        end
+
+      end
+
+      def draw_daily_line(options, current_date, logged_hours, allocated_hours, extra_hours = 0, ratio)
         output_tooltip = ""
         output_field = ""
 
         reference_hours = allocated_hours
         if extra_hours > 0
           output_field << " * "
-          reference_hours = allocated_hours + extra_hours
+          reference_hours += extra_hours
         end
-        #logged_hours = get_logged_time(user, @project.id, current_date)
 
-        #leave
-        leave_time = get_logged_time(user, @leave_project_id, current_date).round(1)
+        unless reference_hours == 0.0 # there is at least some allocated hours and/or overtime extra hours
 
-        base_hours = (user.weekly_working_hours/5).round(1)
-
-        unless leave_time == base_hours
-          unless reference_hours == 0.0 # there is at least some allocated hours and/or overtime extra hours
-            output_tooltip << "Logged time (hours): #{logged_hours.round(1)}"
-            output_tooltip << "<br />Allocation time (hours): #{allocated_hours}"
-            if extra_hours > 0
-              output_tooltip << "<br />Overtime (hours): #{extra_hours}"
-              output_tooltip << "<br />Reference time (hours): #{allocated_hours}+#{extra_hours} = #{reference_hours}"
-            end
-           # ratio = (logged_hours/reference_hours).round(2)
-            output_tooltip << "<br /><strong>Ratio</strong>: #{logged_hours.round(1)}/#{reference_hours} = <strong>#{ratio}</strong> "
-
-            compare_ratio_nominal(current_date, current_date, options, ratio, output_tooltip, output_field)
+          output_tooltip << "Logged time (hours): #{logged_hours.round(1)}"
+          output_tooltip << "<br />Allocation time (hours): #{allocated_hours}"
+          if extra_hours > 0
+            output_tooltip << "<br />Overtime (hours): #{extra_hours}"
+            output_tooltip << "<br />Reference time (hours): #{allocated_hours}+#{extra_hours} = #{reference_hours}"
           end
+  
+          output_tooltip << "<br /><strong>Ratio</strong>: #{logged_hours.round(1)}/#{reference_hours} = <strong>#{ratio}</strong> "
+
+          compare_ratio_nominal(current_date, current_date, options, ratio, output_tooltip, output_field)
+        
         else
           #leave for a whole day
-          line(current_date, current_date, options, 4, "Leave Holiday: #{leave_time}hours - full day", "")
+          line(current_date, current_date, options, 4, "Leave Holiday: full day", "")
         end
+
       end
 
       def compare_ratio_nominal(start_date, end_date, options, ratio, output_tooltip, output_field)

@@ -253,10 +253,11 @@
   <%= timeline.lines_for_weeks.html_safe %>
   <% end %>
 
-  <% ###### Today red line (excluded from cache) ###### %>
+  <% ###### Today dashed blue line (excluded from cache) ###### %>
   <% if Date.today >= timeline.date_from and Date.today <= timeline.date_to %>
     <%
-      today_left = (((Date.today - @timeline.date_from + 1) * zoom).floor() - 1).to_i
+      #today_left = (((Date.today - @timeline.date_from + 1) * zoom).floor() - 1).to_i
+      today_left = (((Date.today - @timeline.date_from )+0.5 ) * zoom).floor() .to_i
       style  = ""
       style += "position: absolute;"
       style += "height: #{g_height}px;"
