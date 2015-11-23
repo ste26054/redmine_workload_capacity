@@ -6,7 +6,9 @@
 	 <ul>
 	<% wl_members_list.each do |wl_member| %>
 	<% wl_project = wl_member.project %>
-  <li>For <strong><%=  wl_project %></strong>, your current week [LoggedTime/AllocatedTime] Ratio: <strong><%= link_to wl_member.get_check_ratio(start_week, end_week), "/projects/#{wl_project.id}/workload/check"  %></strong></li>
+	<% ratio = wl_member.get_check_ratio(start_week, end_week) %>
+	<% ratio = "-- (Allocated to 0%)" if ratio.nil?  %>
+  <li>For <strong><%=  wl_project %></strong>, your current week [LoggedTime/AllocatedTime] Ratio: <strong><%= link_to ratio, "/projects/#{wl_project.id}/workload/check"  %></strong></li>
 
 	<% end%>
 	</ul>

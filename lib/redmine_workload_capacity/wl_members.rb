@@ -1,6 +1,7 @@
 module WlMember
 	
 	def get_check_ratio(from_date, to_date)
+		leave_project_id = RedmineLeavesHolidays::Setting.defaults_settings(:default_project_id)
 		wl_user = self.user
 		wl_project = self.project
 		start_week = from_date
@@ -13,7 +14,7 @@ module WlMember
 
 		overtime_table =  WlUserOvertime.where(user_id: self.user_id, wl_project_window_id: wl_project.wl_project_window.id)
 		logged_hours_table = wl_user.get_logged_time(wl_project, start_week, end_week)
-
+		leave_table = wl_user.get_logged_time(Project.find(leave_project_id), start_week, end_week)
 	
 		while current_date <= end_week
 			
@@ -22,12 +23,31 @@ module WlMember
 			daily_alloc_hours = 0
 			extra_hours_per_day = 0
 			alloc_hours_total = 0
+			daily_basis_hours = (wl_user.weekly_working_hours/5).round(2)
 
 			#bank_holiday?
-			unless wl_user.holiday_date_for_user(current_date) || current_date.cwday == 6 || current_date.cwday == 7
-				daily_alloc_percent = self.wl_project_allocation_between(current_date, current_date)
-				daily_alloc_hours  = (wl_user.weekly_working_hours*daily_alloc_percent)/(100*5)
+			unless wl_user.holiday_date_for_user(current_date) 
+				if current_date.cwday != 6 && current_date.cwday != 7
+					daily_alloc_percent = self.wl_project_allocation_between(current_date, current_date)
+					daily_alloc_hours  = (wl_user.weekly_working_hours*daily_alloc_percent)/(100*5)
+				end
 			end
+
+			unless leave_table[current_date].nil?
+				if leave_table[current_date].round(2) == daily_basis_hours
+					#full day off - put the alloc to 0
+					daily_alloc_hours = 0
+
+				elsif leave_table[current_date].round(2) == (daily_basis_hours/2).round(2)
+					#half day off - cut the alloc to half
+					daily_alloc_hours = daily_alloc_hours/2
+
+				else
+					#NO change
+				end
+					
+			end
+
 
 			#overtime?
 			unless overtime_table.empty?
@@ -59,6 +79,8 @@ module WlMember
  		return ratio
 
 	end
+
+
 
 
 end
