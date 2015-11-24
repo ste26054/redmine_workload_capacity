@@ -13,8 +13,17 @@
 		 <p>Selected Role(s) to be displayed on the Total Allocation value's tooltip: 
 		 	<%- list_id = WlProjectWindowLogic.retrieve_tooltip_role_ids_list(@project) %>
 		 	<%= list_id.map { |id| Role.find(id) }.join(", ") %></p> 
-		 <p>Acceptable [LoggedTime/allocatedTime] Ratio Limit: <%= wl_pw.acceptable_check_limit %>%</p>
-		 <p>Warning [LoggedTime/allocatedTime] Ratio Limit: <%= wl_pw.danger_check_limit %>%</p>
+
+		<p title="This value helps to calculate the limit between the acceptable ratio (green) and the warning ratio (amber). If the check ratio is amber, a notification will be sent to the Project Manager and the Project Member.
+If a is considered to be the threshold, then the acceptable ratio zone is [1-a%; 1+a%]. Otherwise, the warning zone (amber) surrounds the acceptable ratio zone (green).">
+		[LoggedTime/allocatedTime] <span style="color: #19A347">Acceptable</span>-<span style="color: #FF9933">Warning</span> Ratio Limit: </p>
+		<ul> Lower threshold <%= wl_pw.low_accept_check_limit %>% || Upper threshold <%= wl_pw.high_accept_check_limit %>%</ul>
+
+		<p title="This value helps to calculate the limit between the warning ratio (amber) and the danger ratio (red). If the check ratio is red, a notification will be sent to the Project Manager.
+If a is considered to be the threshold, then the danger ratio zone (red,black) are [0;1-a%] and 1+a%; 2]. This danger ratio zone surrounds the warning ratio zone (amber).">
+		[LoggedTime/allocatedTime] <span style="color: #FF9933">Warning</span>-<span style="color: #CC0000">Danger</span> Ratio Limit: </p>
+		<ul>Lower threshold <%= wl_pw.low_danger_check_limit %>% || Upper threshold <%= wl_pw.high_danger_check_limit %>%</ul>
+
 		<%= link_to 'Edit', edit_project_wl_project_window_path(@project), :class => 'icon icon-edit' %>
 		<%= link_to 'Delete', project_wl_project_window_path(@project), method: :delete,  :class => 'icon icon-del' %>
 	<% else %>
