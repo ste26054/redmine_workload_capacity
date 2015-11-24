@@ -31,8 +31,10 @@ class WlProjectWindow < ActiveRecord::Base
   validates :project_id, presence: true
   validates :tooltip_role_ids, presence: true
   validates :display_role_ids, presence: true
-  validates :acceptable_check_limit, presence: true, numericality: true, inclusion: { in: 0..100 }
-  validates :danger_check_limit, presence: true,  numericality: true, inclusion: { in: 0..100 }
+  validates :low_accept_check_limit, presence: true, numericality: true, inclusion: { in: 0..100 }
+  validates :high_accept_check_limit, presence: true, numericality: true, inclusion: { in: 0..100 }
+  validates :low_danger_check_limit, presence: true,  numericality: true, inclusion: { in: 0..100 }
+  validates :high_danger_check_limit, presence: true,  numericality: true, inclusion: { in: 0..100 }
 
   validate :end_date_not_before_start_date
   validate :check_custom_allocations
@@ -41,7 +43,7 @@ class WlProjectWindow < ActiveRecord::Base
   validate :check_tooltip_and_display_role_ids
   validate :check_acceptable_danger_limits
 
-  attr_accessible :start_date, :end_date, :project_id, :tooltip_role_ids, :display_role_ids, :acceptable_check_limit, :danger_check_limit
+  attr_accessible :start_date, :end_date, :project_id, :tooltip_role_ids, :display_role_ids, :low_accept_check_limit, :high_accept_check_limit, :low_danger_check_limit, :high_danger_check_limit
 
   serialize :tooltip_role_ids
   serialize :display_role_ids
@@ -111,7 +113,10 @@ private
 	end	
 
 	def check_acceptable_danger_limits
-		errors.add(:base, l(:error_check_limits)) if acceptable_check_limit >= danger_check_limit
+		if (low_danger_check_limit.to_f <= low_accept_check_limit.to_f) || (high_accept_check_limit.to_f >= high_danger_check_limit.to_f)
+			errors.add(:base, l(:error_check_limits))
+		end
+
 	end
 
 	def update_dashboard

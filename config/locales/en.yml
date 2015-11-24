@@ -34,5 +34,5 @@ en:
   error_dates: "End date cannot take place before Start date"
   error_role_id_project_window_blanck: "Please select one or many roles"
   error_not_valid_date: "Please check date entry"
-  error_check_limits: "Danger limit value should be strictly higher than Acceptable limit value"
+  error_check_limits: "Lower and Upper Warning-Danger threshold values should be respectively bigger (strict) than Lower and Upper Acceptable-Warning threshold values"
   

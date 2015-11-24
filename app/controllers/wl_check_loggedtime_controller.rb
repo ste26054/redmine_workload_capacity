@@ -16,10 +16,10 @@ class WlCheckLoggedtimeController < ApplicationController
 
    
     wl_pw = @project.wl_project_window
-    acceptable_limit_low = (1 - (wl_pw.acceptable_check_limit.to_f/100)).round(2) 
-    acceptable_limit_high = (1 + (wl_pw.acceptable_check_limit.to_f/100)).round(2) 
-    danger_limit_low = (1 - (wl_pw.danger_check_limit.to_f/100)).round(2)    
-    danger_limit_high = (1 + (wl_pw.danger_check_limit.to_f/100)).round(2) 
+    acceptable_limit_low = (1 - (wl_pw.low_accept_check_limit.to_f/100)).round(2) 
+    acceptable_limit_high = (1 + (wl_pw.high_accept_check_limit.to_f/100)).round(2) 
+    danger_limit_low = (1 - (wl_pw.low_danger_check_limit.to_f/100)).round(2)    
+    danger_limit_high = (1 + (wl_pw.high_danger_check_limit.to_f/100)).round(2) 
     @ratio_limits = [acceptable_limit_low, acceptable_limit_high, danger_limit_low, danger_limit_high]
     h2 = {:project => @project, :ratio_limits => @ratio_limits}
 
