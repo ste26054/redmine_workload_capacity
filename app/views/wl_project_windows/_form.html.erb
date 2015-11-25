@@ -30,7 +30,7 @@
 If the check ratio is amber, a notification will be sent to the Project Manager and the Project Member.
 If the check ratio is red or black, a notification will be sent to the Project Manager.">[LoggedTime/allocatedTime] Ratio Limits: </p>
 <ul>
-	Lower <span style="color: #CC0000">Danger</span>-<span style="color: #FF9933">Warning</span> threshold <%= f.number_field :low_danger_check_limit, {:id =>"low_danger_id", :min => 1, :max => 100, :step => 1, :onchange => "update_hours_from_threshold(this, 'low_danger_hours_id', true );"} %> % |
+	Lower <span style="color: #CC0000">Danger</span>-<span style="color: #FF9933">Warning</span> threshold <%= f.number_field :low_danger_check_limit, {:id =>"low_danger_id", :min => 1, :max => 100, :step => 1, :onchange => "update_hours_from_threshold(this, 'low_danger_hours_id', false );"} %> % |
 	Lower <span style="color: #FF9933">Warning</span>-<span style="color: #19A347">Acceptable</span> threshold <%= f.number_field :low_accept_check_limit, {:id =>"low_accept_id", :min => 0, :max => 100, :step => 1, :onchange => "update_hours_from_threshold(this, 'low_accept_hours_id', false );"} %> % | 
 	Upper <span style="color: #19A347">Acceptable</span>-<span style="color: #FF9933">Warning</span> threshold <%= f.number_field :high_accept_check_limit, {:id =>"high_accept_id", :min => 0, :max => 100, :step => 1, :onchange => "update_hours_from_threshold(this, 'high_accept_hours_id', true );"} %> % | 
 	Upper <span style="color: #FF9933">Warning</span>-<span style="color: #CC0000">Danger</span> threshold <%= f.number_field :high_danger_check_limit, {:id =>"high_danger_id", :min => 1, :max => 100, :step => 1, :onchange => "update_hours_from_threshold(this, 'high_danger_hours_id', true );"} %> %
