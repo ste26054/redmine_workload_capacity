@@ -309,29 +309,31 @@ module RedmineWorkloadCapacity
                       #full day off
                       ratio = 0
                       # draw_daily_line(options, current_date, logged_hours, alloc_hours , extra_hours_per_day, ratio)
-                      draw_daily_line(options, current_date, logged_hours, 0 , extra_hours_per_day, ratio)
+                      draw_daily_line(options, current_date, logged_hours, 0 , extra_hours_per_day, ratio, "")
                       # line(current_date, current_date, options, 4, "Leave Holiday: #{leave_time}hours - full day", "")
                       ratio_day = 0
                     else 
                       #working day
-
+                      half_leave = false
                       if leave_time == (base_hours/2).round(2)
                       #half day off
                          alloc_hours = alloc_hours/2   
+                          half_leave = true
                       else
                         #no Leave day
                         #no change of the alloc_hours
+                        half_leave = false
                       end
 
                       if !is_holiday_date 
                         ratio = ratio_calculation(logged_hours, alloc_hours, extra_hours_per_day )
                         ratio_day = 1 
-                        draw_daily_line(options, current_date, logged_hours, alloc_hours , extra_hours_per_day, ratio)
+                        draw_daily_line(options, current_date, logged_hours, alloc_hours , extra_hours_per_day, ratio, half_leave)
                       elsif is_holiday_date && extra_hours_per_day!=0 && overtime[:include_bank_holidays]
                         ratio = ratio_calculation(logged_hours, 0, extra_hours_per_day )
                         ratio_day = 1
                         #case the current date is a bank holiday and not on the week end and there is overtime for bank holiday
-                        draw_daily_line(options, current_date, logged_hours, 0, extra_hours_per_day, ratio)
+                        draw_daily_line(options, current_date, logged_hours, 0, extra_hours_per_day, ratio, half_leave)
                       end  
 
                     end
@@ -393,9 +395,13 @@ module RedmineWorkloadCapacity
 
       end
 
-      def draw_daily_line(options, current_date, logged_hours, allocated_hours, extra_hours = 0, ratio)
+      def draw_daily_line(options, current_date, logged_hours, allocated_hours, extra_hours = 0, ratio, half_leave)
         output_tooltip = ""
         output_field = ""
+
+        if half_leave 
+          output_tooltip << "<strong>Leave Holiday: half day</strong><br />"
+        end
 
         reference_hours = allocated_hours
         if extra_hours > 0
