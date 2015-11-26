@@ -40,15 +40,19 @@
       <td colspan = "10">Caption [Ratio = Logged time / Project Allocated time]: </td> 
     </tr>
     <tr>
-      <td><div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #19A347;"></div></td>
+      <td><div class= "caption-elmt" style="background-color: #19A347;"></div></td>
       <td><%= acceptable_limit_low %> &lt;= ratio &lt;= <%= acceptable_limit_high %></td>
-      <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #FF9933;"></div></td>
+      <td><div class= "caption-elmt" style="background-color: #FF9933;"></div></td>
       <td><%= danger_limit_low %> &lt; ratio &lt; <%= acceptable_limit_low %> or <%= acceptable_limit_high %> &lt; ratio &lt; <%= danger_limit_high %></td>
-      <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #CC0000;"></div></td>
-      <td>ratio &lt;= <%= danger_limit_low %> or <%= danger_limit_high %> &lt;= ratio</td>
-      <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #131214;"></div></td>
+      <td><div class= "caption-elmt" style="background: repeating-linear-gradient(-45deg,#ffbebe,#ffbebe 10px,#f67171 10px,#f67171 20px);
+      filter: progid:DXImageTransform.Microsoft.Gradient(startColorstr='#f67171', endColorstr='#ffbebe');"></div></td>
+      <td>ratio &lt;= <%= danger_limit_low %></td>
+      <td><div class= "caption-elmt" style="background: repeating-linear-gradient(45deg,#d87575,#d87575 10px,#CC0000 10px,#CC0000 20px);
+      filter: progid:DXImageTransform.Microsoft.Gradient(startColorstr='#CC0000', endColorstr='#d87575');"></div></td>
+      <td><%= danger_limit_high %> &lt;= ratio</td>
+      <td><div class= "caption-elmt" style="background-color: #131214; "></div></td>
       <td>No logged time</td>
-      <td><div style="margin-left:20px; border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;background-color: #DADADA;"></div></td>
+      <td><div class= "caption-elmt" style="background-color: #DADADA;"></div></td>
       <td>Full Day Leave</td>
     </tr>
     <tr>
