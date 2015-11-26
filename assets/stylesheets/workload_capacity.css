@@ -16,3 +16,7 @@ tr.odd.allocation-below td, tr.even.allocation-below td { border-color: #FBC96A;
 tr.wl-overtime.needs-attention {color: #F40; font-weight: bold; background: #FFCEB9;}
 
 tr.group td{ padding: 0.2em 0 0.2em 0 !important; }
+
+tr td div.caption-elmt {
+	border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;
+}

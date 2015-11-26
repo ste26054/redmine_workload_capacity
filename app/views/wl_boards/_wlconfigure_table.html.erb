@@ -3,13 +3,13 @@
 		<tr>
 			<td>Caption: </td>
 			<td>
-				<div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;;background-color: #FFEA93;"></div>
+				<div class= "caption-elmt" style="background-color: #FFEA93;"></div>
 			</td><td>Total Allocation &lt;100% </td>
 			<td>
-				<div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;;background-color: #900;"></div>
+				<div class= "caption-elmt" style="background-color: #900;"></div>
 			</td><td>Total Allocation &gt;100% </td>
 			<td>
-				<div style="border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;;background-color: #F40;"></div>
+				<div class= "caption-elmt" style="background-color: #F40;"></div>
 			</td><td>Leave Overlapping with Overtime</td>
 		</tr>
 	</thead>
@@ -170,6 +170,7 @@
 
 	</tbody>
 	<tfoot>
-		<tr style="font-weight: bold;"><td title="Total of project members">Total: <%= total_members = wl_members.count %> members</td><td><span class= "tog"></span></td><td colspan="4" ></td><td title="Average project allocation (%)">Average project allocation: <%= pw_sum_alloc/total_members %>% </td><td></td><td></td></tr>
+		<tr style="font-weight: bold;"><td title="Total of project members">Total: <% total_members = wl_members.count %>
+			<%= pluralise_member(total_members) %></td><td><span class= "tog"></span></td><td colspan="4" ></td><td title="Average project allocation (%)">Average project allocation: <%= pw_sum_alloc/total_members %>% </td><td></td><td></td></tr>
   	</tfoot>
 </table>

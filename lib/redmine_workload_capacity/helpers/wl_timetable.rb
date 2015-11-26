@@ -388,7 +388,7 @@ module RedmineWorkloadCapacity
 
             compare_ratio_nominal(current_date.beginning_of_week, current_date, options, week_ratio, output_tooltip, output_field) 
         else
-             line(current_date.beginning_of_week, current_date, options, 4, "Leave Holiday", "")
+             line(current_date.beginning_of_week, current_date, options, 5, "Leave Holiday", "")
         end
 
       end
@@ -418,7 +418,7 @@ module RedmineWorkloadCapacity
         
         else
           #leave for a whole day
-          line(current_date, current_date, options, 4, "Leave Holiday: full day", "")
+          line(current_date, current_date, options, 5, "Leave Holiday: full day", "")
         end
 
       end
@@ -427,9 +427,12 @@ module RedmineWorkloadCapacity
        
         if ratio == 0.0
           #BLACK color: there is no logged time
+          line(start_date, end_date, options, 4, output_tooltip, output_field)
+        elsif (ratio >= @danger_limit_high) # RED
           line(start_date, end_date, options, 3, output_tooltip, output_field)
-        elsif (ratio <= @danger_limit_low) || (ratio >= @danger_limit_high) # RED
+          elsif (ratio <= @danger_limit_low) # light RED
           line(start_date, end_date, options, 2, output_tooltip, output_field)
+        
         elsif  (ratio >= @acceptable_limit_low) && (ratio <= @acceptable_limit_high) # GREEN
           line(start_date, end_date, options, 0, output_tooltip, output_field)
         else #AMBER
@@ -585,12 +588,20 @@ module RedmineWorkloadCapacity
           if check_status == 0 # Good, ratio = [0.95;1.05]
             style << "background-color: #19A347;" # green
           elsif check_status == 1 # Warning, ratio = [0.90;0.95] && [1.05;1.10]
-            style << "background-color: #FF9933;" # orange
-          elsif check_status == 2 # Bad, ratio = [0;0.90] && [1.10; +infini]
-            style << "background-color: #CC0000;" # red
-          elsif check_status == 4 #leave holiday for full day only
+            #style << "background-color: #FF9933;" # orange
+            style << "background-color: #FF9933;"
+          elsif check_status == 2 # Bad, ratio = [0;0.90] 
+            #style << "background-color: #f67171;" # light red
+            style << "background: repeating-linear-gradient(-45deg,#ffbebe,#ffbebe 10px,#f67171 10px,#f67171 20px);"
+            style << "filter: progid:DXImageTransform.Microsoft.Gradient(startColorstr='#f67171', endColorstr='#ffbebe');"
+          elsif check_status == 3 # Bad, ratio = [1.10; +infini]
+            #style << "background-color: #CC0000;" # red#d87575
+            style << "background: repeating-linear-gradient(45deg,#d87575,#d87575 10px,#CC0000 10px,#CC0000 20px);"
+            style << "filter: progid:DXImageTransform.Microsoft.Gradient(startColorstr='#CC0000', endColorstr='#d87575');"
+
+          elsif check_status == 5 #leave holiday for full day only
             style << "background-color: #DADADA;" # grey
-          else # case that check_status == 3: there is no logged time
+          else # case that check_status == 4: there is no logged time
             style << "background-color: #131214;" # black
           end
           s << "#{text_field}".html_safe

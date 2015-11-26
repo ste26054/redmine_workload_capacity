@@ -2,13 +2,17 @@
 <% unless wl_members_list.empty? %>
 	<% start_week = Date.today.beginning_of_week  %>
 	<% end_week = Date.today.end_of_week  %>
-	<h3>Allocation check (<%= wl_members_list.size %>)</h3>
+	<% previous_start_week = (start_week-1).beginning_of_week %>
+	<% previous_end_week = (start_week-1).end_of_week %>
+	<h3>Allocation check (<%= wl_members_list.size %>) </h3>
 	 <ul>
 	<% wl_members_list.each do |wl_member| %>
 	<% wl_project = wl_member.project %>
 	<% ratio = wl_member.get_check_ratio(start_week, end_week) %>
 	<% ratio = "-- (Allocated to 0%)" if ratio.nil?  %>
-  <li>For <strong><%=  wl_project %></strong>, your current week [LoggedTime/AllocatedTime] Ratio: <strong><%= link_to ratio, "/projects/#{wl_project.id}/workload/check"  %></strong></li>
+	<% previous_ratio = wl_member.get_check_ratio(previous_start_week, previous_end_week) %>
+	<% previous_ratio = "--" if previous_ratio.nil?  %>
+  <li>For <strong><%=  wl_project %></strong>, your current week Ratio: <strong><%= link_to ratio, { :controller => :wl_check_loggedtime, :action => :show, :project_id => wl_project.id } %></strong> <span style="color: #999; "> | your past week Ratio: <%= previous_ratio %></span> </li>
 
 	<% end%>
 	</ul>

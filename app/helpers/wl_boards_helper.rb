@@ -144,7 +144,12 @@ module WlBoardsHelper
 		return output
 	end
 
+	def pluralise_member(from_number)
 
+		output = "".html_safe
+		output << "#{from_number} #{'member'.pluralize(from_number)}".html_safe 
+		return output
+	end
 
     def render_wl_tabs(tabs, selected=params[:tab])
 	    if tabs.any?
