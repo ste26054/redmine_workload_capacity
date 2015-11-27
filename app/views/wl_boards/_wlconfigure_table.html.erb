@@ -39,8 +39,9 @@
 	<% wl_members.each do |member| %>
 		<% if member.wl_project_allocation? %>
 			<% total_alloc = member.wl_global_table_allocation %>
+
+			<!-- 2 seconds to get -->
 			<% remaining_alloc = member.wl_remaining_table_allocation %>
-			<% project_alloc = member.wl_table_allocation %>
 
 			
 
@@ -70,6 +71,8 @@
 			<% total_alloc.each_with_index do |alloc, i| %>
 
 				<!-- To calculate the average project allocation in the footer -->
+
+				<!-- 2 seconds to get -->
  				<% member_sum_alloc += member.wl_sum_alloc_on_working_days(alloc[:start_date], alloc[:end_date]) %>
 				<!-- _________________________________________________________ -->
 
@@ -98,7 +101,7 @@
 						<% custom_link = { :start_date => alloc[:start_date], :end_date => alloc[:end_date], :percent_alloc => remaining_alloc[i][:percent_alloc]} %>
 						<% if alloc[:percent_alloc] > 100 %>
 							<div class="tooltip">
-								<%= link_to 'Smart Allocation', project_user_wl_custom_allocations_path(project, member.user,:wl_custom_allocation => custom_link), :class => 'icon icon-summary', :method => :post %>
+								<%= link_to 'Smart Allocation', project_user_wl_custom_allocations_path(project, member.user,:wl_custom_allocation => custom_link), :id =>"smart_allocation_id", :class => 'icon icon-summary', :method => :post, :onclick => "disable_link(this);", :disabled => false %>
 		        				<span class="tip"><%= render_smart_allocation_tooltip(custom_link) %></span>
 		  		    		</div>
 

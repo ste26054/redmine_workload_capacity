@@ -3,53 +3,20 @@ module WlUser
 	include WlProjectWindowLogic
 
     def self.users_for_project_role(project, role)
-		users = []
-		members = project.members.to_a
-		members.each do |member|
-			role_ids = member.roles.map{ |role| role.id }
-			if role.id.in?(role_ids)
-				users << member.user
-			end
-		end	
-		return users.uniq
+    	member_role_ids = MemberRole.where(role_id: role.id).pluck(:id)
+		members_list = Member.includes(:member_roles, :project, :user).where(users: {status: 1}, project_id: project.id, member_roles: {id: member_role_ids}).to_a.uniq
+		return members_list.map{|member| member.user}
 	end	
 
-	def self.wl_users_for_project(project)
-		 wl_users = []
-		 display_role_ids_list = WlProjectWindowLogic.retrieve_display_role_ids_list(project)
-		 unless display_role_ids_list.empty?
-		 	display_role_ids_list.each do |role_id|
-		 		role = Role.find(role_id)
-		 		wl_users << self.users_for_project_role(project, role)
-		 		wl_users.flatten(1)
-		 	end
-		 	 wl_users.flatten.uniq
-		 end
-		 return wl_users.flatten.uniq
-	end
+	def self.all_for_project(project)
+		 
+		wl_members_list = WlMember.all_for_project(project)
 
-	def self.wl_members_for_project(project)
-		wl_members = []
-		members = project.members.to_a
-	
-		display_role_ids_list = WlProjectWindowLogic.retrieve_display_role_ids_list(project)
-		 unless display_role_ids_list.empty?
-		 	display_role_ids_list.each do |role_id|
-		 		role = Role.find(role_id)
-		 		members.each do |member|
-					role_ids = member.roles.map{ |role| role.id }
-					if role.id.in?(role_ids)
-						wl_members << member
-					end
-				end	
-		 	end
-		  wl_members.flatten.uniq
-		 end
-		 return wl_members.flatten.uniq
+		return wl_members_list.map{|member| member.user}
 	end
 
 	def self.wl_member?(member)
-		wl_members = wl_members_for_project(member.project)
+		wl_members = WlMember.all_for_project(member.project)
 		valid_member = false
 		unless wl_members.empty?
 			if member.in?wl_members

@@ -136,11 +136,11 @@ private
 
 			unless user_ids_list_to_add.empty?
 				# there is new added, please create new project allocation for them
-					user_ids_list_to_add.each do |user_id|
-						parameters = {percent_alloc: 100, user_id: user_id, wl_project_window_id: self.id}
-						obj =  WlProjectAllocation.new(parameters)
-						obj.save
-					end	
+				user_ids_list_to_add.each do |user_id|
+					parameters = {percent_alloc: 100, user_id: user_id, wl_project_window_id: self.id}
+					obj =  WlProjectAllocation.new(parameters)
+					obj.save
+				end	
 				
 			end
 			unless user_ids_list_to_remove.empty?
