@@ -4,7 +4,7 @@ class WlProjectAllocationsController < ApplicationController
 
   before_action :set_project
   before_action :authenticate
-  before_action :set_user, :retrieve_project_alloc
+  before_action :set_user, :set_member, :retrieve_project_alloc
 
   def new
     if @project_allocation
@@ -20,8 +20,11 @@ class WlProjectAllocationsController < ApplicationController
     @project_allocation.wl_project_window_id = @project.wl_project_window.id
 
     if @project_allocation.save
-      flash[:notice] = l(:notice_project_allocation_set, :project => @project.name)
-      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
+      flash[:notice] = l(:notice_project_allocation_set, :project => @project.name) if request.xhr?
+      #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
+      respond_to do |format|
+        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
+      end
     else
       flash[:error] = l(:error_set)
       render :new
@@ -33,8 +36,11 @@ class WlProjectAllocationsController < ApplicationController
 
   def update
     if @project_allocation.update(wl_project_allocation_params)
-      flash[:notice] = l(:notice_project_allocation_set, :project => @project.name)
-      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
+      flash[:notice] = l(:notice_project_allocation_set, :project => @project.name) if request.xhr?
+      #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
+      respond_to do |format|
+        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
+      end
     else
       flash[:error] = l(:error_set)
       render :edit
@@ -49,6 +55,10 @@ class WlProjectAllocationsController < ApplicationController
 
   def set_project
   	@project ||= Project.find(params[:project_id])
+  end
+
+  def set_member
+    @member ||= Member.find_by(user_id: @user.id, project_id: @project.id)
   end
 
   def wl_project_allocation_params

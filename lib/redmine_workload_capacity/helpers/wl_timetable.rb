@@ -577,19 +577,13 @@ module RedmineWorkloadCapacity
       def html_task(params, coords, check_status, text_tooltip, text_field, field_by_day)
         output = ''
         css = "task parent"
-
-        #Renders the tooltip
-        if coords[:bar_start] && coords[:bar_end]
-       
-          s = view.content_tag(:span,
-                               "#{text_tooltip}".html_safe,
-                               :class => "tip")
+       #Renders the field
+       if coords[:bar_start] && coords[:bar_end]
+          width = coords[:bar_end] - coords[:bar_start] - 1
           style = ""
-          style << "position: absolute;"
-          style << "text-align: center;"
           style << "top:#{params[:top]}px;"
           style << "left:#{coords[:bar_start]}px;"
-          style << "width:#{coords[:bar_end] - coords[:bar_start] - 1}px;"
+          style << "width:#{width}px;"
           style << "height:16px;"
           if check_status == 0 # Good, ratio = [0.95;1.05]
             style << "background-color: #19A347;" # green
@@ -604,12 +598,34 @@ module RedmineWorkloadCapacity
             #style << "background-color: #CC0000;" # red#d87575
             style << "background: repeating-linear-gradient(45deg,#d87575,#d87575 10px,#CC0000 10px,#CC0000 20px);"
             style << "filter: progid:DXImageTransform.Microsoft.Gradient(startColorstr='#CC0000', endColorstr='#d87575');"
-
           elsif check_status == 5 #leave holiday for full day only
             style << "background-color: #DADADA;" # grey
           else # case that check_status == 4: there is no logged time
             style << "background-color: #131214;" # black
           end
+
+          content_opt = {:style => style,
+                         :class => "#{css}"}
+
+          output << view.content_tag(:div, '&nbsp;'.html_safe, content_opt)
+        end
+
+
+        #Renders the tooltip
+        if coords[:bar_start] && coords[:bar_end]
+       
+          s = view.content_tag(:span,
+                               "#{text_tooltip}".html_safe,
+                               :class => "tip")
+          style = ""
+          style << "position: absolute;"
+          style << "text-align: center;"
+          style << "top:#{params[:top]}px;"
+          style << "left:#{coords[:bar_start]}px;"
+          style << "width:#{coords[:bar_end] - coords[:bar_start] - 1}px;"
+          style << "height:16px;"
+        
+
           s << "#{text_field}".html_safe
           output << view.content_tag(:div, s.html_safe,
                                      :style => style,

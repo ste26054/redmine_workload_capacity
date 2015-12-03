@@ -17,8 +17,8 @@ class WlBoardsController < ApplicationController
       return
 
     end
-    unless User.current.wl_manage_right?(@project)
-      if Member.find_by(user_id: User.current.id, project_id: @project.id).wl_member? || User.current.allowed_to?(:view_global_allocation_check, @project)
+    if !User.current.wl_manage_right?(@project) && !User.current.admin?
+      if User.current.allowed_to?(:view_global_allocation_check, @project) || Member.find_by(user_id: User.current.id, project_id: @project.id).nil? ? false : Member.find_by(user_id: User.current.id, project_id: @project.id).wl_member?  
         redirect_to :controller => 'wl_check_loggedtime', :action => 'show', :id => @project.id, :tab => 'wlcheck'
         return
       end
@@ -26,6 +26,13 @@ class WlBoardsController < ApplicationController
 
   	@wl_members ||= @project.wl_members
 
+  end
+
+  def update_wlconfigure_member_contentline
+    
+    @member ||= Member.find(params[:member_id])
+    
+    render :layout => false
   end
 
   private

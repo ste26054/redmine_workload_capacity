@@ -1,0 +1,3 @@
+$('#ajax-modal').html('<%= escape_javascript(render :partial => '/wl_custom_project_windows/new', 
+	locals: {:project => @project, :custom_project_window => @custom_project_window, :user => @user}) %>');
+showModal('ajax-modal', '90%');
