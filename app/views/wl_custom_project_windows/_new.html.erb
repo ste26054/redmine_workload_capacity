@@ -1,0 +1,3 @@
+<h3>Create custom Project Window for user <%= @user.name %> in project <%= @project.name %> (Default Project Window from <%= format_date(@project.wl_project_window.start_date) %> to <%= format_date(@project.wl_project_window.end_date) %>)</h3>
+
+<%= render 'form', :project => @project, :custom_project_window => @custom_project_window, :user => @user %>

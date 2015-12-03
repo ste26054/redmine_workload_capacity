@@ -1,0 +1,2 @@
+<h3>Add a Custom Project Allocation for <%= @user.name %> (Project Window from <%= format_date(@project.wl_project_window.start_date) %> to <%= format_date(@project.wl_project_window.end_date) %>)</h3>
+<%= render 'form', :user => @user, :project => @project, :custom_allocation => @custom_allocation, :custom_project_window_list => @custom_project_window_list %>

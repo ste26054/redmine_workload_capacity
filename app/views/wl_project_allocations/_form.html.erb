@@ -3,7 +3,7 @@
 </fieldset>
 <br />
 <fieldset>
-<%= form_for project_allocation, :url => project_user_wl_project_allocation_path do |f| %>
+<%= form_for project_allocation,:remote => true, :url => project_user_wl_project_allocation_path do |f| %>
 
 	<% if project_allocation.errors.any? %>
 		<div class="flash error">
@@ -16,7 +16,7 @@
 	<% end %>
 
 	<%- options = (0..100).step(5).to_a %>
-	<p>Project allocation: <%= f.select :percent_alloc, options, :selected => 100 %>%</p>
-	<p><%= f.submit 'Save' %> <a href="javascript:history.back()"><%= l(:button_back) %></a></p>
+	<p>Project allocation: <%= f.select :percent_alloc, options %>%</p>
+	<p><%= f.submit 'Save', :onclick => "hideModal(this);" %> <a href="#" onclick = "hideModal(this);"><%= l(:button_cancel) %></a></p>
 <% end %>
 </fieldset>

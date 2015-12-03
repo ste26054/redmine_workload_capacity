@@ -20,3 +20,16 @@ tr.group td{ padding: 0.2em 0 0.2em 0 !important; }
 tr td div.caption-elmt {
 	border-radius: 8px;width: 20px;height: 15px;border-color: grey;border-width: thin;border-style: inherit;
 }
+
+/***** Tooltips ******/
+.ltooltip{position:relative;z-index:24;}
+.ltooltip:hover{z-index:25;color:#F40;}
+.ltooltip span.ltip{display: none; text-align:left; background-color: lightblue; position:absolute;  z-index:25;}
+
+div.ltooltip:hover span.ltip{
+display:block;
+position:absolute;
+top:12px; width:270px;
+font-size: 0.8em;
+z-index:25;
+}

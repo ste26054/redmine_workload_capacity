@@ -4,6 +4,7 @@ class WlCustomAllocationsController < ApplicationController
 
   before_action :set_project
   before_action :set_user
+  before_action :set_member
   before_action :authenticate
   before_action :retrieve_custom_alloc, except: [:new, :create]
   before_action :retrieve_custom_project_window_list
@@ -17,21 +18,26 @@ class WlCustomAllocationsController < ApplicationController
     @custom_allocation.user_id = @user.id
     @custom_allocation.wl_project_window_id = @project.wl_project_window.id
   	if @custom_allocation.save
-      flash[:notice] = l(:notice_custom_allocation_set, :user => @user.name)
-      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
+      flash[:notice] = l(:notice_custom_allocation_set, :user => @user.name) if request.xhr?
+      #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
+      #render :layout => false
+     
+      respond_to do |format|
+        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
+      end
     else
       flash[:error] = l(:error_set)
       render :new
     end
   end
 
-  def edit
-  end
-
   def update
   	if @custom_allocation.update(wl_custom_allocation_params)
-      flash[:notice] = l(:notice_custom_allocation_set, :user => @user.name)
-      redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
+      flash[:notice] = l(:notice_custom_allocation_set, :user => @user.name) if request.xhr?
+     # redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
+      respond_to do |format|
+        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
+      end
     else
       flash[:error] = l(:error_set)
       render :edit
@@ -40,11 +46,16 @@ class WlCustomAllocationsController < ApplicationController
 
   def destroy
   	if @custom_allocation.destroy
-      flash[:notice] = l(:notice_custom_allocation_deleted, :user => @user.name)
+      flash[:notice] = l(:notice_custom_allocation_deleted, :user => @user.name) if request.xhr?
     else
-      flash[:error] = l(:error_set)
+      flash[:error] = l(:error_set) if request.xhr?
     end
-    redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
+    #render :layout => false
+      respond_to do |format|
+        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
+      end
+    #render :nothing => true
+   # redirect_to :nothing => true :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
   end
 
   private
@@ -59,6 +70,10 @@ class WlCustomAllocationsController < ApplicationController
 
   def set_project
   	@project ||= Project.find(params[:project_id])
+  end
+
+  def set_member
+    @member ||= Member.find_by(user_id: @user.id, project_id: @project.id)
   end
 
   def retrieve_custom_alloc

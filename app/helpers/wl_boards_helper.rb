@@ -167,7 +167,7 @@ module WlBoardsHelper
 	def wl_tabs
 		tabs = []
   		
-	    if User.current.wl_manage_right?(@project)
+	    if User.current.wl_manage_right?(@project) || User.current.admin?
 				tabs <<  {:name => 'wldashboard', :controller => 'wl_boards', :action => 'index', :tab => "wldashboard"  , :label => :label_wldashboard}
 	    		tabs << {:name => 'wlconfigure', :controller => 'wl_boards', :action => 'index', :tab => "wlconfigure" , :label => :label_wlconfigure}
 		end
@@ -175,5 +175,6 @@ module WlBoardsHelper
 
 		return tabs
 	end
+
 
 end

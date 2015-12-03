@@ -1,4 +1,12 @@
 module WlMember
+	include WlProjectWindowLogic
+
+	def self.all_for_project(project)
+		display_role_ids_list = WlProjectWindowLogic.retrieve_display_role_ids_list(project)
+		member_role_ids = MemberRole.where(role_id: display_role_ids_list).pluck(:id)
+
+		return Member.includes(:member_roles, :project, :user).where(users: {status: 1}, project_id: project.id, member_roles: {id: member_role_ids}).to_a.uniq
+	end
 	
 	def get_check_ratio(from_date, to_date)
 		leave_project_id = RedmineLeavesHolidays::Setting.defaults_settings(:default_project_id)

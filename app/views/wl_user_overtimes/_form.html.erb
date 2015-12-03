@@ -1,7 +1,3 @@
-<% content_for :header_tags do %>
-    <%= stylesheet_link_tag 'workload_capacity', :plugin => 'redmine_workload_capacity' %>
-<% end %>
-
 <p>
 	Project Window from <%= format_date(project.wl_project_window.start_date) %> to <%= format_date(project.wl_project_window.end_date) %>
 </p>
@@ -10,7 +6,7 @@
 </p>
 
 <fieldset>
-<%= form_for [project, user_overtime], :url => (user_overtime.new_record? ? project_user_wl_user_overtimes_path : project_user_wl_user_overtime_path) do |f| %>
+<%= form_for [project, user_overtime], :remote => true, :url => (user_overtime.new_record? ? project_user_wl_user_overtimes_path : project_user_wl_user_overtime_path) do |f| %>
 
 	<% if user_overtime.errors.any? %>
 		<div class="flash error">
@@ -32,7 +28,7 @@
 	
 	
 	
-	<p><%= f.submit 'Save' %> <a href="javascript:history.back()"><%= l(:button_back) %></a></p>
+	<p><%= f.submit 'Save', :onclick => "hideModal(this);" %> <a href="#" onclick = "hideModal(this);"><%= l(:button_cancel) %></a></p>
 <% end %>
 </fieldset>
 <br />

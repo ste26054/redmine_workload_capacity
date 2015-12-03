@@ -16,6 +16,7 @@ module RedmineWorkloadCapacity
 
 		module ProjectInstanceMethods
 			include WlUser
+			include WlMember
 			include WlLogic
 
 			def wl_reload
@@ -26,11 +27,11 @@ module RedmineWorkloadCapacity
 			end
 
 			def wl_users
-				@wl_users ||= WlUser.wl_users_for_project(self)
+				@wl_users ||= WlUser.all_for_project(self)
 			end
 
 			def wl_members
-				@wl_members ||= WlUser.wl_members_for_project(self)
+				@wl_members ||= WlMember.all_for_project(self)
 			end
 
 			def wl_window?
