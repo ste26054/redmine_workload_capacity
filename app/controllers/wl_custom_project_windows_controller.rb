@@ -17,7 +17,7 @@ class WlCustomProjectWindowsController < ApplicationController
 		@custom_project_window.user_id = @user.id
 		@custom_project_window.wl_project_window_id = @wl_project_window.id
 		if @custom_project_window.save
-			flash[:notice] = l(:notice_custom_project_windows_set, :project => @project.name, :user => @user.name) if request.xhr?
+			flash[:notice] = l(:notice_custom_project_windows_set, :project => @project.name, :user => @user.name) 
 			#redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
 			 respond_to do |format|
 		        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
@@ -33,7 +33,7 @@ class WlCustomProjectWindowsController < ApplicationController
 
 	def update
 		if @custom_project_window.update(wl_custom_project_window_params)
-			flash[:notice] = l(:notice_custom_project_windows_set, :project => @project.name, :user => @user.name) if request.xhr?
+			flash[:notice] = l(:notice_custom_project_windows_set, :project => @project.name, :user => @user.name) 
 			#redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
 			 respond_to do |format|
 		        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
@@ -46,10 +46,10 @@ class WlCustomProjectWindowsController < ApplicationController
 
 	def destroy
 		if @custom_project_window.destroy
-			#if request.xhr?
-			flash[:notice] = l(:notice_custom_allocation_deleted, :user => @user.name) if request.xhr?
+			#
+			flash[:notice] = l(:notice_custom_allocation_deleted, :user => @user.name) 
  		else
- 			flash[:error] = l(:error_delete_cpw) if request.xhr?
+ 			flash[:error] = l(:error_delete_cpw) 
  	   end
  	    
 		#redirect_to :controller => 'wl_boards', :action => 'index', :tab => "wlconfigure"

@@ -18,7 +18,7 @@ class WlUserOvertimesController < ApplicationController
     @user_overtime.user_id = @user.id
     @user_overtime.wl_project_window_id = @project.wl_project_window.id
   	if @user_overtime.save
-      flash[:notice] = l(:notice_user_overtime_set, :user => @user.name) if request.xhr?
+      flash[:notice] = l(:notice_user_overtime_set, :user => @user.name) 
       #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
       respond_to do |format|
         format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
@@ -34,7 +34,7 @@ class WlUserOvertimesController < ApplicationController
 
   def update
   	if @user_overtime.update(wl_user_overtime_params)
-      flash[:notice] = l(:notice_user_overtime_set, :user => @user.name) if request.xhr? 
+      flash[:notice] = l(:notice_user_overtime_set, :user => @user.name)  
       #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
       respond_to do |format|
         format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
@@ -47,9 +47,9 @@ class WlUserOvertimesController < ApplicationController
 
   def destroy
   	if @user_overtime.destroy
-      flash[:notice] = l(:notice_user_overtime_deleted, :user => @user.name) if request.xhr?
+      flash[:notice] = l(:notice_user_overtime_deleted, :user => @user.name) 
     else
-      flash[:error] = l(:error_set) if request.xhr?
+      flash[:error] = l(:error_set) 
     end
     #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
     respond_to do |format|
