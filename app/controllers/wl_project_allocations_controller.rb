@@ -20,7 +20,7 @@ class WlProjectAllocationsController < ApplicationController
     @project_allocation.wl_project_window_id = @project.wl_project_window.id
 
     if @project_allocation.save
-      flash[:notice] = l(:notice_project_allocation_set, :project => @project.name) if request.xhr?
+      flash[:notice] = l(:notice_project_allocation_set, :project => @project.name) 
       #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
       respond_to do |format|
         format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
@@ -36,7 +36,7 @@ class WlProjectAllocationsController < ApplicationController
 
   def update
     if @project_allocation.update(wl_project_allocation_params)
-      flash[:notice] = l(:notice_project_allocation_set, :project => @project.name) if request.xhr?
+      flash[:notice] = l(:notice_project_allocation_set, :project => @project.name) 
       #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
       respond_to do |format|
         format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
