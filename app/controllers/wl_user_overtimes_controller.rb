@@ -19,9 +19,12 @@ class WlUserOvertimesController < ApplicationController
     @user_overtime.wl_project_window_id = @project.wl_project_window.id
   	if @user_overtime.save
       flash[:notice] = l(:notice_user_overtime_set, :user => @user.name) 
+       msg = ""
+     msg << flash[:notice] unless flash[:notice].blank?
+    
       #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
       respond_to do |format|
-        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
+        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id}, '#{msg}', true );" } #this is the second time format.js has been called in this controller! 
       end
     else
       flash[:error] = l(:error_set)
@@ -35,9 +38,11 @@ class WlUserOvertimesController < ApplicationController
   def update
   	if @user_overtime.update(wl_user_overtime_params)
       flash[:notice] = l(:notice_user_overtime_set, :user => @user.name)  
+       msg = ""
+     msg << flash[:notice] unless flash[:notice].blank?
       #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
       respond_to do |format|
-        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
+        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id}, '#{msg}', true );" } #this is the second time format.js has been called in this controller! 
       end
     else
       flash[:error] = l(:error_set)
@@ -51,9 +56,19 @@ class WlUserOvertimesController < ApplicationController
     else
       flash[:error] = l(:error_set) 
     end
+     msg = ""
+    type_notice = true
+    unless flash[:notice].blank?
+     msg << flash[:notice] 
+     type_notice = true
+    end 
+    unless flash[:error].blank?
+     msg << flash[:error]
+     type_notice = false
+    end
     #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
     respond_to do |format|
-        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
+        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id}, '#{msg}', #{type_notice} );" } #this is the second time format.js has been called in this controller! 
     end
   end
 

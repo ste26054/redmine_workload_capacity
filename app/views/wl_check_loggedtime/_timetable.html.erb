@@ -1,4 +1,3 @@
-
 <% timeline.view = self %>
 
 <fieldset><legend><%= l(:label_filter_plural) %></legend>
@@ -254,7 +253,7 @@
   <% if timeline.zoom > 3 %>
   <%= timeline.lines.html_safe %> 
   <% else %>
-  <%= timeline.lines_for_weeks.html_safe %>
+  <%= timeline.lines_for_weeks_or_months.html_safe %>
   <% end %>
 
   <% ###### Today dashed blue line (excluded from cache) ###### %>
