@@ -20,7 +20,7 @@ class WlCustomProjectWindowsController < ApplicationController
 			flash[:notice] = l(:notice_custom_project_windows_set, :project => @project.name, :user => @user.name) 
 			#redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
 			 msg = ""
-     msg << flash[:notice] unless flash[:notice].blank?
+    		 msg << flash[:notice] unless flash[:notice].blank?
 			 respond_to do |format|
 		        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id}, '#{msg}', true );" } #this is the second time format.js has been called in this controller! 
 		      end
@@ -59,10 +59,13 @@ class WlCustomProjectWindowsController < ApplicationController
  	    msg = ""
 	    type_notice = true
 	    unless flash[:notice].blank?
+	     msg = ""
 	     msg << flash[:notice] 
 	     type_notice = true
 	    end 
+	   
 	    unless flash[:error].blank?
+	     msg = ""
 	     msg << flash[:error]
 	     type_notice = false
 	    end
