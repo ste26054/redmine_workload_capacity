@@ -44,7 +44,7 @@ function delete_contentline_rows(member_id){
 }
 
 
-function refresh_member_contentline(project_id, member_id){
+function refresh_member_contentline(project_id, member_id, flash_msg, notice_flash){
 	$.ajax({
 	      url: '/projects/'+project_id+'/update_wlconfigure/'+member_id,
 	      cache: false,
@@ -55,6 +55,16 @@ function refresh_member_contentline(project_id, member_id){
 			delete_contentline_rows(member_id);
 			$("table #wlmember"+member_id+"-nameline").after(data);
 			update_footer();
+			if(flash_msg != "" ){
+				field_flash =  document.getElementById('flash');
+				field_flash.innerHTML = "";
+				if(notice_flash == false){
+					field_flash.className= "flash error";
+				}else{
+					field_flash.className= "flash notice";
+				}
+				field_flash.innerHTML = flash_msg+" ";
+	      	}
 	      }
 
 	});

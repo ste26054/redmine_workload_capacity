@@ -54,7 +54,7 @@ module RedmineWorkloadCapacity
         @date_to = (@date_from >> @months) - 1
         @users = ''
         @lines = ''
-        @lines_for_weeks = ''
+        @lines_for_weeks_or_months = ''
         @number_of_rows = nil
         @truncated = false
         if options.has_key?(:max_rows)
@@ -105,7 +105,7 @@ module RedmineWorkloadCapacity
         indent = options[:indent] || 4
         @users = '' unless options[:only] == :lines
         @lines = '' unless options[:only] == :users
-        @lines_for_weeks = '' unless options[:only] == :users
+        @lines_for_weeks_or_months = '' unless options[:only] == :users
         @number_of_rows = 0
         begin
           if @project
@@ -180,9 +180,9 @@ module RedmineWorkloadCapacity
         @lines
       end
 
-      def lines_for_weeks(options={})
-        render(options.merge(:only => :lines_for_weeks)) unless @lines_rendered
-        @lines_for_weeks
+      def lines_for_weeks_or_months(options={})
+        render(options.merge(:only => :lines_for_weeks_or_months)) unless @lines_rendered
+        @lines_for_weeks_or_months
       end
 
 
@@ -232,8 +232,10 @@ module RedmineWorkloadCapacity
           alloc_table = member.wl_table_allocation #Array
           overtime_table = WlUserOvertime.where(user_id: user.id, wl_project_window_id: @project.wl_project_window.id) #Active Record
 
-          ratio_total = 0
-          number_days = 0
+          total_weekly_ratio = 0
+          total_weekly_working_days = 0
+          total_monthly_ratio = 0
+          total_monthly_working_days = 0
 
           alloc_table.each_with_index do |alloc,i|
             
@@ -283,20 +285,20 @@ module RedmineWorkloadCapacity
                         draw_daily_line(options, current_date, logged_hours, 0, extra_hours_per_day, ratio) 
                       end
                     end
-                    if @zoom < 4 # do the weekly calculation if we display the weekly gantt (zoom out (value= 1,2,3))
+                    if @zoom == 2 || @zoom == 3 #************* do the weekly calculation if we display the weekly gantt (zoom out (value= 1,2,3))
                       if current_date.cwday == 7 
-                        if number_days != 0
-                            ratio_total += ratio
-                            number_days += ratio_day
+                        if total_weekly_working_days != 0
+                            total_weekly_ratio += ratio
+                            total_weekly_working_days += ratio_day
 
-                            week_ratio = (ratio_total/number_days).round(2)  
+                            week_ratio = (total_weekly_ratio/total_weekly_working_days).round(2)  
                         else
-                            ratio_total = 0
+                            total_weekly_ratio = 0
                             week_ratio = 0
                         end
-                        draw_weekly_line(options, current_date,ratio_total, number_days, week_ratio)
-                        ratio_total = 0
-                        number_days = 0
+                        draw_weekly_line(options, current_date,total_weekly_ratio, total_weekly_working_days, week_ratio)
+                        total_weekly_ratio = 0
+                        total_weekly_working_days = 0
                       end
                     end
                   #_______other days
@@ -340,8 +342,27 @@ module RedmineWorkloadCapacity
      
                   end
 
-                  ratio_total += ratio
-                  number_days += ratio_day
+                  #monthly computation
+                  if @zoom == 1 
+                    total_monthly_ratio += ratio
+                    total_monthly_working_days += ratio_day
+
+                    if current_date == current_date.end_of_month
+                      if total_monthly_working_days != 0
+                        month_ratio = (total_monthly_ratio/total_monthly_working_days).round(2)  
+                      else
+                        month_ratio = 0
+                      end
+                        draw_monthly_line(options, current_date, total_monthly_ratio, total_monthly_working_days, month_ratio)
+                        total_monthly_ratio = 0
+                        total_monthly_working_days = 0
+                    end
+
+                  end
+
+                  total_weekly_ratio += ratio
+                  total_weekly_working_days += ratio_day
+                  
                 end # from __ unless alloc_hours ==0 
 
               end # from __ if current_date.between?(start_date, end_date)
@@ -375,7 +396,7 @@ module RedmineWorkloadCapacity
         return ratio
       end
 
-      def draw_weekly_line(options, current_date,ratio_total, number_days, week_ratio)
+      def draw_weekly_line(options, current_date, total_daily_ratio, number_days, this_week_ratio)
         output_tooltip = ""
         output_field = ""
 
@@ -384,13 +405,33 @@ module RedmineWorkloadCapacity
             output_tooltip = ""
             output_field = ""
             output_tooltip << "Week from #{format_date(current_date.beginning_of_week)} to #{format_date(current_date)}"
-            output_tooltip << "<br />Sum of daily ratio: #{ratio_total.round(2)}"
+            output_tooltip << "<br />Sum of daily ratio: #{total_daily_ratio.round(2)}"
             output_tooltip << "<br />Number of working days for this week: #{number_days}"
-            output_tooltip << "<br /><strong>Average Ratio this week</strong>: #{ratio_total.round(2)}/#{number_days} = <strong>#{week_ratio}</strong> "
+            output_tooltip << "<br /><strong>Average Ratio this week</strong>: #{total_daily_ratio.round(2)}/#{number_days} = <strong>#{this_week_ratio}</strong> "
 
-            compare_ratio_nominal(current_date.beginning_of_week, current_date, options, week_ratio, output_tooltip, output_field) 
+            compare_ratio_nominal(current_date.beginning_of_week, current_date, options, this_week_ratio, output_tooltip, output_field) 
         else
              line(current_date.beginning_of_week, current_date, options, 5, "Leave Holiday", "")
+        end
+
+      end
+
+       def draw_monthly_line(options, current_date, total_daily_ratio, number_days, this_month_ratio)
+        output_tooltip = ""
+        output_field = ""
+
+        if number_days != 0
+
+            output_tooltip = ""
+            output_field = ""
+            output_tooltip << "Month from #{format_date(current_date.beginning_of_month)} to #{format_date(current_date)}"
+            output_tooltip << "<br />Sum of daily ratio: #{total_daily_ratio.round(2)}"
+            output_tooltip << "<br />Number of working days for this month: #{number_days}"
+            output_tooltip << "<br /><strong>Average Ratio this month</strong>: #{total_daily_ratio.round(2)}/#{number_days} = <strong>#{this_month_ratio}</strong> "
+
+            compare_ratio_nominal(current_date.beginning_of_month, current_date, options, this_month_ratio, output_tooltip, output_field) 
+        else
+             line(current_date.beginning_of_month, current_date, options, 5, "Leave Holiday", "")
         end
 
       end
@@ -635,7 +676,7 @@ module RedmineWorkloadCapacity
           @lines << output
           output
         else 
-          @lines_for_weeks << output
+          @lines_for_weeks_or_months << output
           output
         end
       end

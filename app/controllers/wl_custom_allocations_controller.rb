@@ -21,9 +21,10 @@ class WlCustomAllocationsController < ApplicationController
       flash[:notice] = l(:notice_custom_allocation_set, :user => @user.name) 
       #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
       #render :layout => false
-     
+     msg = ""
+     msg << flash[:notice] unless flash[:notice].blank?
       respond_to do |format|
-        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
+        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id}, '#{msg}', true );" } #this is the second time format.js has been called in this controller! 
       end
     else
       flash[:error] = l(:error_set)
@@ -35,8 +36,10 @@ class WlCustomAllocationsController < ApplicationController
   	if @custom_allocation.update(wl_custom_allocation_params)
       flash[:notice] = l(:notice_custom_allocation_set, :user => @user.name) 
      # redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
+      msg = ""
+     msg << flash[:notice] unless flash[:notice].blank?
       respond_to do |format|
-        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
+        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id}, '#{msg}', true );" } #this is the second time format.js has been called in this controller! 
       end
     else
       flash[:error] = l(:error_set)
@@ -50,9 +53,19 @@ class WlCustomAllocationsController < ApplicationController
     else
       flash[:error] = l(:error_set) 
     end
+    msg = ""
+    type_notice = true
+    unless flash[:notice].blank?
+     msg << flash[:notice] 
+     type_notice = true
+    end 
+    unless flash[:error].blank?
+     msg << flash[:error]
+     type_notice = false
+    end 
     #render :layout => false
       respond_to do |format|
-        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id} );" } #this is the second time format.js has been called in this controller! 
+        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id}, '#{msg}', #{type_notice});" } #this is the second time format.js has been called in this controller! 
       end
     #render :nothing => true
    # redirect_to :nothing => true :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
