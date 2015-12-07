@@ -19,8 +19,8 @@ class WlUserOvertimesController < ApplicationController
     @user_overtime.wl_project_window_id = @project.wl_project_window.id
   	if @user_overtime.save
       flash[:notice] = l(:notice_user_overtime_set, :user => @user.name) 
-       msg = ""
-     msg << flash[:notice] unless flash[:notice].blank?
+      msg = ""
+      msg << flash[:notice] unless flash[:notice].blank?
     
       #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
       respond_to do |format|
@@ -56,13 +56,16 @@ class WlUserOvertimesController < ApplicationController
     else
       flash[:error] = l(:error_set) 
     end
-     msg = ""
+    msg = ""
     type_notice = true
     unless flash[:notice].blank?
+     msg = ""
      msg << flash[:notice] 
      type_notice = true
     end 
+   
     unless flash[:error].blank?
+     msg = ""
      msg << flash[:error]
      type_notice = false
     end
