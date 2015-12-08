@@ -15,18 +15,18 @@
 	<% end %>
 
 <p>Start: <%= f.text_field :start_date %><%= calendar_for('wl_project_window_start_date') %>    	End: <%= f.text_field :end_date %><%= calendar_for('wl_project_window_end_date') %></p>
-<p>Role(s) to be displayed on the Allocation Dashboard
-	<%- options = available_project_roles %> 
+<p>Select the role(s) to be defined on the Project Window - The selected role(s) will be displayed on the Allocation Table (Dashboard and Configure Tabs)
+		<%- options = available_project_roles %> 
 	<%= f.select :display_role_ids, options, {:include_hidden => false}, {:multiple => true} %>
 </p>
-<p>Role(s) to be displayed on the Total Allocation value's tooltip 
+<p>Main point of contact for the project - The selected role(s) will be displayed on the Total Allocation value's tooltip 
 	<%- options = available_project_roles %> 
 	<%= f.select :tooltip_role_ids, options, {:include_hidden => false}, {:multiple => true} %>
 </p>
 
 
 
-<span title="Those threshold values help to calculate the limit between the acceptable ratio (green), the warning ratio (amber), the danger ratio (red). 
+<span title="Those threshold values help to calculate the limit between the Green ratio, the Amber ratio, the Red ratio. 
 If the check ratio is amber, a notification will be sent to the Project Manager and the Project Member.
 If the check ratio is red or black, a notification will be sent to the Project Manager.">[LoggedTime/allocatedTime] Ratio Limits: </span>
 <ul>

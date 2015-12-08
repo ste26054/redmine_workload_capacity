@@ -7,14 +7,14 @@
 	<% wl_pw = @project.wl_project_window %>
 	<% if wl_pw != nil %>
 		<h3>From: <%= format_date(wl_pw.start_date) %> To: <%= format_date(wl_pw.end_date) %> </h3>
-		 <p>Selected Role(s) to be displayed on the Allocation Dashboard: 
+		 <p>Selected role(s) to be defined on the Project Window & displayed on the Allocation Table (Dashboard and Configure Tabs):
 		 	<%- list_id = WlProjectWindowLogic.retrieve_display_role_ids_list(@project) %>
 		 	<%= list_id.map { |id| Role.find(id) }.join(", ") %></p> 
-		 <p>Selected Role(s) to be displayed on the Total Allocation value's tooltip: 
+		 <p>Selected Main point of contact for the project, displayed on the Total Allocation value's tooltip: 
 		 	<%- list_id = WlProjectWindowLogic.retrieve_tooltip_role_ids_list(@project) %>
 		 	<%= list_id.map { |id| Role.find(id) }.join(", ") %></p> 
 
-		<span title="Those threshold values help to calculate the limit between the acceptable ratio (green), the warning ratio (amber), the danger ratio (red). 
+		<span title="Those threshold values help to calculate the limit between the Green ratio, the Amber ratio, the Red ratio. 
 If the check ratio is amber, a notification will be sent to the Project Manager and the Project Member.
 If the check ratio is red or black, a notification will be sent to the Project Manager.">[LoggedTime/allocatedTime] Ratio Limits: </span>
 <ul>
