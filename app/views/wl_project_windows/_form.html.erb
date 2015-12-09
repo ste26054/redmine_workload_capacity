@@ -15,7 +15,7 @@
 	<% end %>
 
 <p>Start: <%= f.text_field :start_date %><%= calendar_for('wl_project_window_start_date') %>    	End: <%= f.text_field :end_date %><%= calendar_for('wl_project_window_end_date') %></p>
-<p>Select the role(s) to be defined on the Project Window - The selected role(s) will be displayed on the Allocation Table (Dashboard and Configure Tabs)
+<p>Select Role(s) to be defined on the Project Window - The selected role(s) will be displayed on the Allocation Table (Dashboard and Configure Tabs)
 		<%- options = available_project_roles %> 
 	<%= f.select :display_role_ids, options, {:include_hidden => false}, {:multiple => true} %>
 </p>
@@ -30,10 +30,10 @@
 If the check ratio is amber, a notification will be sent to the Project Manager and the Project Member.
 If the check ratio is red or black, a notification will be sent to the Project Manager.">[LoggedTime/allocatedTime] Ratio Limits: </span>
 <ul>
-	<span style="background-color: #f67171; color: white;">Lower threshold Red-Amber</span> <%= f.number_field :low_danger_check_limit, {:id =>"low_danger_id", :min => 1, :max => 100, :step => 1, :onchange => "update_hours_from_threshold(this, 'low_danger_hours_id', false );"} %> % |
-	<span style="background-color: #FF9933;">Lower threshold Amber-Green</span> <%= f.number_field :low_accept_check_limit, {:id =>"low_accept_id", :min => 0, :max => 100, :step => 1, :onchange => "update_hours_from_threshold(this, 'low_accept_hours_id', false );"} %> % | 
-	<span style="background-color: #FF9933;">Upper threshold Green-Amber</span> <%= f.number_field :high_accept_check_limit, {:id =>"high_accept_id", :min => 0, :max => 100, :step => 1, :onchange => "update_hours_from_threshold(this, 'high_accept_hours_id', true );"} %> % | 
-	<span style="background-color: #CC0000; color: white;">Upper threshold Amber-Red</span> <%= f.number_field :high_danger_check_limit, {:id =>"high_danger_id", :min => 1, :max => 100, :step => 1, :onchange => "update_hours_from_threshold(this, 'high_danger_hours_id', true );"} %> %
+	<span style="background-color: #f67171; color: white;">Lower threshold Red-Amber</span> <%= f.number_field :low_danger_check_limit, {:id =>"low_danger_id", :min => 1, :max => 100, :step => 1, :required => 'required', :onchange => "update_hours_from_threshold(this, 'low_danger_hours_id', false );"} %> % |
+	<span style="background-color: #FF9933;">Lower threshold Amber-Green</span> <%= f.number_field :low_accept_check_limit, {:id =>"low_accept_id", :min => 0, :max => 99, :step => 1, :required => 'required', :onchange => "update_hours_from_threshold(this, 'low_accept_hours_id', false );"} %> % | 
+	<span style="background-color: #FF9933;">Upper threshold Green-Amber</span> <%= f.number_field :high_accept_check_limit, {:id =>"high_accept_id", :min => 0, :max => 99, :step => 1, :required => 'required', :onchange => "update_hours_from_threshold(this, 'high_accept_hours_id', true );"} %> % | 
+	<span style="background-color: #CC0000; color: white;">Upper threshold Amber-Red</span> <%= f.number_field :high_danger_check_limit, {:id =>"high_danger_id", :min => 1, :max => 100, :step => 1, :required => 'required', :onchange => "update_hours_from_threshold(this, 'high_danger_hours_id', true );"} %> %
 </ul>
 </br>
 <fieldset>
@@ -47,11 +47,11 @@ Please use the spinner to set a weekly working hours : <input type="number" id="
 <thead><tr><th colspan="7"> Result of logged hours if allocation is up to 100%: </th></tr></thead>
 <tbody><tr>
 	<td title="Notification will be sent to the project manager" style="background-color: black; color: white;">0</td>
-	<td title="Notification will be sent to the project manager" style="background-color: #f67171; color: white;">----- <span id="low_danger_hours_id">6.7</span></td>
-	<td title="Notification will be sent to the project manager and the project member" style="background-color: #FF9933;">----- <span id="low_accept_hours_id">7.03</span></td>
+	<td title="Notification will be sent to the project manager" style="background-color: #f67171; color: white;">----- <span id="low_danger_hours_id">--</span></td>
+	<td title="Notification will be sent to the project manager and the project member" style="background-color: #FF9933;">----- <span id="low_accept_hours_id">--</span></td>
 	<td style="background-color: #19A347;">--- <span id="daily_basis_hours_id">7.4</span> ---</td>
-	<td title="Notification will be sent to the project manager and the project member" style="background-color: #FF9933;"><span id="high_accept_hours_id">8.14</span> -----</td>
-	<td title="Notification will be sent to the project manager" style="background-color: #CC0000; color: white;"><span id="high_danger_hours_id">8.9</span> -----> <span>24</span></td>
+	<td title="Notification will be sent to the project manager and the project member" style="background-color: #FF9933;"><span id="high_accept_hours_id">--</span> -----</td>
+	<td title="Notification will be sent to the project manager" style="background-color: #CC0000; color: white;"><span id="high_danger_hours_id">--</span> -----> <span>24</span></td>
 </tr> </tbody>
 </table>
 </fieldset>
