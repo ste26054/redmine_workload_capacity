@@ -41,17 +41,33 @@ If the check ratio is red or black, a notification will be sent to the Project M
 </br>
 Please use the spinner to set a weekly working hours : <input type="number" id="weekly_basis_hours_id" min="1" max="100" step="1" value="37" onchange="convert_daily_hours()"> h/week
 
+<!-- Initialisation threshold value -->
+<!-- weekgly basis working hours : 37 -->
+<!-- daily basis working hours : 7.4 -->
+<% daily_hours_initial = 7.4 %>
+<% unless project_window.new_record? 
+	ld_result=(daily_hours_initial*(1-(project_window.low_danger_check_limit.to_f/100))).round(2) 
+	la_result=(daily_hours_initial*(1-(project_window.low_accept_check_limit.to_f/100))).round(2)
+	ha_result=(daily_hours_initial*(1+(project_window.high_accept_check_limit.to_f/100))).round(2)
+	hd_result=(daily_hours_initial*(1+(project_window.high_danger_check_limit.to_f/100))).round(2)
+else
+	ld_result="--"
+	la_result="--" 
+	ha_result="--"
+	hd_result="--"
+end %>
+
 </br>
 </br>
 <table>
 <thead><tr><th colspan="7"> Result of logged hours if allocation is up to 100%: </th></tr></thead>
 <tbody><tr>
 	<td title="Notification will be sent to the project manager" style="background-color: black; color: white;">0</td>
-	<td title="Notification will be sent to the project manager" style="background-color: #f67171; color: white;">----- <span id="low_danger_hours_id">--</span></td>
-	<td title="Notification will be sent to the project manager and the project member" style="background-color: #FF9933;">----- <span id="low_accept_hours_id">--</span></td>
-	<td style="background-color: #19A347;">--- <span id="daily_basis_hours_id">7.4</span> ---</td>
-	<td title="Notification will be sent to the project manager and the project member" style="background-color: #FF9933;"><span id="high_accept_hours_id">--</span> -----</td>
-	<td title="Notification will be sent to the project manager" style="background-color: #CC0000; color: white;"><span id="high_danger_hours_id">--</span> -----> <span>24</span></td>
+	<td title="Notification will be sent to the project manager" style="background-color: #f67171; color: white;">----- <span id="low_danger_hours_id"><%= ld_result%></span></td>
+	<td title="Notification will be sent to the project manager and the project member" style="background-color: #FF9933;">----- <span id="low_accept_hours_id"><%= la_result%></span></td>
+	<td style="background-color: #19A347;">--- <span id="daily_basis_hours_id"><%=daily_hours_initial%></span> ---</td>
+	<td title="Notification will be sent to the project manager and the project member" style="background-color: #FF9933;"><span id="high_accept_hours_id"><%= ha_result%></span> -----</td>
+	<td title="Notification will be sent to the project manager" style="background-color: #CC0000; color: white;"><span id="high_danger_hours_id"><%= hd_result%></span> -----> <span>24</span></td>
 </tr> </tbody>
 </table>
 </fieldset>
