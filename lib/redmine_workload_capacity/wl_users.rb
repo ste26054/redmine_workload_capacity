@@ -27,7 +27,7 @@ module WlUser
 	end
 
 	def self.wl_manage_right?(user, project)
-		return user.allowed_to?(:manage_project_allocation, project)
+		return user.admin? || user.allowed_to?(:manage_project_allocation, project)
 	end
 
 	def self.leave_request_list(user, wl_project_window)
