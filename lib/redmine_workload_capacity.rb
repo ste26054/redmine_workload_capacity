@@ -19,4 +19,8 @@ Rails.configuration.to_prepare do
 
   require 'redmine_workload_capacity/wl_common'
   require 'redmine_workload_capacity/wl_check_mailer_triggers'
+
+  #graph
+  require 'redmine_workload_capacity/wl_series'
+  require 'redmine_workload_capacity/wl_categories'
 end

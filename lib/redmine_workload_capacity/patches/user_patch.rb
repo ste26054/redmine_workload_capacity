@@ -9,6 +9,8 @@ module RedmineWorkloadCapacity
 		          unloadable # Send unloadable so it will not be unloaded in development
 		          has_many :wl_project_allocations
 		          has_many :wl_custom_allocations
+
+		          has_many :gr_entries, as: :entry
 		        end
 		    end
 		end

@@ -92,10 +92,6 @@ private
     	@member ||= Member.find_by(user_id: @user.id, project_id: @project.id)
   	end
 
-	def set_project
-		@project ||= Project.find(params[:project_id])
-	end
-
 	def set_wl_project_window
 		@wl_project_window ||= WlProjectWindow.find_by(project_id: @project.id)
 	end

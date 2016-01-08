@@ -8,13 +8,12 @@ class WlCheckLoggedtimeController < ApplicationController
   helper :wl_check_loggedtime
   
   before_action :set_user
-  before_action :find_project
+  before_action :set_project
   before_action :authenticate
 
 
   def show
 
-   
     wl_pw = @project.wl_project_window
     acceptable_limit_low = (1 - (wl_pw.low_accept_check_limit.to_f/100)).round(2) 
     acceptable_limit_high = (1 + (wl_pw.high_accept_check_limit.to_f/100)).round(2) 
@@ -35,17 +34,8 @@ class WlCheckLoggedtimeController < ApplicationController
 
   private
   
-
   def set_user
     @user ||= User.current
   end
-
-  def find_project
-    @project ||= Project.find(params[:project_id])
-  end
-
- 
-
-
 
 end

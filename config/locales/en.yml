@@ -3,6 +3,7 @@ en:
   label_workload: "Allocation"
 
   #Tabs
+  label_grgraph: "Graphs"
   label_wldashboard: "Dashboard"
   label_wlconfigure: "Configure"
   label_wlcheck: "Check"

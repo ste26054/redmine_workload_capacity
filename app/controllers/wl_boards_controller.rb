@@ -4,7 +4,7 @@ class WlBoardsController < ApplicationController
 
   menu_item :workload
 
-  before_action :find_project
+  before_action :set_project
   before_action :authenticate
 
   def index
@@ -35,8 +35,5 @@ class WlBoardsController < ApplicationController
 
   private
 
-  def find_project
-    @project ||= Project.find(params[:project_id])
-  end
 
 end

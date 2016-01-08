@@ -153,6 +153,7 @@ module WlBoardsHelper
 
 	def wl_tabs
 		tabs = []
+		tabs <<  {:name => 'grgraph', :controller => 'gr_graphs', :action => 'index', :tab => "grgraph"  , :label => :label_grgraph}
   		
 	    if User.current.wl_manage_right?(@project)
 				tabs <<  {:name => 'wldashboard', :controller => 'wl_boards', :action => 'index', :tab => "wldashboard"  , :label => :label_wldashboard}

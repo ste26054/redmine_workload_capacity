@@ -1,0 +1,26 @@
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 're_graphs', :plugin => 'redmine_graphs' %>
+    <%= javascript_include_tag "http://code.highcharts.com/highcharts.js", "chartkick" %>
+    <%= javascript_include_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/jpicker-1.1.6.js" %>
+    <%= stylesheet_link_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/css/jPicker-1.1.6.css"  %>
+    <%= javascript_include_tag 'wl_graphs/new.js', :plugin => "redmine_workload_capacity" %>
+ 	<%= include_calendar_headers_tags %>
+<% end %>
+
+
+<h2> Create new graph </h2>
+
+<%= render  'new_category', :project => @project, :gr_category => @gr_category %>
+
+<br />
+
+<%= render  'new_series', :project => @project, :series => @series %>
+
+
+<br />
+
+<fieldset>
+<button>Preview</button>
+<button>Save</button>
+<button>Cancel</button>
+</fieldset>

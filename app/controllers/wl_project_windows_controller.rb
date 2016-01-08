@@ -54,10 +54,6 @@ private
 	  params.require(:wl_project_window).permit(:start_date, :end_date, :low_accept_check_limit, :high_accept_check_limit, :low_danger_check_limit, :high_danger_check_limit, :tooltip_role_ids => [], :display_role_ids => [])
   end
 
-  def set_project
-  	@project ||= Project.find(params[:project_id])
-  end
-
   def retrieve_project_window
   	@project_window ||= WlProjectWindow.find_by(project_id: @project.id)
   end

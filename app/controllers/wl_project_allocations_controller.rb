@@ -57,10 +57,6 @@ class WlProjectAllocationsController < ApplicationController
   	@user ||= User.find(params[:user_id])
   end
 
-  def set_project
-  	@project ||= Project.find(params[:project_id])
-  end
-
   def set_member
     @member ||= Member.find_by(user_id: @user.id, project_id: @project.id)
   end
