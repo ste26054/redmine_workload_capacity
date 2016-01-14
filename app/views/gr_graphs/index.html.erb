@@ -2,23 +2,63 @@
 <div class="tabular2"><%= render_wl_tabs wl_tabs %></div>
 <br />
 
-<p><%= link_to 'Add new graph', create_graph_path(@project), :class => 'icon icon-add' %></p>
-<br /><br />
+<fieldset>
+  <legend>Graphs</legend>
+
+  <p><%= link_to 'Add graph', new_project_gr_graph_path, :class => 'icon icon-add' %></p>
+  <br /><br />
+
+<% graphs_list = GrGraph.all %>
+<% unless graphs_list.blank? %>
+
+  <table class="list">
+  <thead><tr>
+    <th> Id </th>
+    <th> plugin reference </th>
+    <th> name </th>
+    <th> user_id </th>
+    <th> projet_id </th>
+    <th> action </th>
+  </tr></thead>
+  <tbody>
+    <% GrGraph.all.each do |g| %>
+      <tr>
+        <td><%= g.id %></td>
+    
+        <td><%= g.plugin_reference %></td>
+        <td><%= g.name %> <%= link_to '', edit_project_gr_graph_path(:id => g.id),
+         :class => 'icon icon-edit' %></td>
+        <td><%= g.user_id %></td> 
+        <td><%= g.project_id %></td> 
+        <td><%= link_to 'Edit', set_project_gr_graphs_path(:gr_graph_id => g.id),
+         :class => 'icon icon-edit' %><%= link_to 'Delete', project_gr_graph_path(:id => g.id),
+         :class => 'icon icon-del', method: :delete %></td>
+      </tr>
+    <% end %>
+  </tbody>
+  </table>
+<% end %>
+
+</fieldset>
+
+ <br /><br />
+
+
   <!-- *********************************************************************************************************************** -->
-<%=  quarter_list = {"Q1" => [Date.new(2015,1,1), Date.new(2015,4,1)], "Q2" => [Date.new(2015,4,1), Date.new(2015,7,1)], "Q3" => [Date.new(2015,7,1), Date.new(2015,10,1)], "Q4" => [Date.new(2015,10,1), Date.new(2015,12,31)] }
+<%#=  quarter_list = {"Q1" => [Date.new(2015,1,1), Date.new(2015,4,1)], "Q2" => [Date.new(2015,4,1), Date.new(2015,7,1)], "Q3" => [Date.new(2015,7,1), Date.new(2015,10,1)], "Q4" => [Date.new(2015,10,1), Date.new(2015,12,31)] }
 %>
 
-<%-
+<%#-
 result = []
 quarter_list.each do |quarter| 
   count_data  =  IssueQuery.find(209).issues.map{|issue| issue.created_on.between?(quarter[1][0], quarter[1][1])}.reject{|v| v==false}.count
   result << [quarter[0], count_data] 
 end
 %>
-<%= result %>
+<%#= result %>
 <div class="graph">
     <h2 align="center">Count issues created on each quarter</h2>
-     <%= pie_chart result %>
+     <%#= pie_chart result %>
 </div>
 
   <!-- *********************************************************************************************************************** -->
@@ -29,4 +69,5 @@ end
     <%= javascript_include_tag "http://code.highcharts.com/highcharts.js", "chartkick" %>
      <%= javascript_include_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/jpicker-1.1.6.js" %>
      <%= stylesheet_link_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/css/jPicker-1.1.6.css"  %>
+     <%= javascript_include_tag 'gr_graphs', :plugin => "redmine_workload_capacity" %>
 <% end %>

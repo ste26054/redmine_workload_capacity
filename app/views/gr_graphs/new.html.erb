@@ -1,0 +1,8 @@
+<h2> Create graph </h2>
+<fieldset>
+	<legend>Title</legend>
+<%= form_tag(project_gr_graphs_path) do %>
+	<%= render :partial => 'form', :locals => { :gr_graph => @gr_graph} %>
+<p><%= submit_tag('Continue') %> <a href="javascript:history.back()"><%= l(:button_back) %></a></p>
+<% end %>
+</fieldset>

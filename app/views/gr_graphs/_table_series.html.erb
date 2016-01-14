@@ -1,30 +1,36 @@
-<table class="list">
-<thead><tr>
-	<th> Series ID </th>
-	<th> Series Type </th>
-	<th> Series Entries </th>
-	<th> Series Name </th>
-	<th> Series Color </th>
-	<th> Series Chart Type </th>
-	<th> Series Attribut </th>
-	<th> Action </th>
-</tr></thead>
-<tbody>
+<% series_list = GrSeries.where(gr_graph_id: gr_graph.id) %>
+<% unless series_list.blank? %>
 
-	<% series_list = GrSeries.all.each do |serie|%>
-		<% properties = serie.properties %>
-		<% entries_list = GrEntry.where(gr_series_id: serie.id).map{|entry| entry.entry_type.constantize.find(entry.entry_id)}.join(", ") %>
-		<tr>
-			<td><%= serie.id %></td>
-			<td><%= GrEntry.where(gr_series_id: serie.id).first.entry_type %></td>
-			<td><%= entries_list %></td>
-			<td><%= serie.name %></td>
-			<td><span style="background-color: #<%=properties[:color]%>"><%= properties[:color] %></span></td>
-			<td><%= serie.chart_type %></td>
-			<td><%=  WlSeries.attribut_options.select{|k,v| v== properties[:attribut].to_i}.keys.first %></td>
-			<td>Edit/<%= link_to 'Delete',{:controller => "gr_series", :action => "destroy", :id => serie.id},
-			 :class => 'icon icon-del', method: :delete %></td>
-		</tr>
-	<% end %>
-</tbody>
-</table>
+	<table class="list">
+	<thead><tr>
+		<th> Series ID </th>
+		<th> Series Type </th>
+		<th> Series Entries </th>
+		<th> Series Name </th>
+		<th> Series Color </th>
+		<th> Series Chart Type </th>
+		<th> Series Attribut </th>
+		<th> Action </th>
+	</tr></thead>
+	<tbody>
+
+		<% series_list.each do |serie|%>
+			<% properties = serie.properties %>
+			<% entries_list = GrEntry.where(gr_series_id: serie.id).map{|entry| entry.entry_type.constantize.find(entry.entry_id)}.join(", ") %>
+			<tr>
+				<td><%= serie.id %></td>
+				<td><%= GrEntry.where(gr_series_id: serie.id).first.entry_type %></td>
+				<td><%= entries_list %></td>
+				<td><%= serie.name %></td>
+				<td><span style="background-color: #<%=properties[:color]%>"><%= properties[:color] %></span></td>
+				<td><%= serie.chart_type %></td>
+				<td><%=  WlSeries.attribut_options.select{|k,v| v== properties[:attribut].to_i}.keys.first %></td>
+				<td><%= link_to 'Edit', edit_project_gr_graph_gr_series_path(:id => serie.id),
+				 :class => 'icon icon-edit' %><%= link_to 'Delete', project_gr_graph_gr_series_path(:id => serie.id),
+				 :class => 'icon icon-del', method: :delete %></td>
+			</tr>
+		<% end %>
+	</tbody>
+	</table>
+
+<% end %>

@@ -1,4 +1,6 @@
-<p><strong>Result for Horizontal (Category) Axis:</strong></p>
+
+	<% category = GrCategory.find_by(gr_graph_id: gr_graph.id) %>
+	<% unless category.nil? %>
 
 <table class="list">
 <thead><tr>
@@ -10,7 +12,6 @@
 </tr></thead>
 <tbody>
 
-	<% categories_list = GrCategory.all.each do |category|%>
 		<% properties = category.properties %>
 		<tr>
 			<td><%= category.gr_category_type %></td>
@@ -18,9 +19,12 @@
 			<td><%= properties[:start_date] %></td>
 			<td><%= properties[:end_date] %></td>
 			<td><%= WlCategories.date_granularity_options.select{|k,v| v == properties[:granularity].to_i }.keys.first %></td> 
-			<td>Edit/<%= link_to 'Delete',{:controller => "gr_categories", :action => "destroy", :id => category.id},
+			<td><%= link_to 'Edit', edit_project_gr_graph_gr_category_path,
+			 :class => 'icon icon-edit' %><%= link_to 'Delete', project_gr_graph_gr_category_path,
 			 :class => 'icon icon-del', method: :delete %></td>
 		</tr>
-	<% end %>
+
 </tbody>
 </table>
+
+	<% end %>

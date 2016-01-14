@@ -1,0 +1,37 @@
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 're_graphs', :plugin => 'redmine_graphs' %>
+    <%= javascript_include_tag "http://code.highcharts.com/highcharts.js", "chartkick" %>
+    <%= javascript_include_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/jpicker-1.1.6.js" %>
+    <%= stylesheet_link_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/css/jPicker-1.1.6.css"  %>
+    <%= javascript_include_tag 'wl_graphs/new.js', :plugin => "redmine_workload_capacity" %>
+ 	<%= include_calendar_headers_tags %>
+<% end %>
+
+
+<h2> Set parameters for your graph : <%=@gr_graph.name%> <%= link_to '', edit_project_gr_graph_path(:id => @gr_graph.id),
+         :class => 'icon icon-edit' %> </h2>
+
+<%= render :partial => 'show_category', :locals => {:gr_graph => @gr_graph} %>
+
+<br />
+
+<%= render :partial => 'index_series', :locals => {:gr_graph => @gr_graph} %>
+
+
+<br />
+
+<fieldset>
+	<legend>Draw</legend>
+
+<button onclick="draw_graph();">Preview</button>
+<button>Save</button>
+  
+
+<div id="gr_container" style="min-width: 310px; height: 400px; margin:0 auto" data-highcharts-chart="0"></div>
+  
+</fieldset>
+<% content_for :header_tags do %>
+     <%= javascript_include_tag 'gr_graphs', :plugin => "redmine_workload_capacity" %>
+<% end %>
+
+

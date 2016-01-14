@@ -1,4 +1,3 @@
- <%= form_tag(:controller => "gr_series", :action => "create")  do  %><!-- series, :url => project_gr_series_index_path   required -->
 	<p>Series Type: 
 		<% type_member_list = ['User', 'Role'] %>
 		<%= select_tag("entry_type" , options_for_select(type_member_list), {:multiple => false}) %>
@@ -10,21 +9,19 @@
 		 end %>
 		<%#= select_tag 'wlrole_list_id', options_for_select(wlrole_list), :multiple => true %>
 		<% wlmember_list = @project.wl_members.map{|member| [member.name, member.user.id]} %>
-		<%= select_tag( "entry_id", options_for_select(wlmember_list), {:multiple => true} ) %>
+		<%= select_tag( "entry_id", options_for_select(wlmember_list, (gr_entries_list.map{|entry| entry.entry_id} unless gr_series.new_record?) ), {:multiple => true} ) %>
 	 	</p>
-	<p>Series Name: <%= text_field_tag("name") %></p>
+	<p>Series Name: <%= text_field_tag("name", (gr_series.name unless gr_series.new_record?) ) %></p>
 	<p>Series Color: 
-		<%= text_field_tag( "color_picker",  "56aaff" ) %>
+		<%= text_field_tag( "color_picker",  gr_series.new_record? ? "56aaff" : gr_series.properties[:color] ) %>
 		</p>
 	<p>Series Chart Type: 
 		<%# type_graph_list = [["Bar", 1], ["Line", 2]] %>
 		<% chart_type_options = GrSeries.chart_types.to_a.map{|a| [a[0].humanize, a[1]]} %>
-		<%= select_tag( "chart_type", options_for_select(chart_type_options), {:multiple => false} ) %>
+		<%= select_tag( "chart_type", options_for_select(chart_type_options, (GrSeries.chart_types[gr_series.chart_type] unless gr_series.new_record?)), {:multiple => false} ) %>
 		</p>
 	<p>Series Attribut: 
 		<%# series_attribut_options = [["Project Allocation", 1], ["Total Allocation", 2], ["Remaining Allocation", 3], ["Logged Time", 4], ["Check Ratio", 5]] %>
-		<%= select_tag( "attribut", options_for_select(WlSeries.attribut_options.to_a.map{|a| [a[0].to_s, a[1]]}), { :multiple => false } ) %>
+		<%= select_tag( "attribut", options_for_select(WlSeries.attribut_options.to_a.map{|a| [a[0].to_s, a[1]]}, (gr_series.properties[:attribut] unless gr_series.new_record?) ), { :multiple => false } ) %>
 		</p> 
-	<%= submit_tag("Add New Series") %>
-<% end %>
 

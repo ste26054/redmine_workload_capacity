@@ -4,11 +4,13 @@
     <%= javascript_include_tag 'wl_graphs/new.js', :plugin => "redmine_workload_capacity" %>
 <% end %>
 
+
 <fieldset>
 	<legend>Legend Entries (Series)</legend>
 
-	<%= form_tag(project_gr_graph_gr_series_index_path) do  %>
-		<%= render :partial => 'form', :locals => {:gr_series => @gr_series} %>
-		<p><%= submit_tag('Submit Series') %> <a href="javascript:history.back()"><%= l(:button_back) %></a></p>
-	<% end %>
+</br>
+	<%= link_to 'New', new_project_gr_graph_gr_series_path, :class => 'icon icon-add' %>
+</br>	
+	<%= render :partial => 'table_series', :locals => { :gr_graph => gr_graph} %>
+
 </fieldset>
