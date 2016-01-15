@@ -3,6 +3,7 @@
 		<%= select_tag("entry_type" , options_for_select(type_member_list), {:multiple => false}) %>
 		</p>
 	<p>Series Entries: 
+		<%# TODO: handle Role:%>
 		<%# wlrole_list = WlProjectWindowLogic.retrieve_display_role_ids_list(@project) %>
 		<%# unless wlrole_list.empty?
 		 wlrole_list = wlrole_list.map{ |id| [Role.find(id).name, id]}

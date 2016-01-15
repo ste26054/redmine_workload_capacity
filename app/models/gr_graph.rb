@@ -1,7 +1,6 @@
 class GrGraph < ActiveRecord::Base
   unloadable
 
-  #belongs_to :plugin_reference, polymorphic: true 
   belongs_to :user
   belongs_to :project
 

@@ -28,16 +28,11 @@ class GrSeriesController < ApplicationController
       GrEntry.create(entry: params[:entry_type].to_s.constantize.find(entry_id), gr_series_id: @gr_series.id)
     end
 
-    # render plain: "******* id : #{@gr_series.id} *****"
-    # return
-
     if @gr_series.save
-      flash[:notice] = "YOUPI"
-      #render :new
+      flash[:notice] = "Create Series: Completed"
     else
-      flash[:error] = "Bouhou"
-
-      render plain: "#{@gr_series.errors.full_messages} ***********"
+      flash[:error] = "Create Series: Failed - #{@gr_series.errors.full_messages}"
+      render :new
       return
     end
 
@@ -67,30 +62,24 @@ class GrSeriesController < ApplicationController
     end
 
     if @gr_series.save
-      flash[:notice] = "YOUPI"
+      flash[:notice] = "Update Series: Completed"
     else
-      flash[:error] = "Bouhou"
-  
-      render plain: "#{@gr_series.errors.full_messages} ***********"
+      flash[:error] = "Update Series: Failed - #{@gr_series.errors.full_messages}"
+      render :edit
       return
     end
-    
+
     redirect_to :controller => 'gr_graphs', :action => 'set_params', :project_id => @project.id, :gr_graph_id => @gr_graph.id
   
   end
 
   def destroy
-     @gr_series = GrSeries.destroy(params[:id])
-
-    # render plain: "*****params[:id]: #{params[:id]}******@gr_category: #{@gr_category}****"
-    # return
+    @gr_series = GrSeries.destroy(params[:id])
     
     if @gr_series.save
-      flash[:notice] = "DELETED"
+      flash[:notice] = "Delete Series: Completed"
     else
-      flash[:error] = "Bouhou - deleted"
-      render plain: "#{@gr_series.errors.full_messages} ***********"
-      return
+      flash[:error] = "Delete Series: Failed - #{@gr_series.errors.full_messages}"
     end
 
     redirect_to :controller => 'gr_graphs', :action => 'set_params', :project_id => @project.id, :gr_graph_id => @gr_graph.id

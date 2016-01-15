@@ -19,14 +19,15 @@ class GrGraphsController < ApplicationController
   end
 
   def create
+    #only taking the title of the graph from textfield
     @gr_graph = GrGraph.new(plugin_reference: "allocation", name: params[:graph_name], user_id: User.current.id, project_id: @project.id )
     
     if @gr_graph.save 
-      flash[:notice] = "YOUPI - your graph has been created"
+      flash[:notice] = "Initiate Graph basis: Completed"
     else
-      flash[:error] = "BOUHOU - graph creation failed"
-      render plain: "#{@gr_graph.errors.full_messaged} **************"
-      return
+      flash[:error] = "Initiate Graph basis: Failed - #{@gr_graph.errors.full_messaged}"
+      render :new
+      return 
     end
 
     redirect_to :controller => 'gr_graphs', :action => 'set_params', :project_id => @project.id, :gr_graph_id => @gr_graph.id
@@ -40,8 +41,8 @@ class GrGraphsController < ApplicationController
   end
 
   def edit
-    @gr_graph = GrGraph.find(params[:id])
     #only rename the graph
+    @gr_graph = GrGraph.find(params[:id])
   end
 
   def update
@@ -49,10 +50,10 @@ class GrGraphsController < ApplicationController
     @gr_graph = GrGraph.update(params[:id], name: params[:graph_name])
 
      if @gr_graph.save 
-      flash[:notice] = "YOUPI - your graph has been renamed"
+      flash[:notice] = "Update Graph title: Completed"
     else
-      flash[:error] = "BOUHOU"
-      render plain: "#{@gr_graph.errors.full_messaged} **************"
+      flash[:error] = "Update Graph title: Failed - #{@gr_graph.errors.full_messaged}"
+      render :edit
       return
     end
 
@@ -64,11 +65,9 @@ class GrGraphsController < ApplicationController
     @gr_graph = GrGraph.destroy(params[:id])
 
     if @gr_graph.save
-      flash[:notice] = "YOUPI - graph deleted"
+      flash[:notice] = "Delete Graph: Completed"
     else
-      flash[:error] = "Bouhou - graph not deleted"
-      render plain: "#{@gr_graph.errors.full_messages} ************"
-      return
+      flash[:error] = "Delete Graph: Failed - #{@gr_graph.errors.full_messages}"
     end
     render :index
 
