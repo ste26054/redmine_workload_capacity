@@ -2,7 +2,7 @@
 	Project Window from <%= format_date(project.wl_project_window.start_date) %> to <%= format_date(project.wl_project_window.end_date) %>
 </p>
 <p>
-	User Working hours: <%= user.weekly_working_hours %>h/week (<%= user.weekly_working_hours / 5.0 %>h/day)
+	User Working hours: <%= user.actual_weekly_working_hours %>h/week (<%= user.actual_weekly_working_hours / 5.0 %>h/day)
 </p>
 
 <fieldset>
