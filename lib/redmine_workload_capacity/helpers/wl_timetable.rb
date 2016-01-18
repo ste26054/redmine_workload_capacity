@@ -306,7 +306,7 @@ module RedmineWorkloadCapacity
 
                     #leave
                     leave_time = get_logged_time(user, @leave_project_id, current_date).round(2)
-                    base_hours = user.actual_weekly_working_hours/5
+                    base_hours = user.weekly_working_hours/5 #an annual leave is a compare to a full-time contract weekly-working-hours
                     if leave_time == base_hours.round(2)
                       #full day off
                       ratio = 0
