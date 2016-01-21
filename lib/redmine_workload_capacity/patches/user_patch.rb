@@ -55,6 +55,12 @@ module RedmineWorkloadCapacity
 		      date.holiday?(region, :observed)
 		    end
 
+		    def actual_weekly_working_hours
+ 				#TODO: needs to be removed after this identical function will be on production in the Leave management plugin
+ 				lp = self.leave_preferences
+ 				return (lp.weekly_working_hours * lp.overall_percent_alloc) / 100.0 
+ 			end
+
 		end
 	end
 end

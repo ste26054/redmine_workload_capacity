@@ -15,7 +15,7 @@ module WlBoardsHelper
 			output << "#{link_to_project_workload(element[:wl_project_window].project)}:".html_safe
 			output << '</strong>'.html_safe if member_project
 			output << " #{element[:percent_alloc]}%".html_safe
-			output << " (#{member.user.weekly_working_hours * element[:percent_alloc] / 100.0}h/week)</br>".html_safe
+			output << " (#{member.user.actual_weekly_working_hours * element[:percent_alloc] / 100.0}h/week)</br>".html_safe
 			
 			project = Project.find(element[:wl_project_window].project.id)
 			role = nil
@@ -50,7 +50,7 @@ module WlBoardsHelper
 
 	def render_member_project_allocation(member, start_date, end_date, overtime_notification = true)
 		alloc_btw = member.wl_project_allocation_between(start_date, end_date)
-		hours_week = member.user.weekly_working_hours * alloc_btw / 100.0
+		hours_week = member.user.actual_weekly_working_hours * alloc_btw / 100.0
 		if overtime_notification
 			overtimes_exist = !WlUserOvertime.where(user_id: member.user_id, wl_project_window_id: member.project.wl_project_window.id).overlaps(start_date, end_date).empty?
 		else
@@ -89,7 +89,7 @@ module WlBoardsHelper
 
 	def render_member_overtime(member, wl_user_overtime)
 		output = "".html_safe
-		user_hours_per_day = member.user.weekly_working_hours / 5.0
+		user_hours_per_day = member.user.actual_weekly_working_hours / 5.0
 		days_count = wl_user_overtime.overtime_days_count
 
 		extra_hours_per_day = wl_user_overtime.overtime_hours.to_f / days_count
@@ -117,7 +117,7 @@ module WlBoardsHelper
 
 	def render_member_overtime_tooltip(wl_user_overtime)
 		extra_hours_per_day = (wl_user_overtime.overtime_hours.to_f / wl_user_overtime.overtime_days_count).round(1)
-		user_hours_per_day = (wl_user_overtime.user.weekly_working_hours / 5.0).round(1)
+		user_hours_per_day = (wl_user_overtime.user.actual_weekly_working_hours / 5.0).round(1)
 		extra_percent_per_day =  ((extra_hours_per_day * 100.0) / user_hours_per_day).round(1)
 		output = "".html_safe
 		output << "<strong>User Working Hours:</strong> #{user_hours_per_day}h/day<br/>".html_safe

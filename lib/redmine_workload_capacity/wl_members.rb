@@ -31,13 +31,13 @@ module WlMember
 			daily_alloc_hours = 0
 			extra_hours_per_day = 0
 			alloc_hours_total = 0
-			daily_basis_hours = (wl_user.weekly_working_hours/5).round(2)
+			daily_basis_hours = (wl_user.actual_weekly_working_hours/5).round(2)
 
 			#bank_holiday?
 			unless wl_user.holiday_date_for_user(current_date) 
 				if current_date.cwday != 6 && current_date.cwday != 7
 					daily_alloc_percent = self.wl_project_allocation_between(current_date, current_date)
-					daily_alloc_hours  = (wl_user.weekly_working_hours*daily_alloc_percent)/(100*5)
+					daily_alloc_hours  = (wl_user.actual_weekly_working_hours*daily_alloc_percent)/(100*5)
 				end
 			end
 

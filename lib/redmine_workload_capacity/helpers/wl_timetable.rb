@@ -249,7 +249,7 @@ module RedmineWorkloadCapacity
               if current_date.between?(start_date, end_date)
 
                 #alloc hours for a day
-                alloc_hours = ((user.weekly_working_hours*alloc[:percent_alloc])/(100*5)).round(1)
+                alloc_hours = ((user.actual_weekly_working_hours*alloc[:percent_alloc])/(100*5)).round(1)
               
                 unless alloc_hours ==0 #Be aware: this alloc_hours is not exactly correct because it is the value for a whole period without taking account of the bank holiday nor week end So for bank holiday and week end, we need to check if there is any overtime
                  
@@ -306,7 +306,7 @@ module RedmineWorkloadCapacity
 
                     #leave
                     leave_time = get_logged_time(user, @leave_project_id, current_date).round(2)
-                    base_hours = user.weekly_working_hours/5
+                    base_hours = user.weekly_working_hours/5 #an annual leave is a compare to a full-time contract weekly-working-hours
                     if leave_time == base_hours.round(2)
                       #full day off
                       ratio = 0
