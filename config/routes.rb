@@ -31,8 +31,3 @@ get '/projects/:project_id/workload/board', :to => 'wl_boards#index'
 get '/projects/:project_id/workload/check', :to => 'wl_check_loggedtime#show'
 
 get '/projects/:project_id/workload/graph', :to => 'gr_graphs#index'
-
-
-
-
-# match '/projects/:project_id/workload/graph/create', :to => 'gr_graphs#new_graph', as: :create_graph, :via => [:get, :post]

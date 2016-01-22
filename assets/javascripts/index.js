@@ -46,7 +46,7 @@ function delete_contentline_rows(member_id){
 
 function refresh_member_contentline(project_id, member_id, flash_msg, notice_flash){
 	$.ajax({
-	      url: '/projects/'+project_id+'/update_wlconfigure/'+member_id,
+	      url: '/projects/'+project_id+'/workload/update_wlconfigure/'+member_id,
 	      cache: false,
 	      beforeSend: function(){
 	      	$('#ajax-indicator').show();

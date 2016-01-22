@@ -1,6 +1,7 @@
 <% content_for :header_tags do %>
     <%= stylesheet_link_tag 're_graphs', :plugin => 'redmine_graphs' %>
     <%= javascript_include_tag "http://code.highcharts.com/highcharts.js", "chartkick" %>
+    <%= javascript_include_tag src="http://code.highcharts.com/modules/exporting.js" %>
     <%= javascript_include_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/jpicker-1.1.6.js" %>
     <%= stylesheet_link_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/css/jPicker-1.1.6.css"  %>
     <%= javascript_include_tag 'wl_graphs/new.js', :plugin => "redmine_workload_capacity" %>
@@ -20,10 +21,92 @@
 
 <br />
 
+<% 
+#declaration de variable
+category_data = []
+series_data = []
+can_draw = false
+%> 
+
+<% 
+
+gr_cat = GrCategory.find_by(gr_graph_id: @gr_graph.id)
+unless gr_cat.nil?
+	#declaration
+	start_period = gr_cat.properties[:start_date].to_date
+	end_period = gr_cat.properties[:end_date].to_date
+	granularity = gr_cat.properties[:granularity].to_i
+	
+	#calcul abscisse
+	category_data = WlCategories.array_date_period(start_period, end_period, granularity)
+
+	#calcul series
+	gr_ser_list = GrSeries.where(gr_graph_id: @gr_graph.id)
+
+	unless gr_ser_list.blank?
+		category_hash = WlCategories.hash_date_period(start_period, end_period, granularity)
+
+		gr_ser_list.each do |series|
+
+			gr_ent_list = GrEntry.where(gr_series_id: series.id)
+			
+			if gr_ent_list.count == 1
+				gr_entry = gr_ent_list.first
+				gr_member = @project.wl_members.select{|wl_m| wl_m.user_id == gr_entry.entry_id }.first
+
+				entry_data = []
+				attribut_type = series.properties[:attribut].to_i
+				case attribut_type
+				when 3 # logged_time
+					
+					category_hash.each do |gr_date|
+						if gr_member.user.get_logged_time(@project, gr_date.last.first, gr_date.last.last).nil?
+							entry_data << 0
+						else
+							entry_data << gr_member.user.get_logged_time(@project, gr_date.last.first, gr_date.last.last).values.sum 
+						end
+					end					
+				when 4 # check_ratio
+					
+					category_hash.each do |gr_date|
+						if gr_member.get_check_ratio(gr_date.last.first, gr_date.last.last).nil?
+							entry_data << 0
+						else
+							entry_data << gr_member.get_check_ratio(gr_date.last.first, gr_date.last.last) 
+						end
+					end
+				else # project_allocation: 0, total_allocation: 1, remaining_allocation: 2
+					entry_data = gr_member.gr_calcul_alloc(start_period, end_period, granularity, attribut_type)
+					entry_data = gr_member.convert_table_alloc_to_hours(entry_data)
+				end
+
+				series_data << {name: series.name, color: "##{series.properties[:color]}", data: entry_data}
+			else
+				#multi selection users
+			end
+
+		end
+		
+	
+	end
+	
+end
+
+
+%>
+
+<%= javascript_tag do %> 
+var gr_title_json = <%=raw @gr_graph.name.to_json %>;
+var category_json = <%=raw category_data.to_json %>;
+var series_json = <%=raw series_data.to_json %>;
+<% end %>
+<%#=raw category_data.to_json %>
+<%#=raw series_data.to_json %>
+
 <fieldset>
 	<legend>Draw</legend>
 
-<button onclick="draw_graph();">Preview</button>
+<button onclick="draw_graph(gr_title_json, category_json, ' - ', series_json);">Preview</button>
 <button>Save</button>
   
 
