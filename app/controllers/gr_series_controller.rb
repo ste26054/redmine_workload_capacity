@@ -16,19 +16,32 @@ class GrSeriesController < ApplicationController
 
   def create
 
-    @properties = { color: params[:color_picker], attribut: params[:attribut] }
+    @properties = { color: params[:color_picker], attribut: params[:attribut], operation: params[:operation] }
     @gr_series = GrSeries.create(
       name: params[:name],
       chart_type: GrSeries.chart_types.select{|k,v| v == params[:chart_type].to_i}.keys.first, 
       properties: @properties,
       gr_graph_id: @gr_graph.id)
 
-    @entries_id_list = params[:entry_id]
-    @entries_id_list.each do |entry_id|
-      GrEntry.create(entry: params[:entry_type].to_s.constantize.find(entry_id), gr_series_id: @gr_series.id)
-    end
+      # @entries_id_list = params[:entry_id]
+      
+      # @entries_id_list.each do |entry_id|
+      #  GrEntry.create(entry: params[:entry_type].to_s.constantize.find(entry_id), gr_series_id: @gr_series.id)
+      # end 
 
     if @gr_series.save
+      @entries_id_list = params[:entry_id]
+      @gr_entry = GrEntry.new
+      @entries_id_list.each do |entry_id|
+        @gr_entry = GrEntry.create(entry: params[:entry_type].to_s.constantize.find(entry_id), gr_series_id: @gr_series.id)
+             unless @gr_entry.save
+              flash[:error] = "Create Series: Failed - #{@gr_entry.errors.full_messages}"
+              @gr_series = GrSeries.destroy(@gr_series.id)
+              render :new
+              return
+            end
+      end 
+ 
       flash[:notice] = "Create Series: Completed"
     else
       flash[:error] = "Create Series: Failed - #{@gr_series.errors.full_messages}"
@@ -49,7 +62,7 @@ class GrSeriesController < ApplicationController
 
     @gr_series = GrSeries.destroy(params[:id])
    
-    @properties = { color: params[:color_picker], attribut: params[:attribut] }
+    @properties = { color: params[:color_picker], attribut: params[:attribut], operation: params[:operation] }
     @gr_series = GrSeries.create(
       name: params[:name],
       chart_type: GrSeries.chart_types.select{|k,v| v == params[:chart_type].to_i}.keys.first, 

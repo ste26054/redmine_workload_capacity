@@ -14,6 +14,7 @@ class WlCheckLoggedtimeController < ApplicationController
 
   def show
 
+   
     wl_pw = @project.wl_project_window
     acceptable_limit_low = (1 - (wl_pw.low_accept_check_limit.to_f/100)).round(2) 
     acceptable_limit_high = (1 + (wl_pw.high_accept_check_limit.to_f/100)).round(2) 
@@ -37,5 +38,6 @@ class WlCheckLoggedtimeController < ApplicationController
   def set_user
     @user ||= User.current
   end
+
 
 end

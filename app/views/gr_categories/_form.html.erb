@@ -2,7 +2,7 @@
 	<% type_options = GrCategory.gr_category_types.to_a.map{|a| [a[0].humanize, a[1]]} %>
 	<%= select_tag('gr_category_type', options_for_select(type_options, gr_category.new_record? ? 0 : gr_category.gr_category_type), {:multiple => false, :disabled => true} ) %>
 </p>
-<p>Range:   From <%= text_field_tag('start_date', (gr_category.properties[:start_date] unless gr_category.new_record?)) %><%= calendar_for('start_date') %> To <%= text_field_tag('end_date', (gr_category.properties[:end_date] unless gr_category.new_record?)) %><%= calendar_for('end_date') %></p>
+<p>Range:   From <%= text_field_tag('start_date', (gr_category.properties[:start_date] unless gr_category.new_record?), :required => true) %><%= calendar_for('start_date') %> To <%= text_field_tag('end_date', (gr_category.properties[:end_date] unless gr_category.new_record?), :required => true) %><%= calendar_for('end_date') %></p>
 <p>Granularity: 
 	<%# granularity_options = [["Daily", 1], ["Weekly", 2], ["Monthly", 3], ["Quarterly", 4], ["Yearly", 5]] %>
 	<% granularity_options = WlCategories.date_granularity_options.to_a.map{|a| [a[0].to_s, a[1]]} %>

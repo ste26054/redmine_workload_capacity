@@ -53,4 +53,21 @@ module WlCategories
 		return hash_period
 	end
 
+	def self.get_array_data(gr_cat)
+		category_data = []
+
+		unless gr_cat.nil?
+			#initialisation
+			start_period = gr_cat.properties[:start_date].to_date
+			end_period = gr_cat.properties[:end_date].to_date
+			granularity = gr_cat.properties[:granularity].to_i
+
+			#calculation abscisse
+			category_data = WlCategories.array_date_period(start_period, end_period, granularity)
+
+		end
+
+		return category_data
+	end
+
 end

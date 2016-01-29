@@ -14,6 +14,7 @@ class GrCategoriesController < ApplicationController
   end
 
   def create
+
   	@properties = {start_date: params[:start_date], end_date: params[:end_date], granularity: params[:granularity]}
   	
   	@gr_category_type =  GrCategory.gr_category_types.select{|k,v| v == params[:gr_category_type].to_i}.keys.first
@@ -28,15 +29,15 @@ class GrCategoriesController < ApplicationController
       return
     end
     redirect_to :controller => 'gr_graphs', :action => 'set_params', :project_id => @project.id, :gr_graph_id => @gr_graph.id
-
+    
   end
 
   def edit
     @gr_category = GrCategory.find_by(gr_graph_id: @gr_graph.id)
-
   end
 
   def update
+
     @gr_category = GrCategory.find_by(gr_graph_id: @gr_graph.id)
 
     @properties = {start_date: params[:start_date], end_date: params[:end_date], granularity: params[:granularity]}
@@ -72,6 +73,5 @@ class GrCategoriesController < ApplicationController
   def get_graph
      @gr_graph = GrGraph.find(params[:gr_graph_id])
   end
-
 
 end

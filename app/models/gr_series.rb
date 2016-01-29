@@ -4,7 +4,7 @@ class GrSeries < ActiveRecord::Base
   belongs_to :gr_graph
   has_many :gr_entries, :dependent => :destroy
 
-  enum chart_type: { pie: 0, bar: 1, line: 2 } 
+  enum chart_type: { pie: 0, column: 1, line: 2, spline: 3, area: 4, bar: 5 } 
 
   validates :name, presence: true
   validates :chart_type, presence: true, inclusion: { in: GrSeries.chart_types.keys }

@@ -10,21 +10,24 @@
 		<th> Series Color </th>
 		<th> Series Chart Type </th>
 		<th> Series Attribut </th>
+		<th> Series function </th>
 		<th> Action </th>
 	</tr></thead>
 	<tbody>
 
 		<% series_list.each do |serie|%>
 			<% properties = serie.properties %>
-			<% entries_list = GrEntry.where(gr_series_id: serie.id).map{|entry| entry.entry_type.constantize.find(entry.entry_id)}.join(", ") %>
+			<% entries_list = GrEntry.where(gr_series_id: serie.id)
+			entries_name = entries_list.map{|entry| entry.entry_type.constantize.find(entry.entry_id)}.join(", ") %>
 			<tr>
 				<td><%= serie.id %></td>
-				<td><%= GrEntry.where(gr_series_id: serie.id).first.entry_type %></td>
-				<td><%= entries_list %></td>
+				<td><%= entries_list.first.entry_type %></td>
+				<td><%= entries_name %></td>
 				<td><%= serie.name %></td>
 				<td><span style="background-color: #<%=properties[:color]%>"><%= properties[:color] %></span></td>
 				<td><%= serie.chart_type %></td>
 				<td><%=  WlSeries.attribut_options.select{|k,v| v== properties[:attribut].to_i}.keys.first %></td>
+				<td> <%= properties[:operation].nil? ? " - " : WlSeries.operation_options.select{|k,v| v== properties[:operation].to_i}.keys.first%> </td>
 				<td><%= link_to 'Edit', edit_project_gr_graph_gr_series_path(:id => serie.id),
 				 :class => 'icon icon-edit' %><%= link_to 'Delete', project_gr_graph_gr_series_path(:id => serie.id),
 				 :class => 'icon icon-del', method: :delete %></td>

@@ -25,7 +25,7 @@ class GrGraphsController < ApplicationController
     if @gr_graph.save 
       flash[:notice] = "Initiate Graph basis: Completed"
     else
-      flash[:error] = "Initiate Graph basis: Failed - #{@gr_graph.errors.full_messaged}"
+      flash[:error] = "Initiate Graph basis: Failed"
       render :new
       return 
     end
@@ -52,7 +52,7 @@ class GrGraphsController < ApplicationController
      if @gr_graph.save 
       flash[:notice] = "Update Graph title: Completed"
     else
-      flash[:error] = "Update Graph title: Failed - #{@gr_graph.errors.full_messaged}"
+      flash[:error] = "Update Graph title: Failed"
       render :edit
       return
     end
@@ -69,8 +69,8 @@ class GrGraphsController < ApplicationController
     else
       flash[:error] = "Delete Graph: Failed - #{@gr_graph.errors.full_messages}"
     end
-    render :index
-
+    #render :index
+    redirect_to :controller => 'gr_graphs', :action => 'index', :project_id => @project.id
   end
 
 

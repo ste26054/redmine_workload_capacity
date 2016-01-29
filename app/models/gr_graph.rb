@@ -8,9 +8,11 @@ class GrGraph < ActiveRecord::Base
   has_many :gr_series, :dependent => :destroy
 
   enum plugin_reference: { doo: 0, allocation: 1, kpi: 2, forecast: 3} 
- 
+
+ # validates_presence_of :name
+
   validates :plugin_reference, presence: true, inclusion: { in: GrGraph.plugin_references.keys }
-  validates :name, presence: true
+  validates :name, presence: true, allow_blank: false
   validates :user_id, presence: true
   validates :project_id, presence: true 
 

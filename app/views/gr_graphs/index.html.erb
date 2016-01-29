@@ -15,8 +15,8 @@
     <th> Id </th>
     <th> plugin reference </th>
     <th> name </th>
-    <th> user_id </th>
-    <th> projet_id </th>
+    <th> created_by </th>
+    <th> projet </th>
     <th> action </th>
   </tr></thead>
   <tbody>
@@ -27,8 +27,8 @@
         <td><%= g.plugin_reference %></td>
         <td><%= g.name %> <%= link_to '', edit_project_gr_graph_path(:id => g.id),
          :class => 'icon icon-edit' %></td>
-        <td><%= g.user_id %></td> 
-        <td><%= g.project_id %></td> 
+        <td><%= User.find(g.user_id).name %></td> 
+        <td><%= Project.find(g.project_id).name %></td> 
         <td><%= link_to 'Edit', set_project_gr_graphs_path(:gr_graph_id => g.id),
          :class => 'icon icon-edit' %><%= link_to 'Delete', project_gr_graph_path(:id => g.id),
          :class => 'icon icon-del', method: :delete %></td>
@@ -40,7 +40,15 @@
 
  <br /><br />
 
-<h2> ~ Graphs dashboard will be here ~ </h2>
+</fieldset>
+
+<fieldset>
+  <legend>Dashboard</legend>
+
+<div id="gr-content">
+
+</div>
+
 
 </fieldset>
  
@@ -48,7 +56,5 @@
 <% content_for :header_tags do %>
     <%= stylesheet_link_tag 're_graphs', :plugin => 'redmine_graphs' %>
     <%= javascript_include_tag "http://code.highcharts.com/highcharts.js", "chartkick" %>
-     <%= javascript_include_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/jpicker-1.1.6.js" %>
-     <%= stylesheet_link_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/css/jPicker-1.1.6.css"  %>
      <%= javascript_include_tag 'gr_graphs', :plugin => "redmine_workload_capacity" %>
 <% end %>

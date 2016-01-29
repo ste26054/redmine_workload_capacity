@@ -35,5 +35,4 @@ class WlBoardsController < ApplicationController
 
   private
 
-
 end

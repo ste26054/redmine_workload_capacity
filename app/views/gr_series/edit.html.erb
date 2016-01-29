@@ -1,12 +1,11 @@
 <% content_for :header_tags do %>
-    <%= javascript_include_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/jpicker-1.1.6.js" %>
-    <%= stylesheet_link_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/css/jPicker-1.1.6.css"  %>
-    <%= javascript_include_tag 'wl_graphs/new.js', :plugin => "redmine_workload_capacity" %>
+    <%= javascript_include_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/jpicker-1.1.6.min.js" %>
+    <%= stylesheet_link_tag src="/plugin_assets/redmine_workload_capacity/javascripts/jpicker-1.1.6/css/jPicker-1.1.6.min.css"  %>
+    <%= javascript_include_tag 'gr_graphs', :plugin => "redmine_workload_capacity" %>
 <% end %>
 
 <fieldset>
 	<legend>Edit Legend Entries (Series)</legend>
-
 	<%= form_tag(project_gr_graph_gr_series_path(:id => @gr_series.id), :method => :put) do  %>
 		<%= render :partial => 'form', :locals => {:project => @project, :gr_series => @gr_series, :gr_entries_list => @gr_entries_list} %>
 		<p><%= submit_tag('Modify') %> <a href="javascript:history.back()"><%= l(:button_back) %></a></p>

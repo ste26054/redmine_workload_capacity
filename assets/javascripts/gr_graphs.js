@@ -59,3 +59,46 @@ function draw_graph(graph_title, category_data, yAxis_unity, series_data){
     });
     
 }
+
+function entry_type_change(wlroles_list_json, wlusers_list_json){
+    entry_type_value = document.getElementById("entry_type").value;
+        $("#entry_id").empty();
+    if(entry_type_value == "User"){
+        $(wlusers_list_json).each(function(i) {  //list of users as option 
+            $("#entry_id").append("<option value=\"" + wlusers_list_json[i][1] + "\">" + wlusers_list_json[i][0] + "</option>")
+        });
+    }else{
+         $(wlroles_list_json).each(function(i) {  //list of users as option 
+            $("#entry_id").append("<option value=\"" + wlroles_list_json[i][1] + "\">" + wlroles_list_json[i][0] + "</option>")
+        });
+    }
+
+}
+
+function entry_id_change(){
+    entry_type_value = document.getElementById("entry_type").value;
+    entry_id_count = document.getElementById("entry_id").selectedOptions.length;
+    operation_field = document.getElementById("operation");   
+    
+
+      operation_field.disabled = false;
+    if(entry_type_value == "User"){
+        if(entry_id_count > 1){
+            operation_field.disabled = false;
+        }else{
+            operation_field.disabled = true;
+        }
+    }else{
+        operation_field.disabled = false;
+    } 
+
+    if(operation_field.disabled){
+        $("#operation_div").hide();
+    }
+    else{   //choose the operation to do (sum, average, max, min)
+        $("#operation_div").show();
+    }
+    // else : always giving a type of operation if the entry_type is a role
+        
+
+}

@@ -9,10 +9,18 @@ class GrCategory < ActiveRecord::Base
   validates :properties, presence: true
   validates :gr_graph_id, presence: true 
 
+  validate :check_dates
+
   serialize :properties
 
   attr_accessible :gr_category_type, :properties, :gr_graph_id
 
 private
+
+def check_dates
+	if self.properties[:start_date] && self.properties[:end_date]
+		errors.add(:base, l(:error_dates)) if self.properties[:end_date] < self.properties[:start_date]
+	end
+end
 
 end
