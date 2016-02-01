@@ -1,10 +1,10 @@
-function draw_graph(graph_title, category_data, yAxis_unity, series_data){
+function draw_graph(gr_id, graph_title, category_data, yAxis_unity, series_data){
 // category_data = document.getElementById("category_data").InnerHTML
 // series_data = document.getElementById("series_data").InnerHTML
-    $('#gr_container').highcharts({
+    $("#gr"+gr_id+"_container").highcharts({
         title: {
             text: graph_title,
-            x: -20 //center
+            // x: -20 //center
         },
         // subtitle: {
         //     text: 'Source: WorldClimate.com',
@@ -100,5 +100,54 @@ function entry_id_change(){
     }
     // else : always giving a type of operation if the entry_type is a role
         
-
 }
+
+function add_graph_div(graph_id){
+    //test
+ $("#gr-content").append("<div id=\"gr#{graph_id}_container\" style=\"min-width: 310px; height: 400px; margin:0 auto\" data-highcharts-chart=\"0\"><p>aaa</p></div>");
+}
+
+function display_graph_div(project_id, graph_id){
+     // $("#gr-content").after("<p>Totooo1</p>");
+     graph_div = document.getElementById("gr"+graph_id+"block");
+     if(graph_div != null ){
+        graph_div.parentNode.removeChild(graph_div);
+     }
+    $.ajax({
+      url: '/projects/'+project_id+'/gr_graphs/'+graph_id+'/display',
+      cache: false,
+      beforeSend: function(){
+        $('#ajax-indicator').show();
+                  },
+      success: function(data){
+        // delete_contentline_rows(member_id);
+        $("#gr-content").append(data);
+        // $("#gr-content").after("<p>Totooo</p>");
+      }
+
+    });
+    
+    
+}
+
+function delete_graph_div(graph_id){
+    graph_div = document.getElementById("gr"+graph_id+"_block");
+    graph_div.parentNode.removeChild(graph_div);
+}
+
+
+function initGrDashSortable(list, url) {
+  $('#list-'+list).sortable({
+    connectWith: '.block-receiver',
+    tolerance: 'pointer',
+    update: function(){
+      $.ajax({
+         url: url,
+        type: 'post',
+        data: {'blocks': $.map($('#list-'+list).children(), function(el){return $(el).attr('id');})}
+      });
+    }
+  });
+  $("#list-top, #list-left, #list-right").disableSelection();
+}
+

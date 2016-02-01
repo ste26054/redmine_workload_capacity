@@ -11,6 +11,11 @@ resources :projects do
 
 		collection do
 			match '/:gr_graph_id/set_params', :to => 'gr_graphs#set_params', as: :set, :via => [:get, :post]
+			get '/:gr_graph_id/display', :to => 'gr_graphs#display_graph', as: :display_graph_content
+			get '/perso_index', :to => 'gr_graphs#personalise_index', as: :personalise_index
+			post '/order_blocks', :to => 'gr_graphs#order_blocks', as: :order_blocks
+			post '/add_block', :to => 'gr_graphs#add_block', as: :add_block
+			post '/remove_block', :to => 'gr_graphs#remove_block', as: :remove_block
 		end
 	end
 

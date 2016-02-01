@@ -27,17 +27,21 @@
 	 	</p>
 
 	<div id="operation_div" 
-		<% if (!gr_series.new_record? && gr_series.properties[:operation].nil?) %>
+		<% if gr_series.new_record? || (!gr_series.new_record? && gr_series.properties[:operation].nil?) %>
 	 	 style ="display: none;"
 	 	<% end %>
 	>
 		<% groperation_list = WlSeries.operation_options.to_a.map{|a| [a[0].to_s, a[1]]} %>
 		<% selected_operation = 0 %>
-		<% if (!gr_series.new_record? && gr_series.properties[:operation].nil?) 
+		<% if gr_series.new_record?  
 			disabled =  true 		  
 		else 
-			selected_operation = gr_series.properties[:operation] unless gr_series.properties[:operation].nil?
-			disabled = false
+			if gr_series.properties[:operation].nil? 
+				disabled = true
+			else
+				selected_operation = gr_series.properties[:operation]
+				disabled = false
+			end	
 		end %>
 	<p>Series Function (operation): 
 		<%# series_operation_options: { sum: 0, average: 1, min: 2, max: 3}  %>

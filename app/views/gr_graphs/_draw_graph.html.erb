@@ -1,0 +1,31 @@
+<div id="gr<%=gr_graph.id%>_block" 
+<% if sortable %>
+class="mypage-box ui-sortable-handle"
+<% end %>
+  > <!--class="mypage-box ui-sortable-handle" -->
+<!--  <div style="float:right;margin-right:16px;z-index:500;" >
+    <a href="#" class="close-icon", onclick ="delete_graph_div(<%=gr_graph.id%>);"> </a>
+  </div> -->
+<% if sortable %>
+    <div style="float:right;margin-right:16px;z-index:500;">
+    <%= link_to "", remove_block_project_gr_graphs_path(:block => "gr#{gr_graph.id}_block"), :method => 'post', :class => "close-icon" %>
+    </div>
+<% end %>
+<div id="gr<%=gr_graph.id%>_container"
+<% if sortable %>
+class="handle"
+<% end %>
+  > <!--  class="handle"--> 
+ 
+        <% gr_cat = GrCategory.find_by(gr_graph_id: gr_graph.id)
+          category_data = WlCategories.get_array_data(gr_cat)
+          series_data = WlSeries.get_array_data(project, gr_cat) %>
+        <%= javascript_tag do %> 
+        var gr_title_json = <%=raw gr_graph.name.to_json %>;
+        var category_json = <%=raw category_data.to_json %>;
+        var series_json = <%=raw series_data.to_json %>;
+        draw_graph(<%=gr_graph.id%>, gr_title_json, category_json, ' - ', series_json);
+        <% end %>
+
+</div>
+</div>
