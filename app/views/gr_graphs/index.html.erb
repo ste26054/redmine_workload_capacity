@@ -7,35 +7,33 @@
 <h2>Allocation</h2>
 <div class="tabular2"><%= render_wl_tabs wl_tabs %></div>
 <br />
-<h2>Graph</h2>
-<br />
 <fieldset>
   <legend>List <%= link_to 'Add graph', new_project_gr_graph_path, :class => 'icon icon-add' %></legend>
   <br />
 
-<% graphs_list = GrGraph.all %>
+<% graphs_list = GrGraph.where(project_id: @project.id) %>
 <% unless graphs_list.blank? %>
 
   <table class="list">
   <thead><tr>
  <!--    <th> Id </th>
     <th> plugin reference </th> -->
-    <th> name </th>
-    <th> created_by </th>
-    <th> projet </th>
-    <th> action </th>
+    <th> Title </th>
+    <th> Created_by </th>
+    <!-- <th> Projet </th> -->
+    <th> Action </th>
   </tr></thead>
   <tbody>
-    <% GrGraph.all.each do |g| %>
+    <% graphs_list.each do |g| %>
       <tr>
-<!--         <td><%= g.id %></td>
-        <td><%= g.plugin_reference %></td> -->
+<!--         <td><%#= g.id %></td>
+        <td><%#= g.plugin_reference %></td> -->
         <td><%= g.name %> <%= link_to '', edit_project_gr_graph_path(:id => g.id),
          :class => 'icon icon-edit' %></td>
         <td><%= User.find(g.user_id).name %></td> 
-        <td><%= Project.find(g.project_id).name %></td> 
+        <!-- <td><%#= Project.find(g.project_id).name %></td>  -->
         <td><%= link_to 'Edit', set_project_gr_graphs_path(:gr_graph_id => g.id),
-         :class => 'icon icon-edit' %><%= link_to 'Delete', project_gr_graph_path(:id => g.id),
+         :class => 'icon icon-edit' %>  <%= link_to 'Delete', project_gr_graph_path(:id => g.id),
          :class => 'icon icon-del', method: :delete %> 
        </td>
       </tr>
@@ -52,45 +50,28 @@
 <fieldset>
   <legend>Dashboard <%= link_to l(:label_personalize_page),{:action => 'personalise_index'}, {:class => 'icon icon-edit'} %></legend>
 
-<div id="gr-content">
-
-  <div id="list-top">
-  <% unless @blocks.nil? 
-    @blocks['top'].each do |block|
-      gr_grph_id = block[/\d+/].to_i
-      gr_graph = GrGraph.find(gr_grph_id) %>
-      <% unless gr_graph.nil? %>
-        <%= render "draw_graph", :project => @project, :gr_graph => gr_graph, :sortable => false %>
-      <% end %>
-   <% end %>
-  <% end %>
-  </div>
-
-  <div id="list-left" class="splitcontentleft">
-  <% unless @blocks.nil? 
-    @blocks['left'].each do |block|
-      gr_grph_id = block[/\d+/].to_i
-      gr_graph = GrGraph.find(gr_grph_id) %>
-      <% unless gr_graph.nil? %>
-        <%= render "draw_graph", :project => @project, :gr_graph => gr_graph, :sortable => false %>
-      <% end %>
-   <% end %>
-  <% end %>
-  </div>
-
-  <div id="list-right" class="splitcontentright">
-  <% unless @blocks.nil? 
-    @blocks['right'].each do |block|
-      gr_grph_id = block[/\d+/].to_i
-      gr_graph = GrGraph.find(gr_grph_id) %>
-      <% unless gr_graph.nil? %>
-        <%= render "draw_graph", :project => @project, :gr_graph => gr_graph, :sortable => false %>
-      <% end %>
-   <% end %>
-  <% end %>
-  </div>
-
-</div>
-
+<div id="gr-content"></div>
 </fieldset>
  
+  <%= javascript_tag do %>
+    $(document).ready(function(){
+
+      $.ajax({
+      
+        url: '<%=display_graph_content_path(@project) %>',
+        cache: false,
+        beforeSend: function(){
+      
+        $("#gr-content").html('<%= escape_javascript(render :partial => '/wl_commons/loading') %>');
+                    },
+        success: function(data){
+        
+          $("#gr-content").html(data);
+          
+        }
+
+      });
+      $('#ajax-indicator').hide();
+     });
+    
+<% end %>

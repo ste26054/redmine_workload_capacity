@@ -3,10 +3,10 @@ en:
   label_workload: "Allocation"
 
   #Tabs
-  label_grgraph: "Graphs"
   label_wldashboard: "Dashboard"
   label_wlconfigure: "Configure"
-  label_wlcheck: "Check"
+  label_wlcheck: "Check vs Timesheet"
+  label_grgraph: "Graph"
 
   #Project Window
   notice_project_windows_set: "The project window was correctly set for %{project}"

@@ -1,15 +1,15 @@
-function draw_graph(gr_id, graph_title, category_data, yAxis_unity, series_data){
+function draw_graph(gr_id, gr_title, gr_subtitle, category_data, series_data){
 // category_data = document.getElementById("category_data").InnerHTML
 // series_data = document.getElementById("series_data").InnerHTML
     $("#gr"+gr_id+"_container").highcharts({
         title: {
-            text: graph_title,
+            text: gr_title,
             // x: -20 //center
         },
-        // subtitle: {
-        //     text: 'Source: WorldClimate.com',
-        //     x: -20
-        // },
+        subtitle: {
+            text: gr_subtitle,
+            x: -20
+        },
         xAxis: {
             // categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                 // 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -17,7 +17,7 @@ function draw_graph(gr_id, graph_title, category_data, yAxis_unity, series_data)
         },
         yAxis: {
             title: {
-                text: yAxis_unity
+                text: " "
             },
             plotLines: [{
                 value: 0,
@@ -25,9 +25,9 @@ function draw_graph(gr_id, graph_title, category_data, yAxis_unity, series_data)
                 color: '#808080'
             }]
         },
-        tooltip: {
-            valueSuffix: yAxis_unity
-        },
+        // tooltip: {
+        //     valueSuffix: yAxis_unity
+        // },
         legend: {
             layout: 'vertical',
             align: 'right',
@@ -100,34 +100,6 @@ function entry_id_change(){
     }
     // else : always giving a type of operation if the entry_type is a role
         
-}
-
-function add_graph_div(graph_id){
-    //test
- $("#gr-content").append("<div id=\"gr#{graph_id}_container\" style=\"min-width: 310px; height: 400px; margin:0 auto\" data-highcharts-chart=\"0\"><p>aaa</p></div>");
-}
-
-function display_graph_div(project_id, graph_id){
-     // $("#gr-content").after("<p>Totooo1</p>");
-     graph_div = document.getElementById("gr"+graph_id+"block");
-     if(graph_div != null ){
-        graph_div.parentNode.removeChild(graph_div);
-     }
-    $.ajax({
-      url: '/projects/'+project_id+'/gr_graphs/'+graph_id+'/display',
-      cache: false,
-      beforeSend: function(){
-        $('#ajax-indicator').show();
-                  },
-      success: function(data){
-        // delete_contentline_rows(member_id);
-        $("#gr-content").append(data);
-        // $("#gr-content").after("<p>Totooo</p>");
-      }
-
-    });
-    
-    
 }
 
 function delete_graph_div(graph_id){

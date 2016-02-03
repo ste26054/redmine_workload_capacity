@@ -9,8 +9,6 @@ module RedmineWorkloadCapacity
 		          unloadable # Send unloadable so it will not be unloaded in development
 		          has_many :wl_project_allocations
 		          has_many :wl_custom_allocations
-
-		          has_many :gr_entries, as: :entry
 		        end
 		    end
 		end
@@ -43,6 +41,10 @@ module RedmineWorkloadCapacity
 
 			def wl_manage_right?(project)
 				return WlUser.wl_manage_right?(self, project)
+			end
+
+			def wl_view_global_right?(project)
+				return WlUser.wl_view_global_right?(self, project)
 			end
 
 			def get_logged_time(project, from_date, to_date)

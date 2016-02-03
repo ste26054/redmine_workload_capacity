@@ -1,7 +1,8 @@
 <fieldset>
-	<legend>Horizontal (Category) Axis Table</legend>
-</br>
-	<%= link_to 'New', new_project_gr_graph_gr_category_path, :class => 'icon icon-add' %>
+	<legend>Horizontal (Category) Axis Table
+	<% if gr_graph.gr_category.nil? %>
+		<%= link_to 'New', new_project_gr_graph_gr_category_path, :class => 'icon icon-add' %>
+	<% end %></legend>
 </br>
 	<%= render :partial => 'table_category', :locals => { :gr_graph => gr_graph} %>
 	

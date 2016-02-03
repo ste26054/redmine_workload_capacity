@@ -1,4 +1,4 @@
-	<% category = GrCategory.find_by(gr_graph_id: gr_graph.id) %>
+	<% category = gr_graph.gr_category %>
 	<% unless category.nil? %>
 
 <table class="list">
@@ -19,7 +19,7 @@
 			<td><%= properties[:end_date] %></td>
 			<td><%= WlCategories.date_granularity_options.select{|k,v| v == properties[:granularity].to_i }.keys.first %></td> 
 			<td><%= link_to 'Edit', edit_project_gr_graph_gr_category_path,
-			 :class => 'icon icon-edit' %><%= link_to 'Delete', project_gr_graph_gr_category_path,
+			 :class => 'icon icon-edit' %>  <%= link_to 'Delete', project_gr_graph_gr_category_path,
 			 :class => 'icon icon-del', method: :delete %></td>
 		</tr>
 

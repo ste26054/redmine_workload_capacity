@@ -17,7 +17,7 @@ class WlBoardsController < ApplicationController
 
     end
     if !User.current.wl_manage_right?(@project) 
-      if User.current.allowed_to?(:view_global_allocation_check, @project) || (Member.find_by(user_id: User.current.id, project_id: @project.id).nil? ? false : Member.find_by(user_id: User.current.id, project_id: @project.id).wl_member?  )
+      if User.current.allowed_to?(:view_global_allocation, @project) || (Member.find_by(user_id: User.current.id, project_id: @project.id).nil? ? false : Member.find_by(user_id: User.current.id, project_id: @project.id).wl_member?  )
         redirect_to :controller => 'wl_check_loggedtime', :action => 'show', :id => @project.id, :tab => 'wlcheck'
         return
       end

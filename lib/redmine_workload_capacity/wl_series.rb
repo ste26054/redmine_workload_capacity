@@ -6,7 +6,18 @@ module WlSeries
 		
 	end
 
-	def average_for_period(total_alloc, current_day, end_recc_date, attribut)
+	def self.get_tooltip_valueSuffix(attribut)
+		unity = ""
+		case attribut 
+		when 4
+			unity = ""
+		else
+			unity = " hours"
+		end
+ 		return unity
+	end
+
+	def self.average_for_period(total_alloc, current_day, end_recc_date, attribut)
 		output = 0
 		nb_increment = 0
 		while current_day <= end_recc_date
@@ -38,7 +49,6 @@ module WlSeries
 			return output
 		end	
 	end
-
 
 
 	def self.operation_options
@@ -118,7 +128,9 @@ module WlSeries
 						final_entry_data = self.gr_operation(data_array, operation_type.to_i)
 					end
 
-					series_data << {name: series.name, type: series.chart_type, color: "##{series_color}", data: final_entry_data}
+					series_unity = self.get_tooltip_valueSuffix(attribut_type)
+
+					series_data << {name: series.name, type: series.chart_type, color: "##{series_color}", tooltip: {valueSuffix: series_unity}, data: final_entry_data}
 
 				end
 				

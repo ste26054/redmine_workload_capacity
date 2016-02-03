@@ -9,16 +9,16 @@ class GrGraphsController < ApplicationController
 
   before_action :set_project
   before_action :authenticate
-  before_action :get_graph, only: [:set_params, :display_graph]
+  before_action :get_graph, only: [:set_params]
 
   def index
     @user = User.current
-    @blocks = @user.pref[:gr_dashboard]
+    @blocks = @user.pref[:graph_alloc]
   end
 
   def personalise_index
     @user = User.current
-    @blocks = @user.pref[:gr_dashboard]
+    @blocks = @user.pref[:graph_alloc]
   end
 
   def new
@@ -27,7 +27,9 @@ class GrGraphsController < ApplicationController
 
   def create
     #only taking the title of the graph from textfield
-    @gr_graph = GrGraph.new(plugin_reference: "allocation", name: params[:graph_name], user_id: User.current.id, project_id: @project.id )
+    # @gr_category_type =  GrCategory.gr_category_types.select{|k,v| v == params[:gr_category_type].to_i}.keys.first
+    @gr_plugin_ref = GrGraph.plugin_references.select{|k,v| v == params[:plugin_ref].to_i}.keys.first
+    @gr_graph = GrGraph.new(plugin_reference: @gr_plugin_ref, name: params[:graph_name], user_id: User.current.id, project_id: @project.id )
     
     if @gr_graph.save 
       flash[:notice] = "Initiate Graph basis: Completed"
@@ -80,14 +82,33 @@ class GrGraphsController < ApplicationController
     redirect_to :controller => 'gr_graphs', :action => 'index', :project_id => @project.id
   end
 
+  def save_data
+
+     @gr_data = GrDatum.new(storage_data: Hash[params[:storage_data]], gr_graph_id: params[:gr_graph_id])
+
+
+    if @gr_data.save 
+      flash[:notice] = "Save Graph Data: Completed"
+    else
+      flash[:error] = "Save Graph Data: Failed"
+    end
+
+   redirect_to :controller => 'gr_graphs', :action => 'index', :project_id => @project.id
+    # render plain: "_________gr_data:__ #{params[:storage_data]} _______gr_graph_id:__ #{params[:gr_graph_id]} ________________"
+    # return
+
+  end 
+
   def display_graph  
+    @user = User.current
+    @blocks = @user.pref[:graph_alloc]
   # render plain: "_____params[:gr_graph_id]: #{params[:gr_graph_id]}_______@gr_graph: #{@gr_graph}___________" 
   # return
 
       
    # render :js => "display_graph(#{@project.id},#{@gr_graph.id});"  
    #  return
-    render :layout => false
+     render :layout => false
   end
 
     # Add a block to user's page
@@ -100,12 +121,12 @@ class GrGraphsController < ApplicationController
       graph_search = GrGraph.find(gr_graph_id)
       unless graph_search.nil?
         @user = User.current
-        layout = @user.pref[:gr_dashboard] || {}
+        layout = @user.pref[:graph_alloc] || {}
         # remove if already present in a group
         %w(top left right).each {|f| (layout[f] ||= []).delete block }
         # add it on top
         layout['top'].unshift block
-        @user.pref[:gr_dashboard] = layout
+        @user.pref[:graph_alloc] = layout
         @user.pref.save
       end
     end
@@ -118,9 +139,9 @@ class GrGraphsController < ApplicationController
     block = params[:block].to_s.underscore
     @user = User.current
     # remove block in all groups
-    layout = @user.pref[:gr_dashboard] || {}
+    layout = @user.pref[:graph_alloc] || {}
     %w(top left right).each {|f| (layout[f] ||= []).delete block }
-    @user.pref[:gr_dashboard] = layout
+    @user.pref[:graph_alloc] = layout
     @user.pref.save
     redirect_to personalise_index_project_gr_graphs_path
   end
@@ -135,13 +156,13 @@ class GrGraphsController < ApplicationController
       group_items = (params["blocks"] || []).collect(&:underscore)
       group_items.each {|s| s.sub!(/^block_/, '')}
       if group_items and group_items.is_a? Array
-        layout = @user.pref[:gr_dashboard] || {}
+        layout = @user.pref[:graph_alloc] || {}
         # remove group blocks if they are presents in other groups
         %w(top left right).each {|f|
           layout[f] = (layout[f] || []) - group_items
         }
         layout[group] = group_items
-        @user.pref[:gr_dashboard] = layout
+        @user.pref[:graph_alloc] = layout
         @user.pref.save
       end
     end
@@ -153,6 +174,8 @@ class GrGraphsController < ApplicationController
   def get_graph
     @gr_graph = GrGraph.find(params[:gr_graph_id])
   end
+
+
 
 
 end

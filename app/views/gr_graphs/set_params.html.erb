@@ -24,24 +24,26 @@ series_data = []
 %> 
 
 <% 
-gr_cat = GrCategory.find_by(gr_graph_id: @gr_graph.id)
-category_data = WlCategories.get_array_data(gr_cat)
-series_data = WlSeries.get_array_data(@project, gr_cat)
+gr_cat = @gr_graph.gr_category #GrCategory.find_by(gr_graph_id: @gr_graph.id)
+category_data = WlCategories.get_array_data(gr_cat).to_json
+series_data = WlSeries.get_array_data(@project, gr_cat).to_json
+gr_title = @gr_graph.name
 %>
-
 <%= javascript_tag do %> 
-var gr_title_json = <%=raw @gr_graph.name.to_json %>;
-var category_json = <%=raw category_data.to_json %>;
-var series_json = <%=raw series_data.to_json %>;
+  var gr_title_json = <%=raw gr_title.to_json %>;
+  var category_json = <%=raw category_data %>;
+  var series_json = <%=raw series_data %>;
 <% end %>
-<%#=raw category_data.to_json %>
-<%#=raw series_data.to_json %>
+
+
+<%# Save Data %>
+<% storage_data = {:title => gr_title, :category_data => "#{category_data}".html_safe, :series_data => "#{series_data}".html_safe} %>
 
 <fieldset>
 	<legend>Draw</legend>
 
-<button onclick="draw_graph(<%=@gr_graph.id%>, gr_title_json, category_json, ' - ', series_json);">Preview</button>
-<button><%= link_to('Save', project_gr_graphs_path) %></button> 
+<button onclick="draw_graph(<%=@gr_graph.id%>, gr_title_json, ' ', category_json, series_json);">Preview</button>
+<button><%= link_to('Save', save_data_project_gr_graphs_path(:storage_data => storage_data)) %></button> <%#= link_to('Save', project_gr_graphs_path) %>
 <button><%= link_to('Delete', project_gr_graph_path(:id => @gr_graph.id),
          {:class => 'icon icon-del', method: :delete, data: { confirm: 'Are you sure to cancel this graph?' }}) %></button> 
 
