@@ -22,9 +22,9 @@ class="mypage-box ui-sortable-handle"
           gr_subtitle = ""
           unless gr_data.blank? 
             gr_datum = gr_data.last
-            category_data = gr_datum.storage_data["category_data"] unless gr_datum.storage_data["category_data"].nil?
-            series_data = gr_datum.storage_data["series_data"] unless gr_datum.storage_data["series_data"].nil?
-            gr_title = gr_datum.storage_data["title"] unless gr_datum.storage_data["title"].nil?
+            category_data = gr_datum.storage_data[:category_data] unless gr_datum.storage_data[:category_data].nil?
+            series_data = gr_datum.storage_data[:series_data] unless gr_datum.storage_data[:series_data].nil?
+            gr_title = gr_datum.storage_data[:title] unless gr_datum.storage_data[:title].nil?
             gr_subtitle = "Updated at: #{gr_datum.created_at}"
           else
             gr_cat = gr_graph.gr_category #GrCategory.find_by(gr_graph_id: gr_graph.id)

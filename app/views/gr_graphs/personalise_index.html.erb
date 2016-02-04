@@ -7,110 +7,49 @@
 <h2>Allocation</h2>
 <div class="tabular2"><%= render_wl_tabs wl_tabs %></div>
 <br />
-<fieldset>
-  <legend>List <%= link_to 'Add graph', new_project_gr_graph_path, :class => 'icon icon-add' %></legend>
-  <br />
-
-<% graphs_list = GrGraph.where(project_id: @project.id) %>
-<% unless graphs_list.blank? %>
-	
-  <table class="list">
-  <thead><tr>
- <!--    <th> Id </th>
-    <th> plugin reference </th> -->
-    <th> Title </th>
-    <th> Created_by </th>
-    <!-- <th> Projet </th> -->
-    <th> Action </th>
-  </tr></thead>
-  <tbody>
-    <% graphs_list.each do |g| %>
-      <tr>
-<!--         <td><%= g.id %></td>
-        <td><%= g.plugin_reference %></td> -->
-        <td><%= g.name %> <%= link_to '', edit_project_gr_graph_path(:id => g.id),
-         :class => 'icon icon-edit' %></td>
-        <td><%= User.find(g.user_id).name %></td> 
-        <!-- <td><%#= Project.find(g.project_id).name %></td>  -->
-        <td><%= link_to 'Edit', set_project_gr_graphs_path(:gr_graph_id => g.id),
-         :class => 'icon icon-edit' %>  <%= link_to 'Delete', project_gr_graph_path(:id => g.id),
-         :class => 'icon icon-del', method: :delete %> 
-       </td>
-      </tr>
-    <% end %>
-  </tbody>
-  </table>
-<% end %>
-
- <br />
-
-</fieldset>
+<%= render :partial => 'table_graph', :locals => { :project => @project, :graph_list => @graph_list} %>
 <br /><br />
 
 <fieldset>
   <legend>Dashboard</legend>
 
-  <div >
-<% unless graphs_list.blank? %>
-	<% @graph_options=[]
-	@graph_options = graphs_list.map{|gr| [gr.name, "gr#{gr.id}_block"]} %>
-  <%= form_tag({:action => "add_block"}, :id => "block-form") do %>
-  <%= label_tag('block-select', "Select Your Graph") %>:
-  <%= select_tag 'block',
-   content_tag('option') + options_for_select(@graph_options),
-                 :id => "block-select" %>
-  <%= link_to l(:button_add), '#', :onclick => '$("#block-form").submit()', :class => 'icon icon-add' %>
-  <% end %>
-<% end %>
-<%= link_to l(:button_back), {:action => 'index'}, :class => 'icon icon-cancel' %>
-</div>
-
-<div id="gr-content">
-
-
-<div id="list-top" class="block-receiver ui-sortable">
-<% unless @blocks.nil? 
-  @blocks['top'].each do |block|
-    gr_grph_id = block[/\d+/].to_i
-    gr_graph = GrGraph.find_by(id: gr_grph_id, project_id: @project.id) %>
-    <% unless gr_graph.nil? %>
-  	 <%= render "draw_graph", :project => @project, :gr_graph => gr_graph, :sortable => true %>
-  	 <% end %>
- <% end %>
-<% end %>
-</div>
-
-<div id="list-left" class="splitcontentleft block-receiver ui-sortable">
-<% unless @blocks.nil? 
-  @blocks['left'].each do |block|
-    gr_grph_id = block[/\d+/].to_i
-    gr_graph = GrGraph.find_by(id: gr_grph_id, project_id: @project.id) %>
-     <% unless gr_graph.nil? %>
-    <%= render "draw_graph", :project => @project, :gr_graph => gr_graph, :sortable => true %>
+  <div>
+    <% unless @graph_list.blank? %>
+    	<% @graph_options=[]
+    	   @graph_options = @graph_list.map{|gr| [gr.name, "gr#{gr.id}_block"]} %>
+      <%= form_tag({:action => "add_block"}, :id => "block-form") do %>
+      <%= label_tag('block-select', "Select Your Graph") %>:
+      <%= select_tag 'block', content_tag('option') + options_for_select(@graph_options), :id => "block-select" %>
+      <%= link_to l(:button_add), '#', :onclick => '$("#block-form").submit()', :class => 'icon icon-add' %>
+      <% end %>
     <% end %>
- <% end %>
-<% end %>
-</div>
+    <%= link_to l(:button_back), {:action => 'index'}, :class => 'icon icon-cancel' %>
+  </div>
 
-<div id="list-right" class="splitcontentright block-receiver ui-sortable">
-<% unless @blocks.nil? 
-  @blocks['right'].each do |block|
-    gr_grph_id = block[/\d+/].to_i
-    gr_graph = GrGraph.find_by(id: gr_grph_id, project_id: @project.id) %>
-     <% unless gr_graph.nil? %>
-    <%= render "draw_graph", :project => @project, :gr_graph => gr_graph, :sortable => true %>
-    <% end %>
- <% end %>
-<% end %>
-</div>
-
-</div>
-
-<%= javascript_tag "initGrDashSortable('top', '#{ escape_javascript url_for(:action => "order_blocks", :group => "top") }');" %>
-<%= javascript_tag "initGrDashSortable('left', '#{ escape_javascript url_for(:action => "order_blocks", :group => "left") }');" %>
-<%= javascript_tag "initGrDashSortable('right', '#{ escape_javascript url_for(:action => "order_blocks", :group => "right") }');" %>
-
-
-
+  <div id="gr-content"></div>
 </fieldset>
+
+<%= javascript_tag do %>
+  $(document).ready(function(){
+
+    $.ajax({
+    
+      url: '<%=display_dashboard_content_path(@project, :sortable => @sortable) %>',
+      cache: false,
+      beforeSend: function(){
+    
+      $("#gr-content").html('<%= escape_javascript(render :partial => '/wl_commons/loading') %>');
+                  },
+      success: function(data){
+      
+        $("#gr-content").html(data);
+        
+      }
+
+    });
+    $('#ajax-indicator').hide();
+
+  });
+<% end %>
+
  

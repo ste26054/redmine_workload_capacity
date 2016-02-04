@@ -11,6 +11,7 @@ resources :projects do
 
 		collection do
 			match '/:gr_graph_id/set_params', :to => 'gr_graphs#set_params', as: :set, :via => [:get, :post]
+			match '/:gr_graph_id/preview', :to => 'gr_graphs#preview', as: :preview, :via => [:get, :post]
 			match '/:gr_graph_id/save_data', :to => 'gr_graphs#save_data', as: :save_data, :via => [:get, :post]
 			get '/perso_index', :to => 'gr_graphs#personalise_index', as: :personalise_index
 			post '/order_blocks', :to => 'gr_graphs#order_blocks', as: :order_blocks
@@ -37,4 +38,4 @@ get '/projects/:project_id/workload/check', :to => 'wl_check_loggedtime#show'
 
 get '/projects/:project_id/workload/graph', :to => 'gr_graphs#index'
 
-get '/projects/:project_id/workload/graph/display', :to => 'gr_graphs#display_graph', as: :display_graph_content
+get '/projects/:project_id/workload/graph/dashboard', :to => 'gr_graphs#display_dashboard', as: :display_dashboard_content

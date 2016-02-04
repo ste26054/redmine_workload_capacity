@@ -9,16 +9,20 @@ class GrGraphsController < ApplicationController
 
   before_action :set_project
   before_action :authenticate
-  before_action :get_graph, only: [:set_params]
+  before_action :get_graph, only: [:set_params, :preview, :save_data]
 
   def index
     @user = User.current
     @blocks = @user.pref[:graph_alloc]
+    @sortable = false
   end
 
   def personalise_index
     @user = User.current
     @blocks = @user.pref[:graph_alloc]
+    @graph_list = GrGraph.where(project_id: @project.id)
+    @sortable = true
+ 
   end
 
   def new
@@ -43,10 +47,10 @@ class GrGraphsController < ApplicationController
   end
 
   def set_params
-
   end
 
-  def draw    
+  def preview    
+    render :layout => false
   end
 
   def edit
@@ -83,26 +87,44 @@ class GrGraphsController < ApplicationController
   end
 
   def save_data
+    #can have many gr_data for a graph but for the allocation plugin, we dont need to have many: so we can destroy old data
+    @old_gr_datum = GrDatum.find_by(gr_graph_id: @gr_graph.id) 
+    unless @old_gr_datum.nil?
+      @old_gr_datum.destroy
+    end
 
-     @gr_data = GrDatum.new(storage_data: Hash[params[:storage_data]], gr_graph_id: params[:gr_graph_id])
+    gr_cat = @gr_graph.gr_category
+    category_data = WlCategories.get_array_data(gr_cat).to_json
+    series_data = WlSeries.get_array_data(@project, gr_cat).to_json
+    gr_title = @gr_graph.name
+
+    storage_data = {:title => gr_title, :category_data => "#{category_data}".html_safe, :series_data => "#{series_data}".html_safe} 
+
+    @gr_datum = GrDatum.new(storage_data: storage_data, gr_graph_id: @gr_graph.id)
+     # @gr_data = GrDatum.new(storage_data: Hash[params[:storage_data]], gr_graph_id: params[:gr_graph_id])
 
 
-    if @gr_data.save 
+    if @gr_datum.save 
       flash[:notice] = "Save Graph Data: Completed"
     else
       flash[:error] = "Save Graph Data: Failed"
     end
 
-   redirect_to :controller => 'gr_graphs', :action => 'index', :project_id => @project.id
+   redirect_to :controller => 'gr_graphs', :action => 'personalise_index', :project_id => @project.id
     # render plain: "_________gr_data:__ #{params[:storage_data]} _______gr_graph_id:__ #{params[:gr_graph_id]} ________________"
     # return
 
   end 
 
-  def display_graph  
+  def display_dashboard  
     @user = User.current
     @blocks = @user.pref[:graph_alloc]
-  # render plain: "_____params[:gr_graph_id]: #{params[:gr_graph_id]}_______@gr_graph: #{@gr_graph}___________" 
+    if params[:sortable] == "true"
+      @sortable = true
+    else
+      @sortable = false
+    end
+  # render plain: "_____params[:gr_graph_id]: #{params[:gr_graph_id]}_______@gr_graph: #{@gr_graph}_____ @sortable = #{params[:sortable]}______" 
   # return
 
       

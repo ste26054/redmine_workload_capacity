@@ -4,7 +4,7 @@ function draw_graph(gr_id, gr_title, gr_subtitle, category_data, series_data){
     $("#gr"+gr_id+"_container").highcharts({
         title: {
             text: gr_title,
-            // x: -20 //center
+            x: -20 //center
         },
         subtitle: {
             text: gr_subtitle,
@@ -123,3 +123,19 @@ function initGrDashSortable(list, url) {
   $("#list-top, #list-left, #list-right").disableSelection();
 }
 
+
+
+function preview_graph(project_id, gr_graph_id){
+    $.ajax({
+          url: '/projects/'+project_id+'/gr_graphs/'+gr_graph_id+'/preview',
+          cache: false,
+          beforeSend: function(){
+            $('#ajax-indicator').show();
+                      },
+          success: function(data){
+            $("#gr-content").html(data);
+          }
+
+    });
+    
+}
