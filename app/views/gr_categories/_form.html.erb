@@ -11,7 +11,7 @@
 
 	<% groperation_list = WlCategories.operation_options.to_a.map{|a| [a[0].to_s, a[1]]} %>	
 	<% 
-		if gr_category.properties[:operation].nil? 
+		if gr_category.new_record? 
 			selected_operation = 0
 		else
 			selected_operation = gr_category.properties[:operation]

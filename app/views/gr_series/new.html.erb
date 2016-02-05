@@ -5,7 +5,7 @@
 <% end %>
 
 <fieldset>
-	<legend>Legend Entries (Series)</legend>
+	<legend>New Legend Entries (Series)</legend>
 	<%= form_tag(project_gr_graph_gr_series_index_path) do  %>
 		<%= render :partial => 'form', :locals => {:gr_series => @gr_series} %>
 		<p><%= submit_tag('Submit Series') %> <a href="javascript:history.back()" class ='icon icon-cancel'><%= l(:button_back) %></a></p>
