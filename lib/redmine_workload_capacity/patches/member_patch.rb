@@ -136,7 +136,7 @@ module RedmineWorkloadCapacity
 
 			#--------------use for wl_graph --------------------#
 			# Returns the total remaining cross project allocation table, INcluding current project allocations, bound to current project window
-			def gr_calcul_alloc(start_period, end_period, granularity, attribut)
+			def gr_calcul_alloc(start_period, end_period, granularity, attribut, category_operation)
 				entry_datas = []
 
 				if attribut == 0
@@ -155,26 +155,27 @@ module RedmineWorkloadCapacity
 						end_recc_date = current_day.end_of_week
 						end_recc_date = end_period if end_recc_date > end_period
 
-						data_result= WlSeries.average_for_period(total_alloc, current_day, end_recc_date, attribut)	
+						data_result= WlSeries.average_for_period(total_alloc, current_day, end_recc_date, attribut, category_operation)	
 						current_day = end_recc_date+1 
 										
 					when 2 # monthly
 						end_recc_date = current_day.end_of_month
 						end_recc_date = end_period if end_recc_date > end_period
-						data_result= WlSeries.average_for_period(total_alloc, current_day, end_recc_date, attribut)
+						data_result= WlSeries.average_for_period(total_alloc, current_day, end_recc_date, attribut, category_operation)
 						current_day = end_recc_date+1 
 					when 3 # quarterly
 						end_recc_date = current_day.end_of_quarter
 						end_recc_date = end_period if end_recc_date > end_period
-						data_result= WlSeries.average_for_period(total_alloc, current_day, end_recc_date, attribut)
+						data_result= WlSeries.average_for_period(total_alloc, current_day, end_recc_date, attribut, category_operation)
 						current_day = end_recc_date+1 
 					when 4 # yearly
 						end_recc_date = current_day.end_of_year
 						end_recc_date = end_period if end_recc_date > end_period
-						data_result= WlSeries.average_for_period(total_alloc, current_day, end_recc_date, attribut)
+						data_result= WlSeries.average_for_period(total_alloc, current_day, end_recc_date, attribut, category_operation)
 						current_day = end_recc_date+1 
 					else #when 0 - daily
-						data_result= WlSeries.average_for_period(total_alloc, current_day, current_day, attribut)
+						category_operation = 0 # no need to do a average
+						data_result= WlSeries.average_for_period(total_alloc, current_day, current_day, attribut, category_operation)
 						current_day = current_day+1
 					end
 					entry_datas << data_result	
@@ -186,32 +187,40 @@ module RedmineWorkloadCapacity
 			def convert_table_alloc_to_hours(table_data)
 				table_result = []
 				actual_wwhours = self.user.actual_weekly_working_hours
-				table_result = table_data.map{|alloc| alloc*actual_wwhours/100}
+				table_result = table_data.map{|alloc| alloc*actual_wwhours/(5*100)}
 				return table_result
 			end
 
-			def gr_entry_data(start_period, end_period, category_hash, granularity, attribut_type)
+			def gr_entry_data(start_period, end_period, category_hash, granularity, attribut_type, category_operation)
 				entry_data =[]
 				case attribut_type
 				when 3 # logged_time	
 					category_hash.each do |gr_date|
 						if self.user.get_logged_time(self.project, gr_date.last.first, gr_date.last.last).nil?
-							entry_data << null
+							entry_datum = 0
 						else
-							entry_data << self.user.get_logged_time(self.project, gr_date.last.first, gr_date.last.last).values.sum 
+							entry_datum = self.user.get_logged_time(self.project, gr_date.last.first, gr_date.last.last).values.sum 
 						end
+						case category_operation
+						when 1 # average
+							total_working_days = self.user.working_days_count(gr_date.last.first, gr_date.last.last)
+							entry_datum = (entry_datum/total_working_days).round(2) unless total_working_days == 0
+						else #when 0: sum
+							# do nothing because it is already a sum of value for the period
+						end
+						entry_data << entry_datum
 					end					
 				when 4 # check_ratio
 						
 					category_hash.each do |gr_date|
 						if self.get_check_ratio(gr_date.last.first, gr_date.last.last).nil?
-							entry_data << null
+							entry_data << 0
 						else
 							entry_data << self.get_check_ratio(gr_date.last.first, gr_date.last.last) 
 						end
 					end
 				else # project_allocation: 0, total_allocation: 1, remaining_allocation: 2
-					entry_data = self.gr_calcul_alloc(start_period, end_period, granularity, attribut_type)
+					entry_data = self.gr_calcul_alloc(start_period, end_period, granularity, attribut_type, category_operation)
 					entry_data = self.convert_table_alloc_to_hours(entry_data)
 				end
 				return entry_data

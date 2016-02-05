@@ -22,6 +22,7 @@ class GrGraph < ActiveRecord::Base
 
 private
 
+  #before destroying a graph, this method will destroy all related user_preferences related to this graph
   def destroy_user_preferences
     block_name = "gr#{id}_block".underscore
     userpref_list = UserPreference.select{|u| u.others[:graph_alloc]}

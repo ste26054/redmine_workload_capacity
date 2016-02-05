@@ -6,6 +6,11 @@ module WlCategories
 		
 	end
 
+	def self.operation_options
+		#return { sum: 0, average: 1}
+		return { sum: 0, average: 1}
+	end
+
 
 	def self.array_date_period(start_date, end_date, granularity )
 		period = start_date..end_date 
@@ -16,10 +21,10 @@ module WlCategories
 			category_data = period.to_a
 		when 1 # weekly
 			hash_period = self.hash_date_period(start_date, end_date, granularity) 
-			category_data = hash_period.map{|a| "Week #{a.first}"}
+			category_data = hash_period.map{|a| "#{a.last.first.year} - Week #{a.first}"}
 		when 2 # monthly
 			hash_period = self.hash_date_period(start_date, end_date, granularity) 
-			category_data = hash_period.map{|a| "Month #{a.first}"}
+			category_data = hash_period.map{|a| "#{a.last.first.year} - #{Date::MONTHNAMES[a.first]}"}
 		when 3 # quarterly
 			hash_period = self.hash_date_period(start_date, end_date, granularity) 
 			category_data = hash_period.map{|a| "#{a.first.year} - Quarter #{1+(a.first.month)/4}"  }

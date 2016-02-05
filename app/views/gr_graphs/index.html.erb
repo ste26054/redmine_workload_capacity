@@ -4,7 +4,7 @@
   <%= javascript_include_tag 'gr_graphs', :plugin => "redmine_workload_capacity" %>
 <% end %>
 
-<h2>Allocation</h2>
+<h2><%=l(:label_workload)%></h2>
 <div class="tabular2"><%= render_wl_tabs wl_tabs %></div>
 
 <fieldset>
@@ -13,25 +13,21 @@
 <div id="gr-content"></div>
 </fieldset>
  
-  <%= javascript_tag do %>
-    $(document).ready(function(){
+<%= javascript_tag do %>
+  $(document).ready(function(){
 
-      $.ajax({
-      
-        url: '<%=display_dashboard_content_path(@project, :sortable =>  @sortable) %>',
-        cache: false,
-        beforeSend: function(){
-      
+    $.ajax({
+      url: '<%=display_dashboard_content_path(@project, :sortable =>  @sortable) %>',
+      cache: false,
+      beforeSend: function(){ 
         $("#gr-content").html('<%= escape_javascript(render :partial => '/wl_commons/loading') %>');
-                    },
-        success: function(data){
-        
-          $("#gr-content").html(data);
-          
-        }
+      },
+      success: function(data){
+        $("#gr-content").html(data);
+      }
+    });
+    $('#ajax-indicator').hide();
 
-      });
-      $('#ajax-indicator').hide();
-     });
+   });
     
 <% end %>

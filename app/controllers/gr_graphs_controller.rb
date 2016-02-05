@@ -31,7 +31,6 @@ class GrGraphsController < ApplicationController
 
   def create
     #only taking the title of the graph from textfield
-    # @gr_category_type =  GrCategory.gr_category_types.select{|k,v| v == params[:gr_category_type].to_i}.keys.first
     @gr_plugin_ref = GrGraph.plugin_references.select{|k,v| v == params[:plugin_ref].to_i}.keys.first
     @gr_graph = GrGraph.new(plugin_reference: @gr_plugin_ref, name: params[:graph_name], user_id: User.current.id, project_id: @project.id )
     
@@ -49,6 +48,7 @@ class GrGraphsController < ApplicationController
   def set_params
   end
 
+  #call via a button from set_params
   def preview    
     render :layout => false
   end
@@ -70,7 +70,7 @@ class GrGraphsController < ApplicationController
       return
     end
 
-    render :index
+    redirect_to personalise_index_project_gr_graphs_path
 
   end
 
@@ -86,6 +86,8 @@ class GrGraphsController < ApplicationController
     redirect_to :controller => 'gr_graphs', :action => 'index', :project_id => @project.id
   end
 
+  #Call via a button from personalise_index or set_params
+  #this is use to save data of the graph so that the display of the dashboard is faster 
   def save_data
     #can have many gr_data for a graph but for the allocation plugin, we dont need to have many: so we can destroy old data
     @old_gr_datum = GrDatum.find_by(gr_graph_id: @gr_graph.id) 
@@ -101,8 +103,6 @@ class GrGraphsController < ApplicationController
     storage_data = {:title => gr_title, :category_data => "#{category_data}".html_safe, :series_data => "#{series_data}".html_safe} 
 
     @gr_datum = GrDatum.new(storage_data: storage_data, gr_graph_id: @gr_graph.id)
-     # @gr_data = GrDatum.new(storage_data: Hash[params[:storage_data]], gr_graph_id: params[:gr_graph_id])
-
 
     if @gr_datum.save 
       flash[:notice] = "Save Graph Data: Completed"
@@ -111,11 +111,11 @@ class GrGraphsController < ApplicationController
     end
 
    redirect_to :controller => 'gr_graphs', :action => 'personalise_index', :project_id => @project.id
-    # render plain: "_________gr_data:__ #{params[:storage_data]} _______gr_graph_id:__ #{params[:gr_graph_id]} ________________"
-    # return
 
   end 
 
+  #call via javascript from the index or personalise_index views
+  #display the graph dashboard with its top/left/right div
   def display_dashboard  
     @user = User.current
     @blocks = @user.pref[:graph_alloc]
@@ -124,16 +124,11 @@ class GrGraphsController < ApplicationController
     else
       @sortable = false
     end
-  # render plain: "_____params[:gr_graph_id]: #{params[:gr_graph_id]}_______@gr_graph: #{@gr_graph}_____ @sortable = #{params[:sortable]}______" 
-  # return
 
-      
-   # render :js => "display_graph(#{@project.id},#{@gr_graph.id});"  
-   #  return
-     render :layout => false
+    render :layout => false
   end
 
-    # Add a block to user's page
+  # Add a block to user's page
   # The block is added on top of the page
   # params[:block] : id of the block to add
   def add_block

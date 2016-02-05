@@ -15,7 +15,7 @@ class GrCategoriesController < ApplicationController
 
   def create
 
-  	@properties = {start_date: params[:start_date], end_date: params[:end_date], granularity: params[:granularity]}
+  	@properties = {start_date: params[:start_date], end_date: params[:end_date], granularity: params[:granularity], operation: params[:operation]}
   	
   	@gr_category_type =  GrCategory.gr_category_types.select{|k,v| v == params[:gr_category_type].to_i}.keys.first
   	
@@ -40,7 +40,7 @@ class GrCategoriesController < ApplicationController
 
     @gr_category = GrCategory.find_by(gr_graph_id: @gr_graph.id)
 
-    @properties = {start_date: params[:start_date], end_date: params[:end_date], granularity: params[:granularity]}
+    @properties = {start_date: params[:start_date], end_date: params[:end_date], granularity: params[:granularity], operation: params[:operation]}
 
     @gr_category = GrCategory.update(@gr_category.id, properties: @properties)
 

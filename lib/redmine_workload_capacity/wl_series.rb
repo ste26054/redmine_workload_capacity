@@ -17,7 +17,7 @@ module WlSeries
  		return unity
 	end
 
-	def self.average_for_period(total_alloc, current_day, end_recc_date, attribut)
+	def self.average_for_period(total_alloc, current_day, end_recc_date, attribut, category_operation)
 		output = 0
 		nb_increment = 0
 		while current_day <= end_recc_date
@@ -34,7 +34,8 @@ module WlSeries
 						total = 100 if total > 100
 						output += 100 - total
 					else
-						#other attribut
+						#other attribut :  logged_time: 3, check_ratio: 4 
+						# their calculation it done directly on WlSeries.get_array_data()
 					end
 
 					nb_increment = nb_increment+1
@@ -43,11 +44,13 @@ module WlSeries
 
 			current_day = current_day+1
 		end #current_day = end_recc_date => end of the week
-		unless nb_increment == 0
-			return (output/nb_increment).round(2)	
-		else
-			return output
-		end	
+		case category_operation
+		when 1 # average
+			output = (output/nb_increment).round(2) unless nb_increment == 0
+		else # when 0: sum
+			#do nothing because output is already a sum of the allocs of the period
+		end
+		return output	
 	end
 
 
@@ -83,6 +86,7 @@ module WlSeries
 			start_period = gr_cat.properties[:start_date].to_date
 			end_period = gr_cat.properties[:end_date].to_date
 			granularity = gr_cat.properties[:granularity].to_i
+			category_operation = gr_cat.properties[:operation].to_i
 			graph_id = gr_cat.gr_graph_id
 			
 			#calcul series
@@ -103,7 +107,7 @@ module WlSeries
 						# no operation = only one entry and this entry is an user
 						gr_entry = GrEntry.find_by(gr_series_id: series.id)
 						gr_member = project.wl_members.select{|wl_m| wl_m.user_id == gr_entry.entry_id }.first
-						final_entry_data = gr_member.gr_entry_data(start_period, end_period, category_hash, granularity, attribut_type)
+						final_entry_data = gr_member.gr_entry_data(start_period, end_period, category_hash, granularity, attribut_type, category_operation)
 					else
 						#if there are an operation then = either one or multiple role(s), or multiple users
 						gr_entries = GrEntry.where(gr_series_id: series.id)
@@ -120,7 +124,7 @@ module WlSeries
 						data_array = []
 						gr_members.each do |gr_member|
 							entry_data = []
-							entry_data = gr_member.gr_entry_data(start_period, end_period, category_hash, granularity, attribut_type)
+							entry_data = gr_member.gr_entry_data(start_period, end_period, category_hash, granularity, attribut_type, category_operation)
 							unless entry_data.blank?
 								data_array << entry_data
 							end

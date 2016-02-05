@@ -14,7 +14,8 @@ class="mypage-box ui-sortable-handle"
   <% if sortable %>
   class="handle"
   <% end %>
-    >  
+    > 
+     
       <% gr_data = gr_graph.gr_datum
           category_data = []
           series_data = []
@@ -30,14 +31,15 @@ class="mypage-box ui-sortable-handle"
             gr_cat = gr_graph.gr_category #GrCategory.find_by(gr_graph_id: gr_graph.id)
             category_data = WlCategories.get_array_data(gr_cat).to_json
             series_data = WlSeries.get_array_data(project, gr_cat).to_json 
-          end %>
-            <%= javascript_tag do %>
-            var gr_title_json = <%=raw gr_title.to_json %>;
-            var gr_subtitle_json = <%=raw gr_subtitle.to_json %>;
-            var category_json = <%=raw category_data %>;
-            var series_json = <%=raw series_data %>;
-            draw_graph(<%=gr_graph.id%>, gr_title_json, gr_subtitle_json, category_json, series_json);
-            <% end %>
+          end 
+      %>
+      <%= javascript_tag do %>
+      var gr_title_json = <%=raw gr_title.to_json %>;
+      var gr_subtitle_json = <%=raw gr_subtitle.to_json %>;
+      var category_json = <%=raw category_data %>;
+      var series_json = <%=raw series_data %>;
+      draw_graph(<%=gr_graph.id%>, gr_title_json, gr_subtitle_json, category_json, series_json);
+      <% end %>
 
   </div>
 

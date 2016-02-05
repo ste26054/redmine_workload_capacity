@@ -1,3 +1,9 @@
+<% content_for :header_tags do %>
+  <%= javascript_include_tag "http://code.highcharts.com/highcharts.js", "chartkick" %>
+  <%= javascript_include_tag src="http://code.highcharts.com/modules/exporting.js" %>
+  <%= javascript_include_tag 'gr_graphs', :plugin => "redmine_workload_capacity" %>
+<% end %>
+
 <div id="gr<%=@gr_graph.id%>_container" style="min-width: 310px; height: 400px; margin:0 auto" data-highcharts-chart="0">
 <% 
 #initialisation variables

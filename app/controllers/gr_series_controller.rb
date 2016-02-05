@@ -23,12 +23,6 @@ class GrSeriesController < ApplicationController
       properties: @properties,
       gr_graph_id: @gr_graph.id)
 
-      # @entries_id_list = params[:entry_id]
-      
-      # @entries_id_list.each do |entry_id|
-      #  GrEntry.create(entry: params[:entry_type].to_s.constantize.find(entry_id), gr_series_id: @gr_series.id)
-      # end 
-
     if @gr_series.save
       @entries_id_list = params[:entry_id]
       @gr_entry = GrEntry.new

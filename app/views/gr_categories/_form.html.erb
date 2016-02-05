@@ -8,3 +8,18 @@
 	<% granularity_options = WlCategories.date_granularity_options.to_a.map{|a| [a[0].to_s, a[1]]} %>
 	<%= select_tag('granularity', options_for_select(granularity_options, gr_category.new_record? ? 0 : gr_category.properties[:granularity]), {:multiple => false }) %>
 	</p>
+
+	<% groperation_list = WlCategories.operation_options.to_a.map{|a| [a[0].to_s, a[1]]} %>	
+	<% 
+		if gr_category.properties[:operation].nil? 
+			selected_operation = 0
+		else
+			selected_operation = gr_category.properties[:operation]
+		
+		end	
+	%>
+<p><span  title="Sum or Average of series data for a period (week, month, quarter, year)">
+	Function depending of the granularity (operation): </span>
+	<%# categories_operation_options: { sum: 0, average: 1}  %>
+	<%= select_tag( "operation", options_for_select(groperation_list, selected_operation), { :multiple => false	} ) %>
+	</p>
