@@ -33,6 +33,12 @@ class WlBoardsController < ApplicationController
     render :layout => false
   end
 
+  def update_wlconfigure_member_global
+    @member ||= Member.find(params[:member_id])
+    
+    render :layout => false
+  end
+
   private
 
   def find_project
