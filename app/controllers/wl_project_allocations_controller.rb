@@ -25,7 +25,7 @@ class WlProjectAllocationsController < ApplicationController
      msg << flash[:notice] unless flash[:notice].blank?
       #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
       respond_to do |format|
-        format.js { render :js => "refresh_member_contentline(#{@project.id},#{@member.id}, '#{msg}',true );" } #this is the second time format.js has been called in this controller! 
+         format.js { render :js => "refresh_member_global(#{@project.id},#{@member.id}, '#{msg}',true );" } #this is the second time format.js has been called in this controller! 
       end
     else
       flash[:error] = l(:error_set)

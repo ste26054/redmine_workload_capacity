@@ -23,9 +23,9 @@
 
 
 		<% else %>
-			<tr class="<%= cycle("odd", "even") %> priority-highest">
-				<td><%= link_to member.user.name, User.find(member.user.id) %></td><td><%= member.user.leave_preferences.region %></td><td><%= member.roles.map{ |role| role.name }.sort.join(", ") %></td>
-				<td colspan="6"><%= link_to 'Define a Default Project Allocation', new_project_user_wl_project_allocation_path(project, member.user), :class => 'icon icon-add' %></td>
+			<tr name ="wlmember<%=member.id%>-global" id ="wlmember<%=member.id%>-global" class="<%= cycle("odd", "even") %> priority-highest">
+			<td><%= link_to member.user.name, User.find(member.user.id) %></td><td><%= member.user.leave_preferences.region %></td><td><%= member.roles.map{ |role| role.name }.sort.join(", ") %></td>
+			<td colspan="6"><%= link_to 'Define a Default Project Allocation', new_project_user_wl_project_allocation_path(project, member.user), :remote => true, :class => 'icon icon-add' %></td>
 			</tr>
 
 		<% end %>
