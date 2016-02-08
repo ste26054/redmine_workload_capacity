@@ -33,6 +33,7 @@ end
 get '/projects/:project_id/workload/board', :to => 'wl_boards#index'
 
 	get '/projects/:project_id/workload/update_wlconfigure/:member_id', :to => 'wl_boards#update_wlconfigure_member_contentline', as: :update_wlconfigure_member_contentline
+	get '/projects/:project_id/workload/update_global/:member_id', :to => 'wl_boards#update_wlconfigure_member_global', as: :update_wlconfigure_member_global
 
 get '/projects/:project_id/workload/check', :to => 'wl_check_loggedtime#show'
 
