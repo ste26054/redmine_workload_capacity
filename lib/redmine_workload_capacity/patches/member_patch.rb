@@ -140,13 +140,13 @@ module RedmineWorkloadCapacity
 				entry_datas = []
 				leave_table = []
 
-				if attribut == 0 #project allocation
+				if attribut == 0  #project allocation
 					alloc_table = self.wl_table_allocation	
 				elsif attribut == 5 #real_allocation
 					alloc_table = self.wl_table_allocation	
 					leave_project_id = RedmineLeavesHolidays::Setting.defaults_settings(:default_project_id)
 					leave_table = self.user.get_logged_time(Project.find(leave_project_id), start_period, end_period)
-				else# total_allocation or remaining allocation
+				else# 1: total_allocation or 2: remaining allocation
 					alloc_table = self.wl_global_table_allocation	
 				end
 
@@ -194,7 +194,11 @@ module RedmineWorkloadCapacity
 				nb_increment = 0
 
 				actual_dailyhours = 0
-				actual_dailyhours = (self.user.actual_weekly_working_hours/5).round(2)	if attribut == 5
+				overtime_table =[]
+				if attribut == 5
+					actual_dailyhours = (self.user.actual_weekly_working_hours/5).round(2)	
+					overtime_table =  WlUserOvertime.where(user_id: self.user_id, wl_project_window_id: self.project.wl_project_window.id)
+				end
 
 				while current_day <= end_recc_date
 					alloc_table.each_with_index do |ta, i|
@@ -210,16 +214,40 @@ module RedmineWorkloadCapacity
 								total = 100 if total > 100
 								output += 100 - total
 							when 5 #real_allocation
-								leave_hours = leave_table[current_day]
-								unless leave_hours.nil? 
-									if leave_hours.round(2) == actual_dailyhours #fullday leave
-										output += 0
-									else # halfday
-										output += (ta[:percent_alloc])/2
-									end
+								result_alloc = ta[:percent_alloc]
+
+								#__bank_holiday?
+								if self.user.holiday_date_for_user(current_day)
+									result_alloc = 0
 								else
-									output += (ta[:percent_alloc])
+
+									#__leave_holiday?
+									leave_hours = leave_table[current_day]
+									unless leave_hours.nil? 
+										if leave_hours.round(2) == actual_dailyhours #fullday leave
+											result_alloc = 0
+										else # halfday
+											result_alloc = (ta[:percent_alloc])/2 
+										end
+									end
+									if current_day.cwday == 6 || current_day.cwday == 7
+										result_alloc = 0
+									end
 								end
+
+								#__overtime?
+								unless overtime_table.empty?
+									overtime = overtime_table.overlaps(current_day, current_day).first
+								else
+									overtime = nil
+								end
+								unless overtime.nil?
+		    					  result_alloc = result_alloc + ((overtime.overtime_hours.to_f * 100.0) / (overtime.overtime_days_count * actual_dailyhours))
+		 						end
+
+		 						#__result
+		 						output += result_alloc
+							
 							else
 								#other attribut :  logged_time: 3, check_ratio: 4 
 								#their calculation it done directly on WlSeries.get_array_data()

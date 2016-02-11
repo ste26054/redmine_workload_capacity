@@ -18,7 +18,7 @@ module WlCategories
 
 		case granularity
 		when 0 # daily
-			category_data = period.to_a
+			category_data = period.map{|a| a.strftime('%a %d %b %Y')}
 		when 1 # weekly
 			hash_period = self.hash_date_period(start_date, end_date, granularity) 
 			category_data = hash_period.map{|a| "#{a.last.first.year} - Week #{a.first}"}
