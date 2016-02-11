@@ -29,16 +29,16 @@ class GrSeriesController < ApplicationController
       @entries_id_list.each do |entry_id|
         @gr_entry = GrEntry.create(entry: params[:entry_type].to_s.constantize.find(entry_id), gr_series_id: @gr_series.id)
              unless @gr_entry.save
-              flash[:error] = "Create Series: Failed - #{@gr_entry.errors.full_messages}"
+              flash[:error] = l(:error_grseries_create, :error_msg => @gr_entry.errors.full_messages)#"Create Series: Failed - #{@gr_entry.errors.full_messages}"
               @gr_series = GrSeries.destroy(@gr_series.id)
               render :new
               return
             end
       end 
  
-      flash[:notice] = "Create Series: Completed"
+      flash[:notice] = l(:notice_grseries_create)#"Create Series: Completed"
     else
-      flash[:error] = "Create Series: Failed - #{@gr_series.errors.full_messages}"
+      flash[:error] = l(:error_grseries_create, :error_msg => @gr_entry.errors.full_messages)#"Create Series: Failed - #{@gr_series.errors.full_messages}"
       render :new
       return
     end
@@ -69,9 +69,9 @@ class GrSeriesController < ApplicationController
     end
 
     if @gr_series.save
-      flash[:notice] = "Update Series: Completed"
+      flash[:notice] = l(:notice_grseries_update)
     else
-      flash[:error] = "Update Series: Failed - #{@gr_series.errors.full_messages}"
+      flash[:error] = l(:error_grseries_update, :error_msg => @gr_entry.errors.full_messages)#"Update Series: Failed - #{@gr_series.errors.full_messages}"
       render :edit
       return
     end
@@ -84,9 +84,9 @@ class GrSeriesController < ApplicationController
     @gr_series = GrSeries.destroy(params[:id])
     
     if @gr_series.save
-      flash[:notice] = "Delete Series: Completed"
+      flash[:notice] = l(:notice_grseries_delete)
     else
-      flash[:error] = "Delete Series: Failed - #{@gr_series.errors.full_messages}"
+      flash[:error] = l(:error_grseries_delete, :error_msg => @gr_entry.errors.full_messages)#"Delete Series: Failed - #{@gr_series.errors.full_messages}"
     end
 
     redirect_to :controller => 'gr_graphs', :action => 'set_params', :project_id => @project.id, :gr_graph_id => @gr_graph.id

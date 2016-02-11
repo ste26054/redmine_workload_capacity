@@ -138,11 +138,16 @@ module RedmineWorkloadCapacity
 			# Returns the total remaining cross project allocation table, INcluding current project allocations, bound to current project window
 			def gr_calcul_alloc(start_period, end_period, granularity, attribut, category_operation)
 				entry_datas = []
+				leave_table = []
 
-				if attribut == 0
-					total_alloc = self.wl_table_allocation	
-				else
-					total_alloc = self.wl_global_table_allocation	
+				if attribut == 0 #project allocation
+					alloc_table = self.wl_table_allocation	
+				elsif attribut == 5 #real_allocation
+					alloc_table = self.wl_table_allocation	
+					leave_project_id = RedmineLeavesHolidays::Setting.defaults_settings(:default_project_id)
+					leave_table = self.user.get_logged_time(Project.find(leave_project_id), start_period, end_period)
+				else# total_allocation or remaining allocation
+					alloc_table = self.wl_global_table_allocation	
 				end
 
 				period = start_period..end_period
@@ -155,27 +160,27 @@ module RedmineWorkloadCapacity
 						end_recc_date = current_day.end_of_week
 						end_recc_date = end_period if end_recc_date > end_period
 
-						data_result= WlSeries.average_for_period(total_alloc, current_day, end_recc_date, attribut, category_operation)	
+						data_result= self.average_for_period(alloc_table, leave_table, current_day, end_recc_date, attribut, category_operation)	
 						current_day = end_recc_date+1 
 										
 					when 2 # monthly
 						end_recc_date = current_day.end_of_month
 						end_recc_date = end_period if end_recc_date > end_period
-						data_result= WlSeries.average_for_period(total_alloc, current_day, end_recc_date, attribut, category_operation)
+						data_result= self.average_for_period(alloc_table, leave_table, current_day, end_recc_date, attribut, category_operation)
 						current_day = end_recc_date+1 
 					when 3 # quarterly
 						end_recc_date = current_day.end_of_quarter
 						end_recc_date = end_period if end_recc_date > end_period
-						data_result= WlSeries.average_for_period(total_alloc, current_day, end_recc_date, attribut, category_operation)
+						data_result= self.average_for_period(alloc_table, leave_table, current_day, end_recc_date, attribut, category_operation)
 						current_day = end_recc_date+1 
 					when 4 # yearly
 						end_recc_date = current_day.end_of_year
 						end_recc_date = end_period if end_recc_date > end_period
-						data_result= WlSeries.average_for_period(total_alloc, current_day, end_recc_date, attribut, category_operation)
+						data_result= self.average_for_period(alloc_table, leave_table, current_day, end_recc_date, attribut, category_operation)
 						current_day = end_recc_date+1 
 					else #when 0 - daily
 						category_operation = 0 # no need to do a average
-						data_result= WlSeries.average_for_period(total_alloc, current_day, current_day, attribut, category_operation)
+						data_result= self.average_for_period(alloc_table, leave_table, current_day, current_day, attribut, category_operation)
 						current_day = current_day+1
 					end
 					entry_datas << data_result	
@@ -183,6 +188,59 @@ module RedmineWorkloadCapacity
 
 				return entry_datas
 			end
+
+			def average_for_period(alloc_table, leave_table, current_day, end_recc_date, attribut, category_operation)
+				output = 0
+				nb_increment = 0
+
+				actual_dailyhours = 0
+				actual_dailyhours = (self.user.actual_weekly_working_hours/5).round(2)	if attribut == 5
+
+				while current_day <= end_recc_date
+					alloc_table.each_with_index do |ta, i|
+						if current_day.between?(ta[:start_date], ta[:end_date])
+							case attribut #integer
+				# project_allocation: 0, total_allocation: 1, remaining_allocation: 2, logged_time: 3, check_ratio: 4, real_allocation: 5#
+							when 0 #project_allocation
+								output += (ta[:percent_alloc])
+							when 1 #total_allocation
+								output += (ta[:percent_alloc])
+							when 2 #remaining_allocation
+								total = (ta[:percent_alloc])
+								total = 100 if total > 100
+								output += 100 - total
+							when 5 #real_allocation
+								leave_hours = leave_table[current_day]
+								unless leave_hours.nil? 
+									if leave_hours.round(2) == actual_dailyhours #fullday leave
+										output += 0
+									else # halfday
+										output += (ta[:percent_alloc])/2
+									end
+								else
+									output += (ta[:percent_alloc])
+								end
+							else
+								#other attribut :  logged_time: 3, check_ratio: 4 
+								#their calculation it done directly on WlSeries.get_array_data()
+								#so not call here
+							end
+
+							nb_increment = nb_increment+1
+						end
+					end
+
+					current_day = current_day+1
+				end #current_day = end_recc_date => end of the week
+				case category_operation
+				when 1 # average
+					output = (output/nb_increment).round(2) unless nb_increment == 0
+				else # when 0: sum
+					#do nothing because output is already a sum of the allocs of the period
+				end
+				return output	
+			end
+
 
 			def convert_table_alloc_to_hours(table_data)
 				table_result = []
@@ -219,7 +277,7 @@ module RedmineWorkloadCapacity
 							entry_data << self.get_check_ratio(gr_date.last.first, gr_date.last.last) 
 						end
 					end
-				else # project_allocation: 0, total_allocation: 1, remaining_allocation: 2
+				else # project_allocation: 0, total_allocation: 1, remaining_allocation: 2, real_allocation : 5
 					entry_data = self.gr_calcul_alloc(start_period, end_period, granularity, attribut_type, category_operation)
 					entry_data = self.convert_table_alloc_to_hours(entry_data)
 				end

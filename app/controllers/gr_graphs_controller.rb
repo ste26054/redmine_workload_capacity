@@ -35,9 +35,9 @@ class GrGraphsController < ApplicationController
     @gr_graph = GrGraph.new(plugin_reference: @gr_plugin_ref, name: params[:graph_name], user_id: User.current.id, project_id: @project.id )
     
     if @gr_graph.save 
-      flash[:notice] = "Initiate Graph basis: Completed"
+      flash[:notice] = l(:notice_grgraph_create)#"Initiate Graph basis: Completed"
     else
-      flash[:error] = "Initiate Graph basis: Failed"
+      flash[:error] = l(:error_grgraph_create)#Initiate Graph basis: Failed"
       render :new
       return 
     end
@@ -63,9 +63,9 @@ class GrGraphsController < ApplicationController
     @gr_graph = GrGraph.update(params[:id], name: params[:graph_name])
 
      if @gr_graph.save 
-      flash[:notice] = "Update Graph title: Completed"
+      flash[:notice] = l(:notice_grgraph_update)#"Update Graph title: Completed"
     else
-      flash[:error] = "Update Graph title: Failed"
+      flash[:error] = l(:error_grgraph_update)#"Update Graph title: Failed"
       render :edit
       return
     end
@@ -78,9 +78,9 @@ class GrGraphsController < ApplicationController
     @gr_graph = GrGraph.destroy(params[:id])
 
     if @gr_graph.save
-      flash[:notice] = "Delete Graph: Completed"
+      flash[:notice] = l(:notice_grgraph_delete)#"Delete Graph: Completed"
     else
-      flash[:error] = "Delete Graph: Failed - #{@gr_graph.errors.full_messages}"
+      flash[:error] = l(:error_grgraph_delete)#"Delete Graph: Failed - #{@gr_graph.errors.full_messages}"
     end
     #render :index
     redirect_to :controller => 'gr_graphs', :action => 'index', :project_id => @project.id
@@ -105,9 +105,9 @@ class GrGraphsController < ApplicationController
     @gr_datum = GrDatum.new(storage_data: storage_data, gr_graph_id: @gr_graph.id)
 
     if @gr_datum.save 
-      flash[:notice] = "Save Graph Data: Completed"
+      flash[:notice] = l(:notice_grgraph_save)#"Save Graph Data: Completed"
     else
-      flash[:error] = "Save Graph Data: Failed"
+      flash[:error] = l(:error_grgraph_save)#"Save Graph Data: Failed"
     end
 
    redirect_to :controller => 'gr_graphs', :action => 'personalise_index', :project_id => @project.id

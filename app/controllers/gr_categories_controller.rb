@@ -22,9 +22,9 @@ class GrCategoriesController < ApplicationController
   	@gr_category = GrCategory.new(gr_category_type: @gr_category_type, properties: @properties, gr_graph_id: @gr_graph.id)
  
   	if @gr_category.save
-      flash[:notice] = "Create Category data: Completed" 
+      flash[:notice] = l(:notice_grcategory_create)#"Create Category data: Completed" 
     else
-      flash[:error] = "Create Category data: Failed - #{@gr_category.errors.full_messages}"
+      flash[:error] = l(:error_grcategory_create, :error_msg => @gr_category.errors.full_messages)#"Create Category data: Failed - #{@gr_category.errors.full_messages}"
       render :new
       return
     end
@@ -45,9 +45,9 @@ class GrCategoriesController < ApplicationController
     @gr_category = GrCategory.update(@gr_category.id, properties: @properties)
 
     if @gr_category.save
-      flash[:notice] = "Update Category data: Completed"
+      flash[:notice] = l(:notice_grcategory_update)#"Update Category data: Completed"
     else
-      flash[:error] = "Update Category data: Failed - #{@gr_category.errors.full_messages}"
+      flash[:error] = l(:error_grcategory_update, :error_msg => @gr_entry.errors.full_messages)#"Update Category data: Failed - #{@gr_category.errors.full_messages}"
       render :edit
       return
     end
@@ -60,9 +60,9 @@ class GrCategoriesController < ApplicationController
     @gr_category = GrCategory.find_by(gr_graph_id: @gr_graph.id).destroy
     
     if @gr_category.save
-      flash[:notice] = "Delete Category data: Completed"
+      flash[:notice] = l(:notice_grcategory_delete)#"Delete Category data: Completed"
     else
-      flash[:error] = "Delete Category data: Failed - #{@gr_category.errors.full_messages}"
+      flash[:error] = l(:error_grcategory_delete, :error_msg => @gr_entry.errors.full_messages)#"Delete Category data: Failed - #{@gr_category.errors.full_messages}"
     end
     redirect_to :controller => 'gr_graphs', :action => 'set_params', :project_id => @project.id, :id => @gr_graph.id, :tab => 'grgraph'
   

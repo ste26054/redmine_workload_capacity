@@ -2,7 +2,7 @@ module WlSeries
 
 	def self.attribut_options 
 		#return [ project_allocation: 0, total_allocation: 1, remaining_allocation: 2, logged_time: 3, check_ratio: 4]
-		return { project_allocation: 0, total_allocation: 1, remaining_allocation: 2, logged_time: 3, check_ratio: 4}
+		return { project_allocation: 0, total_allocation: 1, remaining_allocation: 2, logged_time: 3, check_ratio: 4, real_allocation: 5}
 		
 	end
 
@@ -15,42 +15,6 @@ module WlSeries
 			unity = " hours"
 		end
  		return unity
-	end
-
-	def self.average_for_period(total_alloc, current_day, end_recc_date, attribut, category_operation)
-		output = 0
-		nb_increment = 0
-		while current_day <= end_recc_date
-			total_alloc.each_with_index do |ta, i|
-				if current_day.between?(ta[:start_date], ta[:end_date])
-					case attribut #integer
-	# project_allocation: 0, total_allocation: 1, remaining_allocation: 2, logged_time: 3, check_ratio: 4#
-					when 0 #project_allocation
-						output += (ta[:percent_alloc])
-					when 1 #total_allocation
-						output += (ta[:percent_alloc])
-					when 2 #remaining_allocation
-						total = (ta[:percent_alloc])
-						total = 100 if total > 100
-						output += 100 - total
-					else
-						#other attribut :  logged_time: 3, check_ratio: 4 
-						# their calculation it done directly on WlSeries.get_array_data()
-					end
-
-					nb_increment = nb_increment+1
-				end
-			end
-
-			current_day = current_day+1
-		end #current_day = end_recc_date => end of the week
-		case category_operation
-		when 1 # average
-			output = (output/nb_increment).round(2) unless nb_increment == 0
-		else # when 0: sum
-			#do nothing because output is already a sum of the allocs of the period
-		end
-		return output	
 	end
 
 
@@ -102,12 +66,34 @@ module WlSeries
 					series_color = series.properties[:color]
 					attribut_type = series.properties[:attribut].to_i
 					operation_type = series.properties[:operation]
+					series_unity = self.get_tooltip_valueSuffix(attribut_type)
 
 					if operation_type.nil?
 						# no operation = only one entry and this entry is an user
 						gr_entry = GrEntry.find_by(gr_series_id: series.id)
-						gr_member = project.wl_members.select{|wl_m| wl_m.user_id == gr_entry.entry_id }.first
-						final_entry_data = gr_member.gr_entry_data(start_period, end_period, category_hash, granularity, attribut_type, category_operation)
+						#gr_member = project.wl_members.select{|wl_m| wl_m.user_id == gr_entry.entry_id }.first
+							#distrinct when attribut_type is 1 :
+						if attribut_type == 1 # total_allocation
+							#gr_members = []
+							gr_members = gr_entry.entry.members.select{|m| m.wl_member? }
+							
+							gr_members.each do |gr_member|
+								entry_data = []
+								entry_data = gr_member.gr_entry_data(start_period, end_period, category_hash, granularity, 0, category_operation)
+								unless entry_data.blank?
+									#data_array << entry_data
+									title = "#{series.name}-#{gr_member.project.name}"
+									series_data << {name: title, type: series.chart_type, borderColor: "##{series_color}", borderWidth: 1, tooltip: {valueSuffix: series_unity}, data: entry_data, stacking: "total_#{gr_member.id}"}
+
+								end
+								
+							end
+							
+						else
+							gr_member = project.wl_members.select{|wl_m| wl_m.user_id == gr_entry.entry_id }.first
+							final_entry_data = gr_member.gr_entry_data(start_period, end_period, category_hash, granularity, attribut_type, category_operation)
+					
+						end
 					else
 						#if there are an operation then = either one or multiple role(s), or multiple users
 						gr_entries = GrEntry.where(gr_series_id: series.id)
@@ -132,10 +118,12 @@ module WlSeries
 						final_entry_data = self.gr_operation(data_array, operation_type.to_i)
 					end
 
-					series_unity = self.get_tooltip_valueSuffix(attribut_type)
+					if operation_type.nil? && attribut_type == 1
+						#already done
 
-					series_data << {name: series.name, type: series.chart_type, color: "##{series_color}", tooltip: {valueSuffix: series_unity}, data: final_entry_data}
-
+					else
+						series_data << {name: series.name, type: series.chart_type, color: "##{series_color}", tooltip: {valueSuffix: series_unity}, data: final_entry_data}
+					end
 				end
 				
 			end
