@@ -33,3 +33,5 @@ top:12px; width:270px;
 font-size: 0.8em;
 z-index:25;
 }
+
+.highcharts-container{width:100% !important; height:100% !important;}

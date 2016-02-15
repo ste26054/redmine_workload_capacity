@@ -1,0 +1,10 @@
+<h2>Graph</h2>
+<fieldset>
+	<legend>Title</legend>
+<%= form_tag(project_gr_graph_path(:id => @gr_graph.id ), :method => :put ) do %>
+	<%= render :partial => 'form', :locals => { :gr_graph => @gr_graph} %>
+<p><%= submit_tag('Modify') %> <a href="javascript:history.back()" class ='icon icon-cancel'><%= l(:button_back) %></a> </p>
+<% end %>
+</fieldset>
+
+

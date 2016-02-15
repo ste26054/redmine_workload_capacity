@@ -1,0 +1,27 @@
+<fieldset>
+<p>Category Type:
+	<% type_options = GrCategory.gr_category_types.to_a.map{|a| [a[0].humanize, a[1]]} %>
+	<%= select_tag('gr_category_type', options_for_select(type_options, gr_category.new_record? ? 0 : gr_category.gr_category_type), {:multiple => false, :disabled => true} ) %>
+</p>
+<p>Range:   From <%= text_field_tag('start_date', (gr_category.properties[:start_date] unless gr_category.new_record?), :required => true) %><%= calendar_for('start_date') %> To <%= text_field_tag('end_date', (gr_category.properties[:end_date] unless gr_category.new_record?), :required => true) %><%= calendar_for('end_date') %></p>
+<p>Granularity: 
+	<%# granularity_options = [["Daily", 1], ["Weekly", 2], ["Monthly", 3], ["Quarterly", 4], ["Yearly", 5]] %>
+	<% granularity_options = WlCategories.date_granularity_options.to_a.map{|a| [a[0].to_s, a[1]]} %>
+	<%= select_tag('granularity', options_for_select(granularity_options, gr_category.new_record? ? 0 : gr_category.properties[:granularity]), {:multiple => false }) %>
+	</p>
+
+	<% groperation_list = WlCategories.operation_options.to_a.map{|a| [a[0].to_s, a[1]]} %>	
+	<% 
+		if gr_category.new_record? 
+			selected_operation = 0
+		else
+			selected_operation = gr_category.properties[:operation]
+		
+		end	
+	%>
+<p><span  title="Sum or Average of series data for a period (week, month, quarter, year)">
+	Function depending of the granularity (operation): </span>
+	<%# categories_operation_options: { sum: 0, average: 1}  %>
+	<%= select_tag( "operation", options_for_select(groperation_list, selected_operation), { :multiple => false	} ) %>
+	</p>
+</fieldset>

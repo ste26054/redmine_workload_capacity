@@ -1,0 +1,13 @@
+GEM
+  specs:
+    rufus-scheduler (3.0.3)
+      tzinfo
+    thread_safe (0.3.5)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rufus-scheduler (= 3.0.3)

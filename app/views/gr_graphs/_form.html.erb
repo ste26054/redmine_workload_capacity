@@ -1,0 +1,2 @@
+<%=h hidden_field_tag("plugin_ref", GrGraph.plugin_references[:allocation], :required => true) %>
+<p><%= text_field_tag("graph_name", (gr_graph.name unless gr_graph.new_record?), :required => true) %></p>

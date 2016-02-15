@@ -1,0 +1,46 @@
+<div id="gr<%=gr_graph.id%>_block" style="max-height: 400px;"
+<% if sortable %>
+class="mypage-box ui-sortable-handle"
+<% end %>
+  > 
+
+  <% if sortable %>
+      <div style="float:right;margin-right:16px;z-index:500;">
+      <%= link_to "", remove_block_project_gr_graphs_path(:block => "gr#{gr_graph.id}_block"), :method => 'post', :class => "close-icon" %>
+      </div>
+  <% end %>
+
+  <div id="gr<%=gr_graph.id%>_container"
+  <% if sortable %>
+  class="handle"
+  <% end %>
+    > 
+     
+      <% gr_data = gr_graph.gr_datum
+          category_data = []
+          series_data = []
+          gr_title = gr_graph.name
+          gr_subtitle = ""
+          unless gr_data.blank? 
+            gr_datum = gr_data.last
+            category_data = gr_datum.storage_data[:category_data] unless gr_datum.storage_data[:category_data].nil?
+            series_data = gr_datum.storage_data[:series_data] unless gr_datum.storage_data[:series_data].nil?
+            gr_title = gr_datum.storage_data[:title] unless gr_datum.storage_data[:title].nil?
+            gr_subtitle = "Updated at: #{gr_datum.created_at}"
+          else
+            gr_cat = gr_graph.gr_category #GrCategory.find_by(gr_graph_id: gr_graph.id)
+            category_data = WlCategories.get_array_data(gr_cat).to_json
+            series_data = WlSeries.get_array_data(project, gr_cat).to_json 
+          end 
+      %>
+      <%= javascript_tag do %>
+      var gr_title_json = <%=raw gr_title.to_json %>;
+      var gr_subtitle_json = <%=raw gr_subtitle.to_json %>;
+      var category_json = <%=raw category_data %>;
+      var series_json = <%=raw series_data %>;
+      draw_graph(<%=gr_graph.id%>, gr_title_json, gr_subtitle_json, category_json, series_json);
+      <% end %>
+
+  </div>
+
+</div>

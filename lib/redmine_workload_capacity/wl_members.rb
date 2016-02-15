@@ -89,6 +89,13 @@ module WlMember
 	end
 
 
+	def self.members_for_project_role(project, role_id)
+    	member_role_ids = MemberRole.where(role_id: role_id).pluck(:id)
+		members_list = Member.includes(:member_roles, :project, :user).where(users: {status: 1}, project_id: project.id, member_roles: {id: member_role_ids}).to_a.uniq
+		return members_list
+	end	
+
+
 
 
 end
