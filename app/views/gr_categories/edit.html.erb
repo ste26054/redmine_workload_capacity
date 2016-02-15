@@ -1,0 +1,8 @@
+<h2> Edit Horizontal (Category) Axis </h2>
+
+	<%= form_tag(project_gr_graph_gr_category_path, :method => :put) do  %>
+		<%= render :partial => 'form', :locals => {:gr_category => @gr_category} %>
+		<p><%= submit_tag('Modify') %> <a href="javascript:history.back()" class ='icon icon-cancel'><%= l(:button_back) %></a> </p>
+	<% end %>
+
+

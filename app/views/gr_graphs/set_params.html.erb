@@ -1,0 +1,32 @@
+<% content_for :header_tags do %>
+  <%= javascript_include_tag "http://code.highcharts.com/highcharts.js", "chartkick" %>
+  <%= javascript_include_tag src="http://code.highcharts.com/modules/exporting.js" %>
+  <%= javascript_include_tag 'gr_graphs', :plugin => "redmine_workload_capacity" %>
+  <%= include_calendar_headers_tags %>
+<% end %>
+
+<h2> Set parameters for your graph : <%=@gr_graph.name%> <%= link_to '', edit_project_gr_graph_path(:id => @gr_graph.id),
+         :class => 'icon icon-edit'%> </h2>
+
+<%= render :partial => 'show_category', :locals => {:gr_graph => @gr_graph} %>
+
+<br />
+
+<%= render :partial => 'index_series', :locals => {:gr_graph => @gr_graph} %>
+
+<br />
+
+<fieldset>
+	<legend>Draw</legend>
+
+<button onclick="preview_graph(<%=@project.id%>, <%=@gr_graph.id%>);">Preview</button>
+<button><%= link_to('Save', save_data_project_gr_graphs_path, :class => 'icon icon-save' ) %></button>
+<button><%= link_to('Delete', project_gr_graph_path(:id => @gr_graph.id),
+         {:class => 'icon icon-del', method: :delete, data: { confirm: 'Are you sure to delete this graph?' }}) %></button> 
+
+<div id="gr-content"></div>
+  
+</fieldset>
+
+
+

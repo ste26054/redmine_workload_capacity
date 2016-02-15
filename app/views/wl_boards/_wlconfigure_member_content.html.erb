@@ -1,34 +1,35 @@
 <% if member.wl_project_allocation? %>
 
-			<tr name ="wlmember<%=member.id%>-nameline" id ="wlmember<%=member.id%>-nameline" class="<%= cycle("odd", "even") %>" style="font-weight: bold; ">
-				<td><%= link_to member.user.name, User.find(member.user.id)  %>
+	<tr name ="wlmember<%=member.id%>-nameline" id ="wlmember<%=member.id%>-nameline" class="<%= cycle("odd", "even") %>" style="font-weight: bold; ">
+		<td><%= link_to member.user.name, User.find(member.user.id)  %>
+	
+			<%= display_new_label(member) %>
+		
+		</td>
+		<td><%= member.user.leave_preferences.region %></td>
+		<td><%= member.roles.map{ |role| role.name }.sort.join(", ") %></td>
+	
+		<td colspan="6">
+			<% custom_link = { :start_date => nil, :end_date => nil, :percent_alloc => nil} %>
 			
-  				<%= display_new_label(member) %>
-				
-				</td>
-				<td><%= member.user.leave_preferences.region %></td>
-				<td><%= member.roles.map{ |role| role.name }.sort.join(", ") %></td>
-			
-				<td colspan="6">
-					<% custom_link = { :start_date => nil, :end_date => nil, :percent_alloc => nil} %>
-					
-					<%= link_to 'Edit Default Project Allocation', new_project_user_wl_project_allocation_path(project, member.user), :remote => true, :class => 'icon icon-edit' %>
-					<%= link_to 'Add Custom Project Allocation', new_project_user_wl_custom_allocation_path(project, member.user, :wl_custom_allocation => custom_link), :remote => true, :class => 'icon icon-add' %>
-					<%= link_to 'Add Custom Project Window', new_project_user_wl_custom_project_window_path(project, member.user), :remote => true, :class => 'icon icon-add' %>
-					<%= link_to 'Add Overtime Entry', new_project_user_wl_user_overtime_path(project, member.user), :remote => true, :class => 'icon icon-time-add' %>
-				</td>
-			</tr>
+			<%= link_to 'Edit Default Project Allocation', new_project_user_wl_project_allocation_path(project, member.user), :remote => true, :class => 'icon icon-edit' %>
+			<%= link_to 'Add Custom Project Allocation', new_project_user_wl_custom_allocation_path(project, member.user, :wl_custom_allocation => custom_link), :remote => true, :class => 'icon icon-add' %>
+			<%= link_to 'Add Custom Project Window', new_project_user_wl_custom_project_window_path(project, member.user), :remote => true, :class => 'icon icon-add' %>
+			<%= link_to 'Add Overtime Entry', new_project_user_wl_user_overtime_path(project, member.user), :remote => true, :class => 'icon icon-time-add' %>
+		</td>
+	</tr>
 
-			<%= render "wlconfigure_member_line", :project => project, :member => member %>
+	<%= render "wlconfigure_member_line", :project => project, :member => member %>
 
 
-		<% else %>
-			<tr class="<%= cycle("odd", "even") %> priority-highest">
-				<td><%= link_to member.user.name, User.find(member.user.id) %></td><td><%= member.user.leave_preferences.region %></td><td><%= member.roles.map{ |role| role.name }.sort.join(", ") %></td>
-				<td colspan="6"><%= link_to 'Define a Default Project Allocation', new_project_user_wl_project_allocation_path(project, member.user), :class => 'icon icon-add' %></td>
-			</tr>
+<% else %>
+	<tr name ="wlmember<%=member.id%>-global" id ="wlmember<%=member.id%>-global" class="<%= cycle("odd", "even") %> priority-highest">
+		<td><%= link_to member.user.name, User.find(member.user.id) %></td><td><%= member.user.leave_preferences.region %></td><td><%= member.roles.map{ |role| role.name }.sort.join(", ") %></td>
+		<td colspan="6"><%= link_to 'Define a Default Project Allocation', new_project_user_wl_project_allocation_path(project, member.user), :remote => true, :class => 'icon icon-add' %></td>
+	</tr>
 
-		<% end %>
+
+<% end %>
 
 
 

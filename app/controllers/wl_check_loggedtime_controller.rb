@@ -8,7 +8,7 @@ class WlCheckLoggedtimeController < ApplicationController
   helper :wl_check_loggedtime
   
   before_action :set_user
-  before_action :find_project
+  before_action :set_project
   before_action :authenticate
 
 
@@ -25,7 +25,7 @@ class WlCheckLoggedtimeController < ApplicationController
 
     @timeline = RedmineWorkloadCapacity::Helpers::WlTimetable.new(params.merge(h2) )
     @timeline.project ||= @project
-    if !User.current.wl_manage_right?(@project) && !User.current.allowed_to?(:view_global_allocation_check, @project) && (Member.find_by(user_id: User.current.id, project_id: @project.id).nil? ? false : Member.find_by(user_id: User.current.id, project_id: @project.id).wl_member?)  
+    if !User.current.wl_manage_right?(@project) && !User.current.allowed_to?(:view_global_allocation, @project) && (Member.find_by(user_id: User.current.id, project_id: @project.id).nil? ? false : Member.find_by(user_id: User.current.id, project_id: @project.id).wl_member?)  
       @timeline.wl_users ||= [User.current]
     else
       @timeline.wl_users ||= @project.wl_users
@@ -35,17 +35,9 @@ class WlCheckLoggedtimeController < ApplicationController
 
   private
   
-
   def set_user
     @user ||= User.current
   end
-
-  def find_project
-    @project ||= Project.find(params[:project_id])
-  end
-
- 
-
 
 
 end

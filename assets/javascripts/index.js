@@ -46,7 +46,7 @@ function delete_contentline_rows(member_id){
 
 function refresh_member_contentline(project_id, member_id, flash_msg, notice_flash){
 	$.ajax({
-	      url: '/projects/'+project_id+'/update_wlconfigure/'+member_id,
+	      url: '/projects/'+project_id+'/workload/update_wlconfigure/'+member_id,
 	      cache: false,
 	      beforeSend: function(){
 	      	$('#ajax-indicator').show();
@@ -54,6 +54,49 @@ function refresh_member_contentline(project_id, member_id, flash_msg, notice_fla
 	      success: function(data){
 			delete_contentline_rows(member_id);
 			$("table #wlmember"+member_id+"-nameline").after(data);
+			update_footer();
+			if(flash_msg != "" ){
+				field_flash =  document.getElementById('flash');
+				field_flash.innerHTML = "";
+				if(notice_flash == false){
+					field_flash.className= "flash error";
+				}else{
+					field_flash.className= "flash notice";
+				}
+				field_flash.innerHTML = flash_msg+" ";
+	      	}
+	      }
+
+	});
+	
+}
+
+// used when we define for a new member its default project allocation 
+function delete_globalcontent_rows(member_id){
+	old_rows = document.getElementsByName("wlmember"+member_id+"-global");
+	wltable = document.getElementById("wltable");
+	if(old_rows.length >0){
+		var index = 0;
+		for(i=old_rows.length-1; i>=0; i-- )
+		{
+			index = old_rows[i].rowIndex;
+			wltable.deleteRow(index);
+		}
+
+	}
+}
+
+// used when we define for a new member its default project allocation 
+function refresh_member_global(project_id, member_id, flash_msg, notice_flash){
+	$.ajax({
+	      url: '/projects/'+project_id+'/workload/update_global/'+member_id,
+	      cache: false,
+	      beforeSend: function(){
+	      	$('#ajax-indicator').show();
+	        	      },
+	      success: function(data){
+			delete_globalcontent_rows(member_id);
+			$("#wltable tbody").append(data);
 			update_footer();
 			if(flash_msg != "" ){
 				field_flash =  document.getElementById('flash');

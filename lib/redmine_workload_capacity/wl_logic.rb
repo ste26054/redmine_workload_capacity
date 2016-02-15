@@ -164,4 +164,6 @@ module WlLogic
 		return WlLogic.get_overlaps_from_db.delete_if {|o| !window_id.in?(o[:project_window_ids])}
 	end
 
+
+
 end

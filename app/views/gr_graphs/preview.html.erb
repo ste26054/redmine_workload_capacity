@@ -1,0 +1,31 @@
+<% content_for :header_tags do %>
+  <%= javascript_include_tag "http://code.highcharts.com/highcharts.js", "chartkick" %>
+  <%= javascript_include_tag src="http://code.highcharts.com/modules/exporting.js" %>
+  <%= javascript_include_tag 'gr_graphs', :plugin => "redmine_workload_capacity" %>
+<% end %>
+
+<div id="gr<%=@gr_graph.id%>_container" style="min-width: 310px; height: 400px; margin:0 auto" data-highcharts-chart="0">
+<% 
+#initialisation variables
+category_data = []
+series_data = []
+gr_title =""
+gr_subtitle = "Preview"
+%> 
+
+<% 
+gr_cat = @gr_graph.gr_category #GrCategory.find_by(gr_graph_id: @gr_graph.id)
+category_data = WlCategories.get_array_data(gr_cat).to_json
+series_data = WlSeries.get_array_data(@project, gr_cat).to_json
+gr_title = @gr_graph.name
+%>
+<%= javascript_tag do %> 
+  var gr_title_json = <%=raw gr_title.to_json %>;
+  var gr_subtitle_json = <%=raw gr_subtitle.to_json %>;
+  var category_json = <%=raw category_data %>;
+  var series_json = <%=raw series_data %>;
+  draw_graph(<%=@gr_graph.id%>, gr_title_json, gr_subtitle_json, category_json, series_json);
+<% end %>
+
+
+</div>

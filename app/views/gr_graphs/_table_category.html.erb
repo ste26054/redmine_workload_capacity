@@ -1,0 +1,31 @@
+<% category = gr_graph.gr_category %>
+<% unless category.nil? %>
+
+	<table class="list">
+	<thead><tr>
+		<th> Category Type </th>
+		<th> Start Date </th>
+		<th> End Date </th>
+		<th> Granularity </th>
+		<th> Function </th>
+		<th> Action </th>
+	</tr></thead>
+	<tbody>
+
+		<% properties = category.properties %>
+		<tr>
+			<td><%= category.gr_category_type %></td>
+	
+			<td><%= properties[:start_date] %></td>
+			<td><%= properties[:end_date] %></td>
+			<td><%= WlCategories.date_granularity_options.select{|k,v| v == properties[:granularity].to_i }.keys.first %></td> 
+			<td><%= WlCategories.operation_options.select{|k,v| v == properties[:operation].to_i }.keys.first %></td>
+			<td><%= link_to 'Edit', edit_project_gr_graph_gr_category_path,
+			 :class => 'icon icon-edit' %>  <%= link_to 'Delete', project_gr_graph_gr_category_path,
+			 :class => 'icon icon-del', method: :delete %></td>
+		</tr>
+
+	</tbody>
+	</table>
+
+<% end %>

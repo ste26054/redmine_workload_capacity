@@ -15,12 +15,12 @@ Redmine::Plugin.register :redmine_workload_capacity do
                               :caption => :label_workload,
                               :after => :gantt,
                               :param => :project_id,
-                              :if => Proc.new {|p| User.current.wl_manage_right?(p) || (p.wl_window? && (User.current.allowed_to?(:view_global_allocation_check, p) || (Member.find_by(user_id: User.current.id, project_id: p.id).nil? ? false : Member.find_by(user_id: User.current.id, project_id: p.id).wl_member?)) ) }
+                              :if => Proc.new {|p| User.current.wl_manage_right?(p) || (p.wl_window? && (User.current.allowed_to?(:view_global_allocation, p) || (Member.find_by(user_id: User.current.id, project_id: p.id).nil? ? false : Member.find_by(user_id: User.current.id, project_id: p.id).wl_member?)) ) }
 
   project_module :allocation do
     permission :manage_project_allocation, {:wl_boards => [:index]}
     permission :view_allocation, {:wl_boards => [:index]}, :public => true
-    permission :view_global_allocation_check, {:wl_boards => [:index]}
+    permission :view_global_allocation, {:wl_boards => [:index]}
   end
   
 end

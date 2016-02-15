@@ -1,110 +1,110 @@
+<!-- To calculate the average project allocation in the footer -->
+<% pw_sum_alloc = 0 %>
+<!-- _________________________________________________________ -->
+
+<% total_alloc = member.wl_global_table_allocation %>
+
+<!-- 2 seconds to get -->
+<% remaining_alloc = member.wl_remaining_table_allocation %>
+<!-- To calculate the average project allocation in the footer -->
+<% member_sum_alloc = 0 %>
+<!-- _________________________________________________________ -->
+
+<% total_alloc.each_with_index do |alloc, i| %>
+
 	<!-- To calculate the average project allocation in the footer -->
-	<% pw_sum_alloc = 0 %>
+
+	<!-- 2 seconds to get -->
+		<% member_sum_alloc += member.wl_sum_alloc_on_working_days(alloc[:start_date], alloc[:end_date]) %>
 	<!-- _________________________________________________________ -->
 
-	<% total_alloc = member.wl_global_table_allocation %>
+	<% custom_alloc = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).overlaps(alloc[:start_date], alloc[:end_date]) %>
 
-			<!-- 2 seconds to get -->
-			<% remaining_alloc = member.wl_remaining_table_allocation %>
-			<!-- To calculate the average project allocation in the footer -->
-			<% member_sum_alloc = 0 %>
-			<!-- _________________________________________________________ -->
+	<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" if (alloc[:percent_alloc] > 100) %> <%= "allocation-below" if (alloc[:percent_alloc] < 100) %>" name = "wlmember<%=member.id%>-contentline">
+	<td></td><td></td><td></td>
+	<td>
+		<% if custom_alloc.empty? %>
+			<span class= "tog">Default Project Allocation</span>
+		<% else %>
+			<span class= "tog">Custom Project Allocation</span>
+		<% end %>
+	</td>
+	<td><%= format_date(alloc[:start_date]) %></td>
+	<td><%= format_date(alloc[:end_date]) %></td>
+	
+	<td><%= render_member_project_allocation(member, alloc[:start_date], alloc[:end_date]) %></td>
+	<td>
+		<div class="tooltip"> <% if alloc[:percent_alloc] > 100 %> [!] <% end %> <%= alloc[:percent_alloc] %>%
+    		<span class="tip"><%= render_details_tooltip(alloc[:details], member)  %></span> 
+		    </div>
+	</td>
+	<td> 
+		<% if custom_alloc.empty? %>
+			<% custom_link = { :start_date => alloc[:start_date], :end_date => alloc[:end_date], :percent_alloc => remaining_alloc[i][:percent_alloc]} %>
+			<% if alloc[:percent_alloc] > 100 %>
+				<div class="tooltip">
+					<%= link_to 'Smart Allocation', project_user_wl_custom_allocations_path(project, member.user,:wl_custom_allocation => custom_link), :id =>"smart_id", :class => 'icon icon-summary', :method => :post, :remote => true, :onclick => "loading_action(this.parentNode);" %>
+    				<span class="tip"><%= render_smart_allocation_tooltip(custom_link) %></span>
+		    		</div>
 
-			<% total_alloc.each_with_index do |alloc, i| %>
-
-				<!-- To calculate the average project allocation in the footer -->
-
-				<!-- 2 seconds to get -->
- 				<% member_sum_alloc += member.wl_sum_alloc_on_working_days(alloc[:start_date], alloc[:end_date]) %>
-				<!-- _________________________________________________________ -->
-
-				<% custom_alloc = WlCustomAllocation.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).overlaps(alloc[:start_date], alloc[:end_date]) %>
-
-				<tr class="<%= cycle("odd", "even") %> <%= "priority-highest" if (alloc[:percent_alloc] > 100) %> <%= "allocation-below" if (alloc[:percent_alloc] < 100) %>" name = "wlmember<%=member.id%>-contentline">
-				<td></td><td></td><td></td>
-				<td>
-					<% if custom_alloc.empty? %>
-						<span class= "tog">Default Project Allocation</span>
-					<% else %>
-						<span class= "tog">Custom Project Allocation</span>
-					<% end %>
-				</td>
-				<td><%= format_date(alloc[:start_date]) %></td>
-				<td><%= format_date(alloc[:end_date]) %></td>
-				
-				<td><%= render_member_project_allocation(member, alloc[:start_date], alloc[:end_date]) %></td>
-				<td>
-					<div class="tooltip"> <% if alloc[:percent_alloc] > 100 %> [!] <% end %> <%= alloc[:percent_alloc] %>%
-		        		<span class="tip"><%= render_details_tooltip(alloc[:details], member)  %></span> 
-		  		    </div>
-				</td>
-				<td> 
-					<% if custom_alloc.empty? %>
-						<% custom_link = { :start_date => alloc[:start_date], :end_date => alloc[:end_date], :percent_alloc => remaining_alloc[i][:percent_alloc]} %>
-						<% if alloc[:percent_alloc] > 100 %>
-							<div class="tooltip">
-								<%= link_to 'Smart Allocation', project_user_wl_custom_allocations_path(project, member.user,:wl_custom_allocation => custom_link), :id =>"smart_id", :class => 'icon icon-summary', :method => :post, :remote => true, :onclick => "loading_action(this.parentNode);" %>
-		        				<span class="tip"><%= render_smart_allocation_tooltip(custom_link) %></span>
-		  		    		</div>
-
-		  		    	<% else %>
-		  		    		<%= link_to 'Custom Project Allocation', new_project_user_wl_custom_allocation_path(project, member.user, :wl_custom_allocation => custom_link), :remote => true, :class => 'icon icon-add' %>
-
-						<% end %>
-					<% else %>
-						<%= link_to 'Edit', edit_project_user_wl_custom_allocation_path(project, member.user, custom_alloc.first), :remote => true, :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_custom_allocation_path(project, member.user, custom_alloc.first), :remote => true, method: :delete, :onclick => "loading_action(this);", :class => 'icon icon-del' %>
-					<% end %></td>
-				</tr>
-
+		    	<% else %>
+		    		<%= link_to 'Custom Project Allocation', new_project_user_wl_custom_allocation_path(project, member.user, :wl_custom_allocation => custom_link), :remote => true, :class => 'icon icon-add' %>
 
 			<% end %>
-
-			<!-- To calculate the average project allocation in the footer -->
- 			<% pw_working_days = member.user.working_days_count(project.wl_project_window.start_date, project.wl_project_window.end_date) %>
- 			<% pw_sum_alloc += member_sum_alloc/pw_working_days %>
-			<!-- _________________________________________________________ -->
-
-			<% user_custom_pw = WlCustomProjectWindow.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).order(:start_date) %>
-			<% if user_custom_pw.count > 0 %>
-				<tr name = "wlmember<%=member.id%>-contentline" class="group open"><td colspan="9">
-					<span class="expander" onclick="toggleRowGroup(this);">&nbsp;</span>
-      				Custom Project Windows 
-       				<span class="count"><%= user_custom_pw.count %></span>
-				</td></tr>
-			<% end %>
-			<% user_custom_pw.each_with_index do |pw, i| %>
-				<tr name = "wlmember<%=member.id%>-contentline" class="<%= cycle('odd', 'even') %>">
-				<td></td><td></td><td></td>
-				<td><span class= "tog">Custom Project Window</span></td>
-				<td><%= format_date(pw.start_date) %></td>
-				<td><%= format_date(pw.end_date) %></td>
-				<td>-</td>
-		  		<td>-</td>
-				<td>
-					<%= link_to 'Edit', edit_project_user_wl_custom_project_window_path(project, member.user, pw), :remote => true, :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_custom_project_window_path(project, member.user, pw), method: :delete,:remote => true,:onclick => "loading_action(this);", :class => 'icon icon-del' %></td>
-				</tr>
-			<% end %>
+		<% else %>
+			<%= link_to 'Edit', edit_project_user_wl_custom_allocation_path(project, member.user, custom_alloc.first), :remote => true, :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_custom_allocation_path(project, member.user, custom_alloc.first), :remote => true, method: :delete, :onclick => "loading_action(this);", :class => 'icon icon-del' %>
+		<% end %></td>
+	</tr>
 
 
-			<% user_overtimes = WlUserOvertime.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).order(:start_date) %>
-			<% if user_overtimes.count > 0 %>
-				<tr name = "wlmember<%=member.id%>-contentline" class="group" ><td colspan="8"></td><td><span class= "tog"></span></td></tr>
-			<% end %>
-			<% user_overtimes.each_with_index do |overtime, i| %>
-				<tr name = "wlmember<%=member.id%>-contentline" class="<%= cycle("odd", "even") %> <%= overtime.css_classes %>">
-				<td></td><td></td><td></td>
-				<td><span class= "tog"><%= render_member_overtime_allocation(overtime) %><span></td>
-				<td><%= format_date(overtime.start_date) %></td>
-				<td><%= format_date(overtime.end_date) %></td>
-				<td><div class="tooltip"><%= render_member_overtime(member, overtime) %>
-					<span class="tip"><%= render_member_overtime_tooltip(overtime) %></span>
-		  		    </div>
-		  		</td>
-		  		<td>-</td>
-				<td>
-					<%= link_to 'Edit', edit_project_user_wl_user_overtime_path(project, member.user, overtime),:remote => true, :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_user_overtime_path(project, member.user, overtime), method: :delete,:remote => true,:onclick => "loading_action(this);", :class => 'icon icon-del' %></td>
-				</tr>
-			<% end %>
+<% end %>
+
+<!-- To calculate the average project allocation in the footer -->
+	<% pw_working_days = member.user.working_days_count(project.wl_project_window.start_date, project.wl_project_window.end_date) %>
+	<% pw_sum_alloc += member_sum_alloc/pw_working_days %>
+<!-- _________________________________________________________ -->
+
+<% user_custom_pw = WlCustomProjectWindow.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).order(:start_date) %>
+<% if user_custom_pw.count > 0 %>
+	<tr name = "wlmember<%=member.id%>-contentline" class="group open"><td colspan="9">
+		<span class="expander" onclick="toggleRowGroup(this);">&nbsp;</span>
+			Custom Project Windows 
+			<span class="count"><%= user_custom_pw.count %></span>
+	</td></tr>
+<% end %>
+<% user_custom_pw.each_with_index do |pw, i| %>
+	<tr name = "wlmember<%=member.id%>-contentline" class="<%= cycle('odd', 'even') %>">
+	<td></td><td></td><td></td>
+	<td><span class= "tog">Custom Project Window</span></td>
+	<td><%= format_date(pw.start_date) %></td>
+	<td><%= format_date(pw.end_date) %></td>
+	<td>-</td>
+		<td>-</td>
+	<td>
+		<%= link_to 'Edit', edit_project_user_wl_custom_project_window_path(project, member.user, pw), :remote => true, :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_custom_project_window_path(project, member.user, pw), method: :delete,:remote => true,:onclick => "loading_action(this);", :class => 'icon icon-del' %></td>
+	</tr>
+<% end %>
 
 
-			<tr name = "wlmember<%=member.id%>-contentline" class ="group"><td><span class= "tog"></span></td><td colspan="5"></td><td title="Average of project allocations without the overtime" style="text-align: center;">Average: <span class="member_palloc_average_class"><%= pw_sum_alloc %></span>%</td><td colspan="2"></td></tr>
+<% user_overtimes = WlUserOvertime.where(user_id: member.user_id, wl_project_window_id: project.wl_project_window.id).order(:start_date) %>
+<% if user_overtimes.count > 0 %>
+	<tr name = "wlmember<%=member.id%>-contentline" class="group" ><td colspan="8"></td><td><span class= "tog"></span></td></tr>
+<% end %>
+<% user_overtimes.each_with_index do |overtime, i| %>
+	<tr name = "wlmember<%=member.id%>-contentline" class="<%= cycle("odd", "even") %> <%= overtime.css_classes %>">
+	<td></td><td></td><td></td>
+	<td><span class= "tog"><%= render_member_overtime_allocation(overtime) %><span></td>
+	<td><%= format_date(overtime.start_date) %></td>
+	<td><%= format_date(overtime.end_date) %></td>
+	<td><div class="tooltip"><%= render_member_overtime(member, overtime) %>
+		<span class="tip"><%= render_member_overtime_tooltip(overtime) %></span>
+		    </div>
+		</td>
+		<td>-</td>
+	<td>
+		<%= link_to 'Edit', edit_project_user_wl_user_overtime_path(project, member.user, overtime),:remote => true, :class => 'icon icon-edit' %> <%= link_to 'Delete', project_user_wl_user_overtime_path(project, member.user, overtime), method: :delete,:remote => true,:onclick => "loading_action(this);", :class => 'icon icon-del' %></td>
+	</tr>
+<% end %>
+
+
+<tr name = "wlmember<%=member.id%>-contentline" class ="group"><td><span class= "tog"></span></td><td colspan="5"></td><td title="Average of project allocations without the overtime" style="text-align: center;">Average: <span class="member_palloc_average_class"><%= pw_sum_alloc %></span>%</td><td colspan="2"></td></tr>

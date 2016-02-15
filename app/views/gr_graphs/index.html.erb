@@ -1,0 +1,33 @@
+<% content_for :header_tags do %>
+  <%= javascript_include_tag "http://code.highcharts.com/highcharts.js", "chartkick" %>
+  <%= javascript_include_tag src="http://code.highcharts.com/modules/exporting.js" %>
+  <%= javascript_include_tag 'gr_graphs', :plugin => "redmine_workload_capacity" %>
+<% end %>
+
+<h2><%=l(:label_workload)%></h2>
+<div class="tabular2"><%= render_wl_tabs wl_tabs %></div>
+
+<fieldset>
+  <legend>Dashboard <%= link_to l(:label_personalize_page),{:action => 'personalise_index'}, {:class => 'icon icon-edit'} %></legend>
+
+<div id="gr-content"></div>
+</fieldset>
+ 
+<%= javascript_tag do %>
+  $(document).ready(function(){
+
+    $.ajax({
+      url: '<%=display_dashboard_content_path(@project, :sortable =>  @sortable) %>',
+      cache: false,
+      beforeSend: function(){ 
+        $("#gr-content").html('<%= escape_javascript(render :partial => '/wl_commons/loading') %>');
+      },
+      success: function(data){
+        $("#gr-content").html(data);
+      }
+    });
+    $('#ajax-indicator').hide();
+
+   });
+    
+<% end %>
