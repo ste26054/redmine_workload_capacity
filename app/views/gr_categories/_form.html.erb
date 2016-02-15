@@ -1,3 +1,4 @@
+<fieldset>
 <p>Category Type:
 	<% type_options = GrCategory.gr_category_types.to_a.map{|a| [a[0].humanize, a[1]]} %>
 	<%= select_tag('gr_category_type', options_for_select(type_options, gr_category.new_record? ? 0 : gr_category.gr_category_type), {:multiple => false, :disabled => true} ) %>
@@ -23,3 +24,4 @@
 	<%# categories_operation_options: { sum: 0, average: 1}  %>
 	<%= select_tag( "operation", options_for_select(groperation_list, selected_operation), { :multiple => false	} ) %>
 	</p>
+</fieldset>

@@ -22,7 +22,20 @@ function draw_graph(gr_id, gr_title, gr_subtitle, category_data, series_data){
             }]
         }, 
         // tooltip: {
-        //     valueSuffix: yAxis_unity
+        //     // valueSuffix: yAxis_unity
+        //      formatter: function () {
+                
+        //         return '<b>' + this.x + '</b><br/>' +
+        //             this.series.name + ': ' + this.y + '<br/>' +
+        //             'Total: ' + this.point.stackTotal;
+                
+
+        //     }
+        // },
+        // plotOptions: {
+        //     column: {
+        //         stacking: 'percent'
+        //     }
         // },
         legend: {
             layout: 'vertical',
@@ -75,6 +88,28 @@ function entry_id_change(){
     }
     // else : always giving a type of operation if the entry_type is a role
         
+}
+
+function series_attribut_change(){
+    attribut_value = document.getElementById("attribut").value;
+    unit_field = document.getElementById("unit"); 
+
+       unit_field.disabled = false;
+    if(attribut_value == "check_ratio"){
+       
+        unit_field.disabled = true;
+       
+    }else{
+        unit_field.disabled = false;
+    } 
+
+    if(unit_field.disabled){
+        $("#series_unit_div").hide();
+    }
+    else{   //choose the operation to do (sum, average, max, min)
+        $("#series_unit_div").show();
+    }
+    // else : always giving a type of operation if the entry_type is a role
 }
 
 function delete_graph_div(graph_id){

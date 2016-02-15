@@ -16,7 +16,7 @@ class GrSeriesController < ApplicationController
 
   def create
 
-    @properties = { color: params[:color_picker], attribut: params[:attribut], operation: params[:operation] }
+    @properties = { color: params[:color_picker], attribut: params[:attribut], unit: params[:unit], operation: params[:operation], stacking: params[:stacking] }
     @gr_series = GrSeries.create(
       name: params[:name],
       chart_type: GrSeries.chart_types.select{|k,v| v == params[:chart_type].to_i}.keys.first, 
@@ -38,7 +38,7 @@ class GrSeriesController < ApplicationController
  
       flash[:notice] = l(:notice_grseries_create)#"Create Series: Completed"
     else
-      flash[:error] = l(:error_grseries_create, :error_msg => @gr_entry.errors.full_messages)#"Create Series: Failed - #{@gr_series.errors.full_messages}"
+      flash[:error] = l(:error_grseries_create, :error_msg => @gr_entry.nil? ? "Please check your inputs" : @gr_entry.errors.full_messages)#"Create Series: Failed - #{@gr_series.errors.full_messages}"
       render :new
       return
     end
@@ -56,7 +56,7 @@ class GrSeriesController < ApplicationController
 
     @gr_series = GrSeries.destroy(params[:id])
    
-    @properties = { color: params[:color_picker], attribut: params[:attribut], operation: params[:operation] }
+    @properties = { color: params[:color_picker], attribut: params[:attribut], unit: params[:unit], operation: params[:operation], stacking: params[:stacking] }
     @gr_series = GrSeries.create(
       name: params[:name],
       chart_type: GrSeries.chart_types.select{|k,v| v == params[:chart_type].to_i}.keys.first, 
@@ -71,7 +71,7 @@ class GrSeriesController < ApplicationController
     if @gr_series.save
       flash[:notice] = l(:notice_grseries_update)
     else
-      flash[:error] = l(:error_grseries_update, :error_msg => @gr_entry.errors.full_messages)#"Update Series: Failed - #{@gr_series.errors.full_messages}"
+      flash[:error] = l(:error_grseries_update, :error_msg => @gr_entry.nil? ? "Please check your inputs" : @gr_entry.errors.full_messages)#"Update Series: Failed - #{@gr_series.errors.full_messages}"
       render :edit
       return
     end

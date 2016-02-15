@@ -277,7 +277,25 @@ module RedmineWorkloadCapacity
 				return table_result
 			end
 
-			def gr_entry_data(start_period, end_period, category_hash, granularity, attribut_type, category_operation)
+			def convert_table_alloc_to_fte(table_data)
+				table_data.map{|datum| (datum/100.00).round(2)}
+			end
+
+			def convert_hours_to_fte(table_data)
+				table_result = []
+				actual_dwhours = self.user.actual_weekly_working_hours/5
+				table_result = table_data.map{|datum| (datum/actual_dwhours).round(2)}
+				return table_result
+			end
+
+			def convert_hours_to_percent(table_data)
+				table_result = []
+				actual_dwhours = self.user.actual_weekly_working_hours/5
+				table_result = table_data.map{|datum| ((datum*100)/actual_dwhours).round(2)}
+				return table_result
+			end
+
+			def gr_entry_data(start_period, end_period, category_hash, granularity, attribut_type, category_operation, unit_key)
 				entry_data =[]
 				case attribut_type
 				when 3 # logged_time	
@@ -295,7 +313,18 @@ module RedmineWorkloadCapacity
 							# do nothing because it is already a sum of value for the period
 						end
 						entry_data << entry_datum
-					end					
+					end	
+					#data conversion depending of the unit (fte, hours, %) - here, the raw_data is in hours
+					case unit_key
+					when 0 #fte
+						entry_data = self.convert_hours_to_fte(entry_data)				
+					when 1 #hours
+						#dont need to do anything
+					when 2 #%
+						entry_data = self.convert_hours_to_percent(entry_data)
+					else
+					end
+						
 				when 4 # check_ratio
 						
 					category_hash.each do |gr_date|
@@ -307,7 +336,18 @@ module RedmineWorkloadCapacity
 					end
 				else # project_allocation: 0, total_allocation: 1, remaining_allocation: 2, real_allocation : 5
 					entry_data = self.gr_calcul_alloc(start_period, end_period, granularity, attribut_type, category_operation)
-					entry_data = self.convert_table_alloc_to_hours(entry_data)
+					
+					#data conversion depending of the unot (fte, hours, %) - here the raw_data is in %
+					case unit_key
+					when 0 #fte
+						entry_data = self.convert_table_alloc_to_fte(entry_data)
+					when 1 #hours
+						entry_data = self.convert_table_alloc_to_hours(entry_data)
+					when 2 #%
+						#dont need to do anything 
+					else
+					end
+
 				end
 				return entry_data
 

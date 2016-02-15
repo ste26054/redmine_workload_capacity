@@ -18,6 +18,8 @@
 	%>
 
 <!--Form -->
+<fieldset>
+<legend>Data</legend>
 	<p>Series Type: 
 		<% type_member_list = ['User', 'Role'] %>
 		<%= select_tag("entry_type" , options_for_select(type_member_list, (gr_entry_type unless gr_series.new_record?)), {:multiple => false, :onchange => "entry_type_change(wlroles_list_json, wlusers_list_json);"}) %>
@@ -48,7 +50,32 @@
 		<%= select_tag( "operation", options_for_select(groperation_list, selected_operation), { :multiple => false, :disabled => disabled		} ) %>
 		</p>
 	</div>
+	<p>Series Attribut: 
+		<%# series_attribut_options: { project_allocation: 0, total_allocation: 1, remaining_allocation: 2, logged_time: 3, check_ratio: 4}  %>
+		<%= select_tag( "attribut", options_for_select(WlSeries.attribut_options.to_a.map{|a| [a[0].to_s, a[1]]}, (gr_series.properties[:attribut] unless gr_series.new_record?) ), { :multiple => false, :onchange => "series_attribut_change();" } ) %>
+		</p> 
+	<div id="series_unit_div" 
+	<% if (!gr_series.new_record? && gr_series.properties[:unit].nil?) %>
+ 	 style ="display: none;"
+ 	<% end %>
+	>
+	<% unit_list = WlSeries.unit_options.to_a.map{|a| [a[0].to_s, a[1]]} %>
+		<% selected_unit = 0 %>
+		<% if !gr_series.new_record? && !gr_series.properties[:unit].nil? 
+			selected_unit = gr_series.properties[:unit]	
+		end %>
+	  <%= javascript_tag do %>
+        series_attribut_change();
+      <% end %>
+	<p>Series unit: 
+		<%= select_tag( "unit", options_for_select(unit_list, selected_unit), { :multiple => false } ) %>
+		</p>
+	</div>
+</fieldset>
+</br>
 
+<fieldset>
+<legend>Display</legend>
 	<p>Series Name: <%= text_field_tag("name", (gr_series.name unless gr_series.new_record?), :required => true ) %></p>
 	<p>Series Color: 
 		<%= text_field_tag( "color_picker",  gr_series.new_record? ? "56aaff" : gr_series.properties[:color] ) %>
@@ -58,11 +85,18 @@
 		<% chart_type_options = GrSeries.chart_types.to_a.map{|a| [a[0].humanize, a[1]]}.drop(1) %> 
 		<%= select_tag( "chart_type", options_for_select(chart_type_options, (GrSeries.chart_types[gr_series.chart_type] unless gr_series.new_record?)), {:multiple => false} ) %>
 		</p>
-
-	<p>Series Attribut: 
+	<p>Series Stacking type: 
 		<%# series_attribut_options: { project_allocation: 0, total_allocation: 1, remaining_allocation: 2, logged_time: 3, check_ratio: 4}  %>
-		<%= select_tag( "attribut", options_for_select(WlSeries.attribut_options.to_a.map{|a| [a[0].to_s, a[1]]}, (gr_series.properties[:attribut] unless gr_series.new_record?) ), { :multiple => false } ) %>
-		</p> 
+		<%= select_tag( "stacking", options_for_select(WlSeries.stacking_options.to_a.map{|a| [a[0].to_s, a[1]]}, (gr_series.properties[:stacking] unless gr_series.new_record?) ), { :multiple => false } ) %>
+		</p>
 
+</fieldset>
+
+
+
+
+	
+	
+	
 
 
