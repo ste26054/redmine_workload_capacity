@@ -1,0 +1,72 @@
+<% content_for :header_tags do %>
+  <%= javascript_include_tag "http://code.highcharts.com/highcharts.js", "chartkick" %>
+  <%= javascript_include_tag src="http://code.highcharts.com/modules/exporting.js" %>
+  <%= javascript_include_tag 'gr_graphs', :plugin => "redmine_workload_capacity" %>
+<% end %>
+
+<!-- _________________ TOP DIV _________________ -->
+ <div id="list-top"
+    <% if @sortable %>
+    class="block-receiver ui-sortable"
+    <% end %>
+ >
+  <% unless @blocks.nil? 
+    @blocks['top'].each do |block|
+      gr_grph_id = block[/\d+/].to_i
+      gr_graph = GrGraph.find_by(id: gr_grph_id, project_id: @project.id) %>
+      <% unless gr_graph.nil? %>
+        <%= render "draw_graph", :project => @project, :gr_graph => gr_graph, :sortable => @sortable %>
+      <% end %>
+   <% end %>
+  <% end %>
+  </div>
+<!-- ___________________________________________ -->
+
+
+<!-- _________________ LEFT DIV _________________ -->
+  <div id="list-left" 
+   <% if @sortable %>
+    class="splitcontentleft block-receiver ui-sortable"
+    <% else %>
+  class="splitcontentleft"
+    <% end %> 
+  >
+  <% unless @blocks.nil? 
+    @blocks['left'].each do |block|
+      gr_grph_id = block[/\d+/].to_i
+      gr_graph = GrGraph.find_by(id: gr_grph_id, project_id: @project.id) %>
+      <% unless gr_graph.nil? %>
+        <%= render "draw_graph", :project => @project, :gr_graph => gr_graph, :sortable => @sortable %>
+      <% end %>
+   <% end %>
+  <% end %>
+  </div>
+<!-- ___________________________________________ -->
+
+
+<!-- _________________ RIGHT DIV _________________ -->
+  <div id="list-right" 
+   <% if @sortable %>
+    class="splitcontentright block-receiver ui-sortable"
+    <% else %>
+  class="splitcontentright"
+    <% end %> 
+ >
+  <% unless @blocks.nil? 
+    @blocks['right'].each do |block|
+      gr_grph_id = block[/\d+/].to_i
+      gr_graph = GrGraph.find_by(id: gr_grph_id, project_id: @project.id) %>
+      <% unless gr_graph.nil? %>
+        <%= render "draw_graph", :project => @project, :gr_graph => gr_graph, :sortable => @sortable %>
+      <% end %>
+   <% end %>
+  <% end %>
+  </div>
+<!-- ___________________________________________ -->
+
+
+   <% if @sortable %>
+<%= javascript_tag "initGrDashSortable('top', '#{ escape_javascript url_for(:action => "order_blocks", :group => "top") }');" %>
+<%= javascript_tag "initGrDashSortable('left', '#{ escape_javascript url_for(:action => "order_blocks", :group => "left") }');" %>
+<%= javascript_tag "initGrDashSortable('right', '#{ escape_javascript url_for(:action => "order_blocks", :group => "right") }');" %>
+  <% end %>

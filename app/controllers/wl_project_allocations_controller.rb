@@ -24,8 +24,12 @@ class WlProjectAllocationsController < ApplicationController
        msg = ""
      msg << flash[:notice] unless flash[:notice].blank?
       #redirect_to :controller => 'wl_boards', :action => 'index', :id => @project.id, :tab => "wlconfigure"
+      # render plain: "*********format: #{respond_to.format}************"
+      # return
       respond_to do |format|
-         format.js { render :js => "refresh_member_global(#{@project.id},#{@member.id}, '#{msg}',true );" } #this is the second time format.js has been called in this controller! 
+
+        format.js { render :js => "refresh_member_global(#{@project.id},#{@member.id}, '#{msg}',true );" } #this is the second time format.js has been called in this controller! 
+       
       end
     else
       flash[:error] = l(:error_set)
@@ -55,10 +59,6 @@ class WlProjectAllocationsController < ApplicationController
 
   def set_user
   	@user ||= User.find(params[:user_id])
-  end
-
-  def set_project
-  	@project ||= Project.find(params[:project_id])
   end
 
   def set_member

@@ -43,14 +43,22 @@ module RedmineWorkloadCapacity
 				return WlUser.wl_manage_right?(self, project)
 			end
 
+			def wl_view_global_right?(project)
+				return WlUser.wl_view_global_right?(self, project)
+			end
+
 			def get_logged_time(project, from_date, to_date)
+				result={}
+				curr_user = User.current
 				User.current = self
-				TimeEntryQuery.new(project: project).results_scope.where(user_id: self.id, :spent_on => from_date..to_date).group(:spent_on).sum(:hours)
+				result = TimeEntryQuery.new(project: project).results_scope.where(user_id: self.id, :spent_on => from_date..to_date).group(:spent_on).sum(:hours)
+		    	User.current = curr_user
+		    	return result
 		    end
 
 		    def holiday_date_for_user(date)
-		      region = self.leave_preferences.region.to_sym
-		      date.holiday?(region, :observed)
+		     	region = self.leave_preferences.region.to_sym
+		      	date.holiday?(region, :observed)
 		    end
 
 		    def actual_weekly_working_hours

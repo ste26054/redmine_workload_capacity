@@ -153,13 +153,18 @@ module WlBoardsHelper
 
 	def wl_tabs
 		tabs = []
-  		
+		
 	    if User.current.wl_manage_right?(@project)
-				tabs <<  {:name => 'wldashboard', :controller => 'wl_boards', :action => 'index', :tab => "wldashboard"  , :label => :label_wldashboard}
-	    		tabs << {:name => 'wlconfigure', :controller => 'wl_boards', :action => 'index', :tab => "wlconfigure" , :label => :label_wlconfigure}
+			tabs << {:name => 'wldashboard', :controller => 'wl_boards', :action => 'index', :tab => "wldashboard"  , :label => :label_wldashboard}
+    		tabs << {:name => 'wlconfigure', :controller => 'wl_boards', :action => 'index', :tab => "wlconfigure" , :label => :label_wlconfigure}
 		end
-		tabs << {:name => 'wlcheck', :controller => 'wl_check_loggedtime', :action => 'show', :tab => "wlcheck", :label => :label_wlcheck}
 
+  		tabs << {:name => 'wlcheck', :controller => 'wl_check_loggedtime', :action => 'show', :tab => "wlcheck", :label => :label_wlcheck}
+		
+		 if User.current.wl_manage_right?(@project) || User.current.wl_view_global_right?(@project)
+			tabs << {:name => 'grgraph', :controller => 'gr_graphs', :action => 'index', :tab => "grgraph"  , :label => :label_grgraph}
+  		end
+		
 		return tabs
 	end
 

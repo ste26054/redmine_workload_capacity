@@ -1,0 +1,39 @@
+<fieldset>
+  <legend>List <%= link_to 'Add graph', new_project_gr_graph_path, :class => 'icon icon-add' %></legend>
+  <br />
+
+<% unless graph_list.blank? %>
+
+  <table class="list">
+  <thead><tr>
+ <!--    <th> Id </th>
+    <th> plugin reference </th> -->
+    <th> Title </th>
+    <th> Created_by </th>
+    <th> Last Update </th>
+    <!-- <th> Projet </th> -->
+    <th> Action </th>
+  </tr></thead>
+  <tbody>
+    <% graph_list.each do |g| %>
+      <tr>
+<!--         <td><%#= g.id %></td>
+        <td><%#= g.plugin_reference %></td> -->
+        <td><%= g.name %> <%= link_to '', edit_project_gr_graph_path(:id => g.id),
+         :class => 'icon icon-edit' %></td>
+        <td><%= User.find(g.user_id).name %></td> 
+        <td><%= g.gr_datum.blank? ? ' - ' : g.gr_datum.last.created_at %></td> 
+        <!-- <td><%#= Project.find(g.project_id).name %></td>  -->
+        <td><%= link_to('Update data', save_data_project_gr_graphs_path(:gr_graph_id => g.id), :class => 'icon icon-reload') %>  <%= link_to 'Edit', set_project_gr_graphs_path(:gr_graph_id => g.id),
+         :class => 'icon icon-edit' %>  <%= link_to 'Delete', project_gr_graph_path(:id => g.id),
+         :class => 'icon icon-del', method: :delete %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+  </table>
+<% end %>
+
+ <br />
+
+</fieldset>

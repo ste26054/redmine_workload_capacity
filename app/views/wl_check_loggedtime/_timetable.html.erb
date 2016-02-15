@@ -6,25 +6,24 @@
              :year => params[:year], :months => params[:months]},
              :method => :get, :id => 'query_form') do %>
 
+  <p class="contextual">
+    <%= timeline_zoom_link(timeline, :in) %>
+    <%= timeline_zoom_link(timeline, :out) %>
+  </p>
 
-<p class="contextual">
-  <%= timeline_zoom_link(timeline, :in) %>
-  <%= timeline_zoom_link(timeline, :out) %>
-</p>
+  <p class="buttons">
+  <%= l(:button_show) %>
+  <%= text_field_tag 'months', timeline.months, :size => 2 %>
+  <%= l(:label_months_from) %>
+  <%= select_month(timeline.month_from, :prefix => "month", :discard_type => true) %>
+  <%= select_year(timeline.year_from, :prefix => "year", :discard_type => true) %>
+  <%= hidden_field_tag 'zoom', timeline.zoom %>
 
-<p class="buttons">
-<%= l(:button_show) %>
-<%= text_field_tag 'months', timeline.months, :size => 2 %>
-<%= l(:label_months_from) %>
-<%= select_month(timeline.month_from, :prefix => "month", :discard_type => true) %>
-<%= select_year(timeline.year_from, :prefix => "year", :discard_type => true) %>
-<%= hidden_field_tag 'zoom', timeline.zoom %>
+  <%= link_to_function l(:button_apply), '$("#query_form").submit()',
+                       :class => 'icon icon-checked' %>
+  <%= link_to l(:button_clear), { :clear_filters => 1 }, :class => 'icon icon-reload' %>
 
-<%= link_to_function l(:button_apply), '$("#query_form").submit()',
-                     :class => 'icon icon-checked' %>
-<%= link_to l(:button_clear), { :clear_filters => 1 }, :class => 'icon icon-reload' %>
-
-</p>
+  </p>
 
 <% end %>
 </fieldset>

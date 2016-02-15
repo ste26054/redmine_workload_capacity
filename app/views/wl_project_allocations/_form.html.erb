@@ -3,7 +3,7 @@
 </fieldset>
 <br />
 <fieldset>
-<%= form_for project_allocation,:remote => true, :url => project_user_wl_project_allocation_path do |f| %>
+<%= form_for project_allocation,:remote => true, :method => :post, :url => project_user_wl_project_allocation_path do |f| %>
 
 	<% if project_allocation.errors.any? %>
 		<div class="flash error">
