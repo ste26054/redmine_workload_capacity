@@ -21,10 +21,10 @@ module WlCategories
 			category_data = period.map{|a| a.strftime('%a %d %b %Y')}
 		when 1 # weekly
 			hash_period = self.hash_date_period(start_date, end_date, granularity) 
-			category_data = hash_period.map{|a| "#{a.last.first.year} - Week #{a.first}"}
+			category_data = hash_period.map{|a| "#{a.first.last} - Week #{a.first.first}"}
 		when 2 # monthly
 			hash_period = self.hash_date_period(start_date, end_date, granularity) 
-			category_data = hash_period.map{|a| "#{a.last.first.year} - #{Date::MONTHNAMES[a.first]}"}
+			category_data = hash_period.map{|a| "#{a.first.last} - #{Date::MONTHNAMES[a.first.first]}"}
 		when 3 # quarterly
 			hash_period = self.hash_date_period(start_date, end_date, granularity) 
 			category_data = hash_period.map{|a| "#{a.first.year} - Quarter #{1+(a.first.month)/4}"  }
@@ -39,21 +39,19 @@ module WlCategories
 		period = start_date..end_date 
  		 
 		case granularity
-		when 0 # daily
-			hash_period = Hash[period.map.with_index{|x,i| [i+1, [x,x]]}]
-			# category_data = period.to_a
 		when 1 # weekly
-			hash_period = period.group_by(&:cweek)
-			# category_data = hash_period.map{|a| "Week #{a.first}"}
+			#hash_period = period.group_by(&:cweek)
+			hash_period = period.group_by{|d| [d.cweek, d.year]}
 		when 2 # monthly
-			hash_period = period.group_by(&:month)
-			# category_data = hash_period.map{|a| "Month #{a.first}"}
+			#hash_period = period.group_by(&:month)
+			hash_period = period.group_by{|d| [d.month, d.year]}
 		when 3 # quarterly
 			hash_period = period.group_by(&:beginning_of_quarter)
-			# category_data = hash_period.map{|a| "#{a.first.year} - Quarter #{1+(a.first.month)/4)}"}
-		else # 4 yearly
+			#hash_period = period.group_by{|d| [d.beginning_of_quarter, d.year]}
+		when 4 # yearly
 			hash_period = period.group_by(&:year)
-			# category_data = hash_period.map{|a| "Year #{a.first}"} 
+		else # when 0 #daily
+			hash_period = Hash[period.map.with_index{|x,i| [i+1, [x,x]]}]
 		end
 		return hash_period
 	end
